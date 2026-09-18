@@ -1,0 +1,1958 @@
+total 32
+drwxr-xr-x@ 12 sam  staff    384  5月 27 22:28 .
+drwx------@ 17 sam  staff    544  8月  2 21:45 ..
+-rw-r--r--@  1 sam  staff  12292  7月 24 21:43 .DS_Store
+drwxr-xr-x@  7 sam  staff    224  8月  2 19:09 .idea
+drwxr-xr-x   4 sam  staff    128  4月 19 13:04 .qoder
+drwxr-xr-x@  8 sam  staff    256  4月  6 20:18 im-test
+drwxr-xr-x   6 sam  staff    192  6月  7 10:54 imooc_claw
+drwxr-xr-x  22 sam  staff    704  7月 24 21:44 langchain-test
+drwxr-xr-x@ 20 sam  staff    640  7月 12 15:52 langchain-ts
+drwxr-xr-x@  6 sam  staff    192  4月 19 21:42 monorepo-test
+drwxr-xr-x@  5 sam  staff    160  4月 27 20:41 nestjs-test
+drwxr-xr-x@  7 sam  staff    224  4月  6 20:13 websocket-test
+
+/Users/jack/Desktop/临时/.idea:
+total 56
+drwxr-xr-x@  7 sam  staff    224  8月  2 19:09 .
+drwxr-xr-x@ 12 sam  staff    384  5月 27 22:28 ..
+-rw-r--r--@  1 sam  staff    228  4月  6 20:20 .gitignore
+-rw-r--r--@  1 sam  staff    264  4月 12 10:22 modules.xml
+-rw-r--r--@  1 sam  staff    360  6月 14 22:12 vcs.xml
+-rw-r--r--@  1 sam  staff  10814  8月  2 19:09 workspace.xml
+-rw-r--r--@  1 sam  staff    281  4月 12 10:22 临时.iml
+
+/Users/jack/Desktop/临时/.qoder:
+total 0
+drwxr-xr-x   4 sam  staff  128  4月 19 13:04 .
+drwxr-xr-x@ 12 sam  staff  384  5月 27 22:28 ..
+drwxr-xr-x   2 sam  staff   64  4月 19 13:04 agents
+drwxr-xr-x   2 sam  staff   64  4月 19 13:04 skills
+
+/Users/jack/Desktop/临时/.qoder/agents:
+total 0
+drwxr-xr-x  2 sam  staff   64  4月 19 13:04 .
+drwxr-xr-x  4 sam  staff  128  4月 19 13:04 ..
+
+/Users/jack/Desktop/临时/.qoder/skills:
+total 0
+drwxr-xr-x  2 sam  staff   64  4月 19 13:04 .
+drwxr-xr-x  4 sam  staff  128  4月 19 13:04 ..
+
+/Users/jack/Desktop/临时/im-test:
+total 40
+drwxr-xr-x@  8 sam  staff  256  4月  6 20:18 .
+drwxr-xr-x@ 12 sam  staff  384  5月 27 22:28 ..
+-rw-r--r--@  1 sam  staff  644  4月  6 20:18 clientA.js
+-rw-r--r--@  1 sam  staff  644  4月  6 20:18 clientB.js
+drwxr-xr-x@  4 sam  staff  128  4月  6 20:14 node_modules
+-rw-r--r--@  1 sam  staff  872  4月  6 20:14 package-lock.json
+-rw-r--r--@  1 sam  staff   90  4月  6 20:14 package.json
+-rw-r--r--@  1 sam  staff  900  4月  6 20:19 server.js
+
+/Users/jack/Desktop/临时/im-test/node_modules:
+total 8
+drwxr-xr-x@ 4 sam  staff  128  4月  6 20:14 .
+drwxr-xr-x@ 8 sam  staff  256  4月  6 20:18 ..
+-rw-r--r--@ 1 sam  staff  748  4月  6 20:14 .package-lock.json
+drwxr-xr-x@ 9 sam  staff  288  4月  6 20:14 ws
+
+/Users/jack/Desktop/临时/im-test/node_modules/ws:
+total 72
+drwxr-xr-x@  9 sam  staff    288  4月  6 20:14 .
+drwxr-xr-x@  4 sam  staff    128  4月  6 20:14 ..
+-rw-r--r--@  1 sam  staff    176  4月  6 20:14 browser.js
+-rw-r--r--@  1 sam  staff    796  4月  6 20:14 index.js
+drwxr-xr-x@ 15 sam  staff    480  4月  6 20:14 lib
+-rw-r--r--@  1 sam  staff   1183  4月  6 20:14 LICENSE
+-rw-r--r--@  1 sam  staff   1753  4月  6 20:14 package.json
+-rw-r--r--@  1 sam  staff  15306  4月  6 20:14 README.md
+-rw-r--r--@  1 sam  staff    554  4月  6 20:14 wrapper.mjs
+
+/Users/jack/Desktop/临时/im-test/node_modules/ws/lib:
+total 312
+drwxr-xr-x@ 15 sam  staff    480  4月  6 20:14 .
+drwxr-xr-x@  9 sam  staff    288  4月  6 20:14 ..
+-rw-r--r--@  1 sam  staff   3056  4月  6 20:14 buffer-util.js
+-rw-r--r--@  1 sam  staff    503  4月  6 20:14 constants.js
+-rw-r--r--@  1 sam  staff   7321  4月  6 20:14 event-target.js
+-rw-r--r--@  1 sam  staff   6183  4月  6 20:14 extension.js
+-rw-r--r--@  1 sam  staff   1034  4月  6 20:14 limiter.js
+-rw-r--r--@  1 sam  staff  14532  4月  6 20:14 permessage-deflate.js
+-rw-r--r--@  1 sam  staff  16460  4月  6 20:14 receiver.js
+-rw-r--r--@  1 sam  staff  16711  4月  6 20:14 sender.js
+-rw-r--r--@  1 sam  staff   4204  4月  6 20:14 stream.js
+-rw-r--r--@  1 sam  staff   1498  4月  6 20:14 subprotocol.js
+-rw-r--r--@  1 sam  staff   3903  4月  6 20:14 validation.js
+-rw-r--r--@  1 sam  staff  16643  4月  6 20:14 websocket-server.js
+-rw-r--r--@  1 sam  staff  36724  4月  6 20:14 websocket.js
+
+/Users/jack/Desktop/临时/imooc_claw:
+total 16
+drwxr-xr-x   6 sam  staff   192  6月  7 10:54 .
+drwxr-xr-x@ 12 sam  staff   384  5月 27 22:28 ..
+-rw-r--r--@  1 sam  staff  6148  5月 27 22:33 .DS_Store
+drwxr-xr-x@ 15 sam  staff   480  6月 14 11:59 imooc_claw_dev
+drwxr-xr-x  14 sam  staff   448  6月  7 23:55 vibe-coding
+drwxr-xr-x   2 sam  staff    64  6月  7 10:54 vibe-coding-codex
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev:
+total 1800
+drwxr-xr-x@   15 sam  staff     480  6月 14 11:59 .
+drwxr-xr-x     6 sam  staff     192  6月  7 10:54 ..
+drwxr-xr-x@    2 sam  staff      64  6月 14 11:59 .cursor
+drwxr-xr-x@   13 sam  staff     416  6月  7 10:16 .git
+-rw-r--r--@    1 sam  staff      96  4月 26 18:29 .gitignore
+drwxr-xr-x@    8 sam  staff     256  6月 20 20:36 .idea
+-rw-r--r--@    1 sam  staff     106  5月  4 17:48 .npmrc
+drwxr-xr-x@    5 sam  staff     160  5月  2 20:37 apps
+drwxr-xr-x@    3 sam  staff      96  5月  3 10:51 docs
+drwxr-xr-x@ 1471 sam  staff   47072  5月 30 22:38 node_modules
+-rw-r--r--@    1 sam  staff     288  5月 10 21:17 package.json
+drwxr-xr-x@    4 sam  staff     128  5月  3 21:14 packages
+-rw-r--r--@    1 sam  staff  898774  5月 30 22:38 pnpm-lock.yaml
+-rw-r--r--@    1 sam  staff      40  5月  4 17:48 pnpm-workspace.yaml
+-rw-r--r--@    1 sam  staff     685  5月 31 17:54 test-mcp.js
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.cursor:
+total 0
+drwxr-xr-x@  2 sam  staff   64  6月 14 11:59 .
+drwxr-xr-x@ 15 sam  staff  480  6月 14 11:59 ..
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git:
+total 128
+drwxr-xr-x@  13 sam  staff    416  6月  7 10:16 .
+drwxr-xr-x@  15 sam  staff    480  6月 14 11:59 ..
+-rw-r--r--@   1 sam  staff     17  5月 31 13:48 COMMIT_EDITMSG
+-rw-r--r--@   1 sam  staff    137  4月 26 18:28 config
+drwxr-xr-x@   3 sam  staff     96  6月  7 10:16 cursor
+-rw-r--r--@   1 sam  staff     73  4月 26 18:28 description
+-rw-r--r--@   1 sam  staff     21  4月 26 18:28 HEAD
+drwxr-xr-x@  16 sam  staff    512  4月 26 18:28 hooks
+-rw-r--r--@   1 sam  staff  47155  5月 31 13:48 index
+drwxr-xr-x@   3 sam  staff     96  4月 26 18:28 info
+drwxr-xr-x@   4 sam  staff    128  5月  3 10:47 logs
+drwxr-xr-x@ 248 sam  staff   7936  5月 31 13:48 objects
+drwxr-xr-x@   4 sam  staff    128  4月 26 18:28 refs
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/cursor:
+total 0
+drwxr-xr-x@  3 sam  staff   96  6月  7 10:16 .
+drwxr-xr-x@ 13 sam  staff  416  6月  7 10:16 ..
+drwxr-xr-x@  3 sam  staff   96  6月  7 10:16 crepe
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/cursor/crepe:
+total 0
+drwxr-xr-x@ 3 sam  staff   96  6月  7 10:16 .
+drwxr-xr-x@ 3 sam  staff   96  6月  7 10:16 ..
+drwxr-xr-x@ 5 sam  staff  160  6月  7 10:16 e109424679d1410a0cba9e93b04eb68efdbcf3ed
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/cursor/crepe/e109424679d1410a0cba9e93b04eb68efdbcf3ed:
+total 14864
+drwxr-xr-x@ 5 sam  staff      160  6月  7 10:16 .
+drwxr-xr-x@ 3 sam  staff       96  6月  7 10:16 ..
+-rw-r--r--@ 1 sam  staff  4869312  6月  7 10:16 index.bin
+-rw-r--r--@ 1 sam  staff       30  6月  7 10:16 metadata.json
+-rw-r--r--@ 1 sam  staff  2732771  6月  7 10:16 postings.bin
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/hooks:
+total 128
+drwxr-xr-x@ 16 sam  staff   512  4月 26 18:28 .
+drwxr-xr-x@ 13 sam  staff   416  6月  7 10:16 ..
+-rwxr-xr-x@  1 sam  staff   478  4月 26 18:28 applypatch-msg.sample
+-rwxr-xr-x@  1 sam  staff   896  4月 26 18:28 commit-msg.sample
+-rwxr-xr-x@  1 sam  staff  4726  4月 26 18:28 fsmonitor-watchman.sample
+-rwxr-xr-x@  1 sam  staff   189  4月 26 18:28 post-update.sample
+-rwxr-xr-x@  1 sam  staff   424  4月 26 18:28 pre-applypatch.sample
+-rwxr-xr-x@  1 sam  staff  1649  4月 26 18:28 pre-commit.sample
+-rwxr-xr-x@  1 sam  staff   416  4月 26 18:28 pre-merge-commit.sample
+-rwxr-xr-x@  1 sam  staff  1374  4月 26 18:28 pre-push.sample
+-rwxr-xr-x@  1 sam  staff  4898  4月 26 18:28 pre-rebase.sample
+-rwxr-xr-x@  1 sam  staff   544  4月 26 18:28 pre-receive.sample
+-rwxr-xr-x@  1 sam  staff  1492  4月 26 18:28 prepare-commit-msg.sample
+-rwxr-xr-x@  1 sam  staff  2783  4月 26 18:28 push-to-checkout.sample
+-rwxr-xr-x@  1 sam  staff  2308  4月 26 18:28 sendemail-validate.sample
+-rwxr-xr-x@  1 sam  staff  3650  4月 26 18:28 update.sample
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/info:
+total 8
+drwxr-xr-x@  3 sam  staff   96  4月 26 18:28 .
+drwxr-xr-x@ 13 sam  staff  416  6月  7 10:16 ..
+-rw-r--r--@  1 sam  staff  240  4月 26 18:28 exclude
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/logs:
+total 8
+drwxr-xr-x@  4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 13 sam  staff   416  6月  7 10:16 ..
+-rw-r--r--@  1 sam  staff  1265  5月 31 13:48 HEAD
+drwxr-xr-x@  3 sam  staff    96  5月  3 10:47 refs
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/logs/refs:
+total 0
+drwxr-xr-x@ 3 sam  staff   96  5月  3 10:47 .
+drwxr-xr-x@ 4 sam  staff  128  5月  3 10:47 ..
+drwxr-xr-x@ 3 sam  staff   96  5月  3 10:47 heads
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/logs/refs/heads:
+total 8
+drwxr-xr-x@ 3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 3 sam  staff    96  5月  3 10:47 ..
+-rw-r--r--@ 1 sam  staff  1265  5月 31 13:48 main
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects:
+total 0
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 .
+drwxr-xr-x@  13 sam  staff   416  6月  7 10:16 ..
+drwxr-xr-x@   8 sam  staff   256  5月  4 16:52 00
+drwxr-xr-x@   5 sam  staff   160  5月  3 11:43 01
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 02
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 03
+drwxr-xr-x@   5 sam  staff   160  5月 10 22:32 04
+drwxr-xr-x@   7 sam  staff   224  5月  4 23:01 05
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 06
+drwxr-xr-x@   4 sam  staff   128  5月 10 20:48 07
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 08
+drwxr-xr-x@   6 sam  staff   192  5月  3 11:43 09
+drwxr-xr-x@   8 sam  staff   256  5月  4 23:02 0a
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 0b
+drwxr-xr-x@   4 sam  staff   128  5月  4 16:52 0c
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 0d
+drwxr-xr-x@   6 sam  staff   192  5月  4 23:01 0e
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 0f
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 10
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 11
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 12
+drwxr-xr-x@   6 sam  staff   192  5月  4 23:01 13
+drwxr-xr-x@   3 sam  staff    96  5月  4 16:52 14
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:01 15
+drwxr-xr-x@  10 sam  staff   320  5月  4 16:52 16
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 17
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 18
+drwxr-xr-x@   4 sam  staff   128  5月 10 20:48 19
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 1a
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 1b
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 1c
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 1e
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 1f
+drwxr-xr-x@   4 sam  staff   128  5月  3 11:43 20
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 21
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 22
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 23
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:02 24
+drwxr-xr-x@   6 sam  staff   192  5月 31 13:48 25
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 26
+drwxr-xr-x@   4 sam  staff   128  5月 10 20:48 27
+drwxr-xr-x@   7 sam  staff   224  5月 31 13:48 28
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 29
+drwxr-xr-x@   3 sam  staff    96  5月  4 16:52 2a
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 2b
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 2c
+drwxr-xr-x@   7 sam  staff   224  5月 31 13:48 2d
+drwxr-xr-x@   4 sam  staff   128  5月  3 11:43 2e
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 2f
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 30
+drwxr-xr-x@   3 sam  staff    96  5月  3 11:43 31
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 33
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 34
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 35
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 36
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 37
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 38
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:01 39
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 3a
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 3b
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 3c
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 3d
+drwxr-xr-x@   4 sam  staff   128  5月  4 16:52 3e
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:01 3f
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 40
+drwxr-xr-x@   6 sam  staff   192  5月 10 20:48 41
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 42
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 43
+drwxr-xr-x@   3 sam  staff    96  5月 31 13:48 46
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 47
+drwxr-xr-x@   4 sam  staff   128  5月 10 22:32 48
+drwxr-xr-x@   6 sam  staff   192  5月 10 22:32 49
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 4a
+drwxr-xr-x@   7 sam  staff   224  5月  3 10:47 4b
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 4c
+drwxr-xr-x@   3 sam  staff    96  5月 10 22:32 4d
+drwxr-xr-x@   6 sam  staff   192  5月 31 13:48 4e
+drwxr-xr-x@   3 sam  staff    96  5月  3 11:43 4f
+drwxr-xr-x@   5 sam  staff   160  5月  4 23:02 50
+drwxr-xr-x@   7 sam  staff   224  5月 31 13:48 51
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 52
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 53
+drwxr-xr-x@   5 sam  staff   160  5月  3 11:43 54
+drwxr-xr-x@   5 sam  staff   160  5月 10 20:48 56
+drwxr-xr-x@   6 sam  staff   192  5月 10 20:48 57
+drwxr-xr-x@   4 sam  staff   128  5月  3 11:06 58
+drwxr-xr-x@   4 sam  staff   128  5月 10 20:48 59
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 5a
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 5b
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 5c
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 5d
+drwxr-xr-x@  10 sam  staff   320  5月 31 13:48 5e
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 5f
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 60
+drwxr-xr-x@   7 sam  staff   224  5月  4 16:52 61
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:02 62
+drwxr-xr-x@   5 sam  staff   160  5月 10 20:48 63
+drwxr-xr-x@   3 sam  staff    96  5月 31 13:48 64
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 65
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 67
+drwxr-xr-x@   3 sam  staff    96  5月  4 16:52 68
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 69
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 6a
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 6b
+drwxr-xr-x@   4 sam  staff   128  5月  3 11:06 6c
+drwxr-xr-x@   8 sam  staff   256  5月 31 13:48 6d
+drwxr-xr-x@   3 sam  staff    96  5月 10 20:48 6e
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 6f
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 70
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 71
+drwxr-xr-x@   7 sam  staff   224  5月  4 23:02 72
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 73
+drwxr-xr-x@   7 sam  staff   224  5月 31 13:48 74
+drwxr-xr-x@   6 sam  staff   192  5月  4 23:02 75
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 76
+drwxr-xr-x@   4 sam  staff   128  5月 10 22:32 77
+drwxr-xr-x@   6 sam  staff   192  5月 10 22:32 78
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 79
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 7a
+drwxr-xr-x@   6 sam  staff   192  5月 10 22:32 7b
+drwxr-xr-x@   5 sam  staff   160  5月 10 20:48 7c
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 7d
+drwxr-xr-x@   8 sam  staff   256  5月  3 10:47 7e
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 7f
+drwxr-xr-x@   7 sam  staff   224  5月  3 11:06 80
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 81
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 82
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 83
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 84
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 85
+drwxr-xr-x@   3 sam  staff    96  5月 31 13:48 86
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 87
+drwxr-xr-x@   7 sam  staff   224  5月  3 11:43 88
+drwxr-xr-x@   3 sam  staff    96  5月  4 23:02 89
+drwxr-xr-x@   3 sam  staff    96  5月  3 11:43 8a
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 8b
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 8c
+drwxr-xr-x@   5 sam  staff   160  5月 10 22:32 8d
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 8e
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 8f
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 90
+drwxr-xr-x@   6 sam  staff   192  5月 10 22:32 91
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 92
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 93
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 94
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 95
+drwxr-xr-x@   7 sam  staff   224  5月 31 13:48 96
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 97
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:02 99
+drwxr-xr-x@   3 sam  staff    96  5月  4 23:01 9a
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 9b
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 9c
+drwxr-xr-x@   3 sam  staff    96  5月  4 16:52 9d
+drwxr-xr-x@   6 sam  staff   192  5月 10 22:32 9f
+drwxr-xr-x@   8 sam  staff   256  5月 31 13:48 a0
+drwxr-xr-x@   4 sam  staff   128  5月 10 22:32 a1
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 a2
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 a3
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:02 a4
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 a5
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 a7
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 a8
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 a9
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 aa
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 ab
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 ac
+drwxr-xr-x@   8 sam  staff   256  5月 10 22:32 ae
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 af
+drwxr-xr-x@   5 sam  staff   160  5月 10 20:48 b0
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 b1
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 b2
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 b3
+drwxr-xr-x@   3 sam  staff    96  5月  4 16:52 b4
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 b5
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 b6
+drwxr-xr-x@   8 sam  staff   256  5月  4 16:52 b7
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 b8
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 b9
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 ba
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:02 bb
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 bc
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 bd
+drwxr-xr-x@   5 sam  staff   160  5月  3 11:43 be
+drwxr-xr-x@   8 sam  staff   256  5月 10 22:32 bf
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 c0
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 c1
+drwxr-xr-x@   7 sam  staff   224  5月  3 11:06 c2
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 c3
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 c4
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 c5
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 c6
+drwxr-xr-x@   5 sam  staff   160  5月  4 23:01 c7
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 c8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 c9
+drwxr-xr-x@   9 sam  staff   288  5月 10 22:32 ca
+drwxr-xr-x@   5 sam  staff   160  5月  3 11:43 cb
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 cc
+drwxr-xr-x@   5 sam  staff   160  5月 10 20:48 cd
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 ce
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 cf
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 d0
+drwxr-xr-x@   6 sam  staff   192  5月 31 13:48 d1
+drwxr-xr-x@   4 sam  staff   128  5月  4 16:52 d2
+drwxr-xr-x@   3 sam  staff    96  5月 31 13:48 d3
+drwxr-xr-x@   5 sam  staff   160  5月  4 23:01 d4
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 d5
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 d6
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 d7
+drwxr-xr-x@   5 sam  staff   160  5月 10 22:32 d8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 d9
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 da
+drwxr-xr-x@   4 sam  staff   128  5月  3 11:43 db
+drwxr-xr-x@   3 sam  staff    96  5月 10 22:32 dc
+drwxr-xr-x@   5 sam  staff   160  5月  3 11:06 dd
+drwxr-xr-x@   7 sam  staff   224  5月  3 10:47 de
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 df
+drwxr-xr-x@   4 sam  staff   128  5月  3 11:06 e0
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 e1
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 e2
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 e4
+drwxr-xr-x@   6 sam  staff   192  5月 31 13:48 e5
+drwxr-xr-x@   5 sam  staff   160  5月  3 22:47 e6
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 e7
+drwxr-xr-x@   6 sam  staff   192  5月 31 13:48 e8
+drwxr-xr-x@   7 sam  staff   224  5月 10 22:32 e9
+drwxr-xr-x@   7 sam  staff   224  5月 31 13:48 ea
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 eb
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 ec
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 ed
+drwxr-xr-x@   6 sam  staff   192  5月  4 23:02 ee
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 ef
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 f0
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 f1
+drwxr-xr-x@   6 sam  staff   192  5月 31 13:48 f2
+drwxr-xr-x@   9 sam  staff   288  5月  3 10:47 f3
+drwxr-xr-x@   7 sam  staff   224  5月  3 10:47 f4
+drwxr-xr-x@   4 sam  staff   128  5月  3 11:06 f5
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 f6
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 f7
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 f8
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 f9
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 fa
+drwxr-xr-x@   4 sam  staff   128  5月  3 11:43 fc
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 fd
+drwxr-xr-x@  12 sam  staff   384  5月 31 13:48 fe
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 ff
+drwxr-xr-x@   2 sam  staff    64  4月 26 18:28 info
+drwxr-xr-x@   2 sam  staff    64  4月 26 18:28 pack
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/00:
+total 48
+drwxr-xr-x@   8 sam  staff   256  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   793  5月  3 10:47 530efedb134827b2e5799c32986ea0eac92426
+-r--r--r--@   1 sam  staff   904  5月  3 10:47 8e41586b8b0fd7b0c12bba46b2557ec5dd4f49
+-r--r--r--@   1 sam  staff   328  5月  3 11:05 92a2e4666b3aa902d7bcf547d5a44a7be6ac27
+-r--r--r--@   1 sam  staff   566  5月  3 10:47 d878c3a8563a1d37ff678d286582dbe5d4be06
+-r--r--r--@   1 sam  staff  1615  5月  3 10:47 e0c32ce578018035da8c87f8322c647992401f
+-r--r--r--@   1 sam  staff    95  5月  4 16:52 f5e7430a8de7c49e9a775801c2e0b75061f1df
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/01:
+total 184
+drwxr-xr-x@   5 sam  staff    160  5月  3 11:43 .
+drwxr-xr-x@ 248 sam  staff   7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  85883  5月  3 10:47 01772cf56dc052af6c28436f330dd70670823c
+-r--r--r--@   1 sam  staff    243  5月  3 10:47 050b20c2bac1057e891067336f34b33f113f8d
+-r--r--r--@   1 sam  staff    190  5月  3 11:43 8fa504d6684278abcdb385b4a25eb28f55ede0
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/02:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   954  5月  3 10:47 b1458f11d4aa777b2fe610bd1be89c5bf9f7d3
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/03:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  2350  5月  3 10:47 54f0dd2bab5f0a842a7b1792e7fe0e2eb10a4f
+-r--r--r--@   1 sam  staff  1283  5月  3 10:47 7e0b947d6b3bbfab0eab517a893102ca4a98ce
+-r--r--r--@   1 sam  staff   865  5月 31 13:48 cad528e9941110c513665ba520d7b65bafb4dd
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/04:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 10 22:32 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   373  5月  3 10:47 3020c7ed96285b967dea703639f80035e02ea8
+-r--r--r--@   1 sam  staff   279  5月 10 22:32 56ba7fe6219485c0981a338762c0153ee362a9
+-r--r--r--@   1 sam  staff  3743  5月  3 10:47 b5e7322eff390e39df71713c1bed160a077ebc
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/05:
+total 40
+drwxr-xr-x@   7 sam  staff   224  5月  4 23:01 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   304  5月  3 10:47 6e537da20a85cca03963c1b66b54471a0cfbe5
+-r--r--r--@   1 sam  staff   697  5月  3 10:47 83d416283d36552348f670df087c9435d7a240
+-r--r--r--@   1 sam  staff   203  5月  3 10:47 cc79784227229ec18ed0b7598e6a03db6bb7d7
+-r--r--r--@   1 sam  staff   328  5月  4 23:01 e05520f3c9e4ebf2edc45a019b21e41254eafa
+-r--r--r--@   1 sam  staff   317  5月  3 10:47 ef70eef4f5c67c36c7c394022734aa3d814f4c
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/06:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   244  5月  3 10:47 18da58367a7547f9a2bff8f842c93994229cc7
+-r--r--r--@   1 sam  staff   182  5月 31 13:48 40cd200f4702730d48344ef9928d9a6e25478c
+-r--r--r--@   1 sam  staff  1852  5月  3 10:47 6ce18237e02ac5bb708e1a74c3735d3bc98bf8
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/07:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月 10 20:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   111  5月 10 20:48 685b99211db7b2579625ae61dee0c1dd9eaaee
+-r--r--r--@   1 sam  staff   189  5月  3 11:43 f094eac6f2d7a18d5c5f5e26da5702f51f40d4
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/08:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   710  5月  3 10:47 2d48741c38e0b1b68228c6c96f585cede4e14e
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/09:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  3 11:43 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   650  5月  3 10:47 60e920b956fef4722f057861398699cddadaf3
+-r--r--r--@   1 sam  staff   795  5月  3 10:47 68818371cf76258fbe3e552908bfd843a58c2c
+-r--r--r--@   1 sam  staff  2489  5月  3 11:43 785a8746f9d4eaa2341eb82dc71ad143bd40eb
+-r--r--r--@   1 sam  staff   281  5月  3 10:47 f0ef0e048d604ef3e08da8c775fd53c3374819
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/0a:
+total 48
+drwxr-xr-x@   8 sam  staff   256  5月  4 23:02 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   205  5月  4 23:02 00b597eae3df4c788485b33e61ed8dba835f96
+-r--r--r--@   1 sam  staff   281  5月  3 10:47 4597c90f4abf03a6a3d630a86762dd1282b094
+-r--r--r--@   1 sam  staff    46  5月  3 10:47 4b97de53ae4f83db224a73981e6c0aaf581203
+-r--r--r--@   1 sam  staff   300  5月  3 10:47 acb4cd592ee864c78313c809609582fae197b9
+-r--r--r--@   1 sam  staff   976  5月  3 10:47 ade5494097ea2903977e7a449374832c6b0161
+-r--r--r--@   1 sam  staff   112  5月  3 10:47 d5e64a482e8de678c17b33f8bd63cca3413ba7
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/0b:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   659  5月  3 10:47 fe7bff7c891c8b7561d3b8c8b92008012126c8
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/0c:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   190  5月  4 16:52 45a7a1900ef1720c703da4564cd56b7be23a38
+-r--r--r--@   1 sam  staff  2502  5月  3 10:47 c8a04fffd2cb63627f6470a3dfb23f8c9023f8
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/0d:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  2168  5月  3 10:47 727d45a2ad0523c23467dd1c13461ee27a77d9
+-r--r--r--@   1 sam  staff   249  5月 31 13:48 dff9ea292afffca6e42db5d04d90bd54047643
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/0e:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  4 23:01 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   942  5月  4 23:01 2c187c51d67e5d9104beb5ffc862853a09bb81
+-r--r--r--@   1 sam  staff   181  5月  3 10:47 443f6cbb488ce911b1a30db7c173b183c643a2
+-r--r--r--@   1 sam  staff   333  5月  3 11:43 a45db942ec1a722696c1a506f18fba4deeefe8
+-r--r--r--@   1 sam  staff   833  5月  3 10:47 f54c95143dbc4a421b33d89ae8b14080fca0e6
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/0f:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   184  5月  3 10:47 b50b14f8d751c8db6e87d412eb173734aa2f31
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/10:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   940  5月  3 10:47 159e37bd53a88ace8a9c717d29c82a86bcca97
+-r--r--r--@   1 sam  staff   195  5月  3 10:47 8a6e489be8e7567ac6d41cd7d81d7715020b3b
+-r--r--r--@   1 sam  staff    70  5月  3 10:47 c1aca7f215e53172765cb7bb189a68a4b4ea91
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/11:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  1737  5月  3 10:47 35f5b5ac1cb9fbc42f72c26115761cb93954f1
+-r--r--r--@   1 sam  staff    86  5月  3 10:47 e7311e308d65755bc824d671d76c3d583b044d
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/12:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   175  5月  3 10:47 56c02675475cf9f9c94f2ef6144c2a120ac8f3
+-r--r--r--@   1 sam  staff   432  5月  3 10:47 83b145e398f6dfaa3fc5785789af9cf57a2536
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/13:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  4 23:01 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   101  5月  4 23:01 049dd749108150a3cab3520bbca54560a3eebc
+-r--r--r--@   1 sam  staff  2751  5月  3 11:43 c4bc5a9f5f4c230d5ac803278d51dbe4be81ae
+-r--r--r--@   1 sam  staff   752  5月  3 10:47 e5a680c4d403edfcbe14c0c7647b21a17a7e41
+-r--r--r--@   1 sam  staff   867  5月  3 10:47 e6b5c3ebcaa73bacee7dac7d2ad76325e6058f
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/14:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   335  5月  4 16:52 abedb2cb9ead3a35d937b0aff8dab624c20e77
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/15:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:01 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   219  5月  4 23:01 172b242883b70d5ecf4ea01f021fc4979ccf8e
+-r--r--r--@   1 sam  staff   196  5月  3 10:47 4eb81970d932d1192ada28640b115efcecc883
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/16:
+total 64
+drwxr-xr-x@  10 sam  staff   320  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   327  5月  4 16:52 0e1c5191276596bc5a7a451069359462987e16
+-r--r--r--@   1 sam  staff   118  5月  3 10:47 3cb8b23c51cdcfc9babb8885ce22c1eb1284be
+-r--r--r--@   1 sam  staff   333  5月  3 10:47 42938769e17b1b32463d490550ae3bf681c6a7
+-r--r--r--@   1 sam  staff   778  5月  3 10:47 8bd7557e422795bef59ea1ce68017060b0ee79
+-r--r--r--@   1 sam  staff   243  5月  3 10:47 9a71f1c2aec89230b7cac66ca3d11772ea90c6
+-r--r--r--@   1 sam  staff  1536  5月  3 11:05 b59630acf46a311dc0dd0dde9032a9376a69a5
+-r--r--r--@   1 sam  staff  1082  5月  3 10:47 e35d5236fd7ad7678c6359247b92556a8cd398
+-r--r--r--@   1 sam  staff  1438  5月  3 10:47 e3ff4ae82c3b41bcc233e09b82ca4b326634fb
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/17:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   859  5月  4 16:52 3bd8f9ea9a78143eedfb63d97f8bdbaeef8b9b
+-r--r--r--@   1 sam  staff  1738  5月  3 10:47 a990d240245c19aac894740175d252a20bc7be
+-r--r--r--@   1 sam  staff  1486  5月  3 10:47 aa25fe4140829a3e46230668e4dc1b7cf4013b
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/18:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   122  5月  3 10:47 6991f5c7bd42b890314f6735f00a2f90918c15
+-r--r--r--@   1 sam  staff   149  5月  3 10:47 f8786f953e219a1499586bc82bb7a1befce9ee
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/19:
+total 24
+drwxr-xr-x@   4 sam  staff   128  5月 10 20:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   436  5月  3 10:47 3148ffced68335b3b534db37bf99ae81a063dd
+-r--r--r--@   1 sam  staff  4896  5月 10 20:48 339282c4268e3e7139114f2f6735419ab0d27b
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/1a:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   459  5月 31 13:48 0f3b20461ca6c3d6ed91bc063bd072c8207c8a
+-r--r--r--@   1 sam  staff  1120  5月  3 10:47 6197ded5685c5aefd1465e0f763227a16556a0
+-r--r--r--@   1 sam  staff   159  5月  3 10:47 c489fe5fa51155b9c1a7751cb622819a152d13
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/1b:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    72  5月  3 10:47 92c195edfe4429c25e26ea33c0cc68afca9002
+-r--r--r--@   1 sam  staff  2800  5月  3 10:47 e74a60b9c2d7c2ecaa9e677277d347346d7cc7
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/1c:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    96  5月  3 10:47 2023c82305e4816d48a03e3f52d638b2a11715
+-r--r--r--@   1 sam  staff   335  5月  3 10:47 f6c3c5dc331cf803c09e63e0c463b00051c837
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/1e:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   129  5月 31 13:48 13011d717eda230101dfca7997b0670fceae1f
+-r--r--r--@   1 sam  staff  2413  5月  3 10:47 5ad2799e4977f18b35e7afb440d90d79f6aaec
+-r--r--r--@   1 sam  staff   173  5月  3 10:47 dfe6b87a7f399748eafe6b8ca83e1d00a0d961
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/1f:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    77  5月  3 10:47 08fef1e09fa3a02ae8af990e5c2a84155f12f1
+-r--r--r--@   1 sam  staff   111  5月  3 10:47 1feadbf6f1494e8da6a1e781a87399f1c46a8a
+-r--r--r--@   1 sam  staff   309  5月  3 10:47 d0cb37c8f4962e37d65278f530aa2346c6c24b
+-r--r--r--@   1 sam  staff  2465  5月  3 10:47 de7f44e830804d214f7c4cf6a1c7743c56286c
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/20:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 11:43 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    54  5月  3 11:43 4de802a8a66cfbdc87bcce5a34afcbf1902ca7
+-r--r--r--@   1 sam  staff    59  5月  3 10:47 5b0f5fc70ad0f706a958ffc80d44db6f83e567
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/21:
+total 16
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  4826  5月  3 10:47 fc108f00294d66855a6c10af022b9d6d0f23b9
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/22:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   257  5月  3 10:47 192d8a8102e9860c852d290951c8da8eefdfa9
+-r--r--r--@   1 sam  staff   337  5月  3 10:47 46742382ff6c6435337c86e98db40daa6e5f40
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/23:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   277  5月  3 10:47 3fb305ff5df3021d431142d43ec4613f0010d1
+-r--r--r--@   1 sam  staff   243  5月  3 10:47 5003f5e04772d9b2a2ddf4ae7aff3ced9fd5fc
+-r--r--r--@   1 sam  staff   110  5月  3 10:47 5977f4991c3bdf51df1a4460035c32b2629de5
+-r--r--r--@   1 sam  staff  1425  5月  3 10:47 9bf69f181116ee699e122a8f43e96b11843d1d
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/24:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:02 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   111  5月  4 23:02 6405eb38bd4cfc6aeb6759df6dc81f7a02fdab
+-r--r--r--@   1 sam  staff   128  5月  3 10:47 a546d07833bbe96d60bf7786897c2b6db9d235
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/25:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   449  5月  4 23:01 08e6408ae3079510a77a099fdf947984d9eac1
+-r--r--r--@   1 sam  staff   858  5月 31 13:48 6c494256a6b68a0337ee7531461595ca748b9d
+-r--r--r--@   1 sam  staff   545  5月  4 16:52 7deaf323f2622cc641cbfe8c8538b51e2af7e1
+-r--r--r--@   1 sam  staff  1340  5月  3 10:47 80b9752a6d11372249ac044efddb74819ef508
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/26:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   390  5月  3 10:47 79be46f50adb54c3eef7c5a8b9a00af17ef7c1
+-r--r--r--@   1 sam  staff   144  5月  3 10:47 9688f79defe723ef9740d9417cd2f092c06758
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/27:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月 10 20:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   146  5月 10 20:48 b3f8b96b5d0ab6ae954163fd49d82ccd519334
+-r--r--r--@   1 sam  staff    54  5月  3 10:47 d1a66d76662514fa3e6803fc2698058254cd94
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/28:
+total 40
+drwxr-xr-x@   7 sam  staff   224  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  3026  5月  3 10:47 0648b9bfd9269ecbfe6f36708c15f36f9dff2b
+-r--r--r--@   1 sam  staff   511  5月  3 10:47 2f1326180a5840911918bc884b72df52828aa7
+-r--r--r--@   1 sam  staff  1525  5月 31 13:48 5e3c5a2218b56158636faff1ecc5b40993878a
+-r--r--r--@   1 sam  staff  1380  5月  3 10:47 82c2e8c35f7b955c6b62411072684cd9fbd775
+-r--r--r--@   1 sam  staff  1306  5月  3 10:47 e8b5a51c40fe75391ff65d2ff8e6b2381b6927
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/29:
+total 40
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  4671  5月  3 10:47 7837477ab80c14edca173521e1b5e6f97461af
+-r--r--r--@   1 sam  staff   262  5月  3 10:47 911a46c3000dcabdc4b1523ca91207b571aa84
+-r--r--r--@   1 sam  staff   141  5月  3 10:47 ea88944f236dd4deffa9de3aaa7a61174c9fe8
+-r--r--r--@   1 sam  staff   265  5月  3 10:47 f8545202294f7d52a48309f4945e497a045e64
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/2a:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   244  5月  4 16:52 892fa7a41ef628d29cfd5c90d8719422447461
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/2b:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   178  5月  4 16:52 0b69f457cc2dd4c7d22fc54119789875550cf3
+-r--r--r--@   1 sam  staff  1500  5月  3 10:47 4571cbff565760f8b127e347ad658461e08297
+-r--r--r--@   1 sam  staff   335  5月  3 11:43 4f830f9470bb3564e9ec798a901f3a40952fe4
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/2c:
+total 72
+drwxr-xr-x@   3 sam  staff     96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff   7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  34363  5月  3 10:47 a71c062c85ef686f8baa43ee6544ce5db76b25
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/2d:
+total 40
+drwxr-xr-x@   7 sam  staff   224  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    54  5月  3 11:06 22fa7ed71555fed5d6f44b6b2f620c1d8b4863
+-r--r--r--@   1 sam  staff  2248  5月  3 10:47 46602dcb0b1cf672ea879d20578677df38dac3
+-r--r--r--@   1 sam  staff   253  5月  3 10:47 aaf24336276ecd2c9445081dbeb450df41a6a2
+-r--r--r--@   1 sam  staff   473  5月  3 10:47 b6d326152c475a9f04c947e2994e817cd938f8
+-r--r--r--@   1 sam  staff    72  5月 31 13:48 c90129faed8782cea2d5f2b7c5dacf75b33686
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/2e:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 11:43 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  2146  5月  3 10:47 0ddf6c7216cd8d5fc30d4044108b9df5b2a997
+-r--r--r--@   1 sam  staff   121  5月  3 11:43 dfb65f82b0debf20e47dc58ff7bf0e50e46bb9
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/2f:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   156  5月  3 10:47 4f5bcec3f570bff6fe680a58324f582d5d5523
+-r--r--r--@   1 sam  staff  1482  5月  4 16:52 880860796be45879b4d1f65ac490d2fee94f18
+-r--r--r--@   1 sam  staff  1325  5月  3 10:47 d5663cb219b448dd6bf3162866933d873cbf7a
+-r--r--r--@   1 sam  staff    96  5月  3 10:47 e1df273de6f4c070ddf8fc18b3c2388f23353b
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/30:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  2014  5月  3 10:47 457e8a92e02167e5cbd0d187d2d02094d05c29
+-r--r--r--@   1 sam  staff   614  5月  4 16:52 7e446e20606ec4a5e481e21dcac37f0592fd13
+-r--r--r--@   1 sam  staff    38  5月  3 10:47 c2d4d3624a8970342c7c6514217648aaed82d4
+-r--r--r--@   1 sam  staff   335  5月  3 10:47 dc1d0feb51e3142ada343482c2e9d576f7481d
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/31:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 11:43 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   306  5月  3 11:43 00fa38d7c2529e04402c2b72e544834ee9f7f6
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/33:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   243  5月 31 13:48 07709e1b68e61ac179b7edefef2d57033f1a56
+-r--r--r--@   1 sam  staff   263  5月  3 10:47 d8f5705b80b9365492eb31a1cbf709e1964ecb
+-r--r--r--@   1 sam  staff    91  5月  3 10:47 ed6c52b1ea8d0fe1a1085cb90a3ba518af3a64
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/34:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   184  5月  3 10:47 58407e3727eb39ec7ce365b4bb32bdb57327f3
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/35:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   592  5月  4 16:52 553d565a3c88a2018d6049ca060d985914827a
+-r--r--r--@   1 sam  staff   207  5月  3 10:47 c077c8e13884c23f0cb44203b144b666037606
+-r--r--r--@   1 sam  staff   143  5月  3 10:47 c247f048482281b3bd4b5e4bb293bd59cc3972
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/36:
+total 232
+drwxr-xr-x@   6 sam  staff     192  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff    7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff     175  5月  3 10:47 154e82b303341d444ef6f325c764a2a5be93e5
+-r--r--r--@   1 sam  staff      54  5月  3 10:47 ac35489749cdff221a318375da2b38cfd15dc8
+-r--r--r--@   1 sam  staff  105010  5月  3 10:47 b5307cc406f8e02883ab065bc564208fa504bd
+-r--r--r--@   1 sam  staff     907  5月  3 10:47 ed89c9c4542683a4dacb72ed853f76cc958fdf
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/37:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   203  5月  3 10:47 3d9fa6cdcc27626f26dc6a168d211f7ca7e8d3
+-r--r--r--@   1 sam  staff    86  5月  3 10:47 cd34fa2de8e74569e006630e628061582ac6a0
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/38:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   386  5月  3 10:47 1f234e19da901ef2237902fa1a65faeb7ad17b
+-r--r--r--@   1 sam  staff   249  5月  3 10:47 244070652225e7df1e72ccf1f3f19303963197
+-r--r--r--@   1 sam  staff  1441  5月  4 16:52 788302af20d5f9a112508820c38abc6a22d0de
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/39:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:01 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   419  5月  4 23:01 1555c757bca2a5453f132991ab4d72eca185c1
+-r--r--r--@   1 sam  staff   444  5月  3 10:47 f561d166f8eabe31d37d32b851b51e22b2bf2c
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/3a:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   445  5月  3 10:47 23617e8c9011421027821ed03427b255866a68
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/3b:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    46  5月  3 10:47 62c9cf3f087562cfec7924f7d73bae8de4c335
+-r--r--r--@   1 sam  staff    54  5月  4 16:52 6b4fdb9579263edb9bb1d3efa3bfcd7f13f1c5
+-r--r--r--@   1 sam  staff    99  5月  3 10:47 a7eeda69c7cd6edc5fd8d205bd626531737a45
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/3c:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   891  5月  3 10:47 44c250b1f51b59f4950a567185683c8c37cb85
+-r--r--r--@   1 sam  staff  2505  5月  3 10:47 c81e301ce95f89745e5cc23b9fbbb768278850
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/3d:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   179  5月  3 10:47 537e5d3813e83d77ddf60c5f871bfc48a60c3e
+-r--r--r--@   1 sam  staff    86  5月  3 10:47 662fbf1bba1723a3795e66221382851a0a6478
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/3e:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    67  5月  4 16:52 0031c6987fc05e8344de0b7ca4a15e7da12afa
+-r--r--r--@   1 sam  staff   383  5月  3 11:43 a37839f544a85f6729bbcd4bdecb366e1e563d
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/3f:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:01 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   252  5月  3 10:47 35ca21de4d9cbbbabf0237260b8f2a439cb36a
+-r--r--r--@   1 sam  staff    43  5月  4 23:01 f5faaaf5f139c707e338e7e89e51606e9e0ace
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/40:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  2866  5月  3 10:47 d383adefc81956d09e95a42a5b8ea670bb709d
+-r--r--r--@   1 sam  staff   122  5月  3 10:47 f238c0749e902ed53ebf6efc046584f044288f
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/41:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月 10 20:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   224  5月  4 16:52 557ff960d531d8fe12d4e43866c3464611a4f4
+-r--r--r--@   1 sam  staff   545  5月 10 20:48 575f4fb8d24a729adda3882690a7204e312a03
+-r--r--r--@   1 sam  staff  1383  5月  3 10:47 86a18feffe5962e19e181a4e807e55c592c7e1
+-r--r--r--@   1 sam  staff   112  5月  3 10:47 8d10f1ab333d66dfed05220d8da9a11110a9e8
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/42:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   977  5月  3 10:47 1a26392ff20bf1d04529150b5a1a6865bc4c0f
+-r--r--r--@   1 sam  staff    81  5月  3 10:47 2b19445bd83d06acea0d73d2a05410b7b94b44
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/43:
+total 104
+drwxr-xr-x@   6 sam  staff    192  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff   7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  37975  5月  4 16:52 089f0f6ddc61fb79789e3da0d9869c0516b60b
+-r--r--r--@   1 sam  staff    151  5月  3 10:47 8bddb69ea31f0ace7e3eaf954d1c1ac9813bc7
+-r--r--r--@   1 sam  staff    856  5月  3 10:47 a5075e8455079c0f58f8a741c3fe85e303c1ff
+-r--r--r--@   1 sam  staff     53  5月  3 10:47 c72f8ddae5ad590e490274ad842c97b32e1959
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/46:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    47  5月 31 13:48 4555641cf6137752622e1778266ce3bc2f9d68
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/47:
+total 616
+drwxr-xr-x@   4 sam  staff     128  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff    7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff      89  5月 31 13:48 74f8ee734e5e1a1c1092b5f6dd5434067325ae
+-r--r--r--@   1 sam  staff  308077  5月 31 13:48 e33fc6c350b4bd8bf81d280f559b2c394ec9a7
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/48:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月 10 22:32 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    89  5月 10 22:32 c9dccf1e922cb3fe20a94f68174f4f6afa06d0
+-r--r--r--@   1 sam  staff  1350  5月  3 10:47 d0e2339a60a637b94319c65e8654289b4f4b6c
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/49:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月 10 22:32 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   217  5月  3 10:47 017848030ae60a5d7941c522c0b284f5793b6e
+-r--r--r--@   1 sam  staff    48  5月  3 11:06 b0ab57e57503e2c752424aed2b3fc11f52b7bc
+-r--r--r--@   1 sam  staff   122  5月  3 10:47 c41c2427138e3a9da11c02d09f1c0590839386
+-r--r--r--@   1 sam  staff   177  5月 10 22:32 f60ba8573b405d9876f60ca5ff1d5303552220
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/4a:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   147  5月 31 13:48 1982bd46a0821f15b6ad1fba75783125bbf6a9
+-r--r--r--@   1 sam  staff  2967  5月 10 20:48 a02c7622e1688e5cca81f4849f748a176f9614
+-r--r--r--@   1 sam  staff   307  5月  3 10:47 d6863d0673a13bf88ef32898b0a25c0e3263a9
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/4b:
+total 40
+drwxr-xr-x@   7 sam  staff   224  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  1610  5月  3 10:47 4a7b4f100d3746edc5bc54d91e89633a992d6e
+-r--r--r--@   1 sam  staff  1340  5月  3 10:47 6a07674562aec5b1b49c6f7c0a88f9c7c94ee6
+-r--r--r--@   1 sam  staff    79  5月  3 10:47 831f6d1f843dcf70ba36e950f6b5ce56a00a4d
+-r--r--r--@   1 sam  staff   118  5月  3 10:47 8ba63064208730cbcbf764792079f1fda624bd
+-r--r--r--@   1 sam  staff   140  5月  3 10:47 ddb0c831768a44be21d90551ef3794443abe33
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/4c:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   149  5月  3 10:47 1dfd21dcd454a20fa7da8c6906b00923cbb836
+-r--r--r--@   1 sam  staff    68  5月  3 10:47 db3b7278b4027c31d1f0494d3d989a51cfb166
+-r--r--r--@   1 sam  staff   400  5月  3 10:47 ed012e289b2cdd444a93ea3c47af5b3c8e97c2
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/4d:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月 10 22:32 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   823  5月 10 22:32 b0d4b0d169c42224c0b8fc53089bef17d29573
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/4e:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    67  5月 31 13:48 0c3ebb9dbfb8cc3e63e06de334d7d46d05f317
+-r--r--r--@   1 sam  staff   502  5月  3 10:47 2d1301b95d18edb85ac6e61b5c2afb98504733
+-r--r--r--@   1 sam  staff   242  5月  3 10:47 3ca5ff831b069e333d283cae615be5c6b614fe
+-r--r--r--@   1 sam  staff    86  5月  3 10:47 fa2e7986dc996d225669ea7e4b34385ca14e44
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/4f:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 11:43 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   175  5月  3 11:43 4589b13b807add2d3114612b3f15f71f084d29
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/50:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  4 23:02 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   369  5月  3 10:47 06e586e38ffd654893fa1570712fb567c1c641
+-r--r--r--@   1 sam  staff   222  5月  4 23:02 9404a27e61ec36277e78a06ea9b5f1c8b539e7
+-r--r--r--@   1 sam  staff   452  5月  4 16:52 af02922d418886deed59fa855b0de9ce420b13
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/51:
+total 560
+drwxr-xr-x@   7 sam  staff     224  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff    7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  266598  5月  3 10:47 296a7c81a72e935c79cd82bbd84d8e0f9bf351
+-r--r--r--@   1 sam  staff    2015  5月  3 10:47 301806689bd463d0d159dbcefe4d74d13933b4
+-r--r--r--@   1 sam  staff     304  5月  3 10:47 6d59fa3ce2ee57461600b540659761ee969481
+-r--r--r--@   1 sam  staff     490  5月 31 13:48 7eb35b2015f1b018bbb78d36ed7aec125313ac
+-r--r--r--@   1 sam  staff     188  5月  4 16:52 b788699e2b006e379e7cd7d8adaf0dc285e670
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/52:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    38  5月  3 10:47 1a9f7c0773588848ad5fa8a074ceca964a6b41
+-r--r--r--@   1 sam  staff  3526  5月  3 10:47 eaffe98d2e2397aff60329ade57d1af394c616
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/53:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   560  5月  4 16:52 a4c2fe1b8559019ca6ee2d99b5a5801d983db9
+-r--r--r--@   1 sam  staff   190  5月 31 13:48 e45c16b818d45f7dc668912ce41aa653d5e56a
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/54:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  3 11:43 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   178  5月  3 11:43 305d41cf9d3188d6f2fc4c28571e05c3a9aeea
+-r--r--r--@   1 sam  staff   252  5月  3 10:47 831b4c3bd3d6f19007f26d11cf78c00d794072
+-r--r--r--@   1 sam  staff  1697  5月  3 10:47 872022e9f9fdabc98063f38f8196e458141346
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/56:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 10 20:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  1453  5月  3 10:47 07122301564d16e8db15939730ac9cd6d017f7
+-r--r--r--@   1 sam  staff   443  5月  3 11:43 c2f5056ba077e19f419f22722b67f666dde71f
+-r--r--r--@   1 sam  staff   223  5月 10 20:48 f552e6d19574405b3097cab715d3e89879817f
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/57:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月 10 20:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   379  5月 10 20:48 46829419007e61b9127063220364790581b684
+-r--r--r--@   1 sam  staff   190  5月  3 10:47 6024867a4c6df27486d5dc4a5788429d701c7f
+-r--r--r--@   1 sam  staff   334  5月  3 10:47 609518e2be42226514f099d0a0c7a92002e62f
+-r--r--r--@   1 sam  staff   208  5月  3 10:47 b42bf226a2e0047edabf2ea70a3f3e6004a88a
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/58:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 11:06 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  1827  5月  3 10:47 48e9d9c5d272c75bd920c9fc6c1401880ceb9e
+-r--r--r--@   1 sam  staff   178  5月  3 11:06 60fb3bfa903d89e81f66650eaa8d31ad72d94c
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/59:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月 10 20:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  1094  5月 10 20:48 7fa8b7ab62a8f07fd0722d2b254e68168c805f
+-r--r--r--@   1 sam  staff  1204  5月  3 10:47 9ced43e7618d4bca97e2757e0f942fbd146aa4
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/5a:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   359  5月  3 10:47 822c49632623579aa4475ee3071b07eff8127a
+-r--r--r--@   1 sam  staff   311  5月  3 10:47 961d27095d12392470d353e9691df8fcfefa45
+-r--r--r--@   1 sam  staff   205  5月  3 10:47 9d385fb4979a3ec6ed5c2e58fb1e35fc2dd26d
+-r--r--r--@   1 sam  staff   151  5月  3 10:47 d791096d7517dcadbc12289c3154bc5d332af6
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/5b:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   146  5月  3 10:47 47678e0c4d5be0150392d8b63be58c026e4d8c
+-r--r--r--@   1 sam  staff   753  5月  3 10:47 537faee0bd999c840b3cc1aa8a1f691644d7c5
+-r--r--r--@   1 sam  staff   242  5月  3 10:47 e78fb4fa41702ca2e04143beaac5fd4e4ded8b
+-r--r--r--@   1 sam  staff    53  5月  3 10:47 fad2b3f8e483b6b173d8aaff19597e84626f15
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/5c:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  3230  5月  3 10:47 69b1f51213f62df8d16f179e2db853a8f682d8
+-r--r--r--@   1 sam  staff   626  5月  3 10:47 b269240d4c4beaa8789162df38d409368b99ef
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/5d:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   350  5月  3 10:47 88fc4fa65dfd135efe8293e94b997be7786dec
+-r--r--r--@   1 sam  staff   312  5月  3 10:47 8db5b48dfc54d81dec9e3dfb55096f20a6e247
+-r--r--r--@   1 sam  staff    88  5月  3 10:47 98766edd320e7cb19d8d23c3a0f81f4eca2786
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/5e:
+total 64
+drwxr-xr-x@  10 sam  staff   320  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   545  5月  3 10:47 4a79042fefcbdd061168b5615b1acbafe6b540
+-r--r--r--@   1 sam  staff  1546  5月  4 16:52 6ee801f97fa70c13642323aa2522fbb58562ec
+-r--r--r--@   1 sam  staff   219  5月  4 16:52 759c2323e8c0c0bd7e52fe7fb803ef16abb7c7
+-r--r--r--@   1 sam  staff   664  5月  3 10:47 7bea25751e7f61d2ce8b287fa89c7f2acdb9af
+-r--r--r--@   1 sam  staff   231  5月 31 13:48 84f49a974bd11d0b0618303ed4dfadc0f9a040
+-r--r--r--@   1 sam  staff    66  5月  3 10:47 a071a612decdb99445fba52f8a14d131a4aea8
+-r--r--r--@   1 sam  staff    80  5月  3 10:47 a23699883d980d191fde2e3868acc89af0d8b9
+-r--r--r--@   1 sam  staff  1390  5月  3 11:05 bddb00e829d746bb4bd370a89e6e770fa9fec3
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/5f:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  2227  5月  3 10:47 01ce59c35568d114a45b9d5726cf1c60083bcb
+-r--r--r--@   1 sam  staff   247  5月  3 10:47 4f5a993f75b0d4675d5a9783d1fdf4db78feb1
+-r--r--r--@   1 sam  staff   380  5月  4 16:52 b4ac9a37723894b6f8bc87bf811dfbd843b405
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/60:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   947  5月  3 10:47 356431b7825677cb92722efa5afb7b18277adb
+-r--r--r--@   1 sam  staff   964  5月  3 10:47 76f259422b793cae05ba1b4d707c9c22e2e836
+-r--r--r--@   1 sam  staff   492  5月  3 10:47 85c1e5f3876686a9d1a82bc7a4f5c5641c40b0
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/61:
+total 40
+drwxr-xr-x@   7 sam  staff   224  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   416  5月  4 16:52 11f11ac7a0e7b406a96b7c6c46bc1c669ba6f3
+-r--r--r--@   1 sam  staff  1007  5月  3 11:43 5945b6039e37207e0a4647c244ff800572b72d
+-r--r--r--@   1 sam  staff   305  5月  3 10:47 6c56af46e3d3770d6f79d2bc30b1756bcdf14c
+-r--r--r--@   1 sam  staff   376  5月  3 10:47 8cc783bc53b1fee9e7e58dfbc4ef3f1eaf2584
+-r--r--r--@   1 sam  staff  1755  5月  3 11:43 f2993905cb0c18557ab4f8e18988ad2b5ef1b7
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/62:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:02 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   279  5月  4 23:02 5371dec0784543e68cda8b38c6238284972456
+-r--r--r--@   1 sam  staff  1770  5月  3 10:47 7db88051e5cdd13d86b26b30a0d4df9ed3e8f4
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/63:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 10 20:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   339  5月  3 10:47 03f027b0a42e8531f450d06f11b5d0b3e671cd
+-r--r--r--@   1 sam  staff   188  5月 10 20:48 ddf8a77787029554940b3b2fdf187fa54fddc8
+-r--r--r--@   1 sam  staff  1508  5月  3 10:47 de8e1eb76d9ac214b8c0a4b6999c14575cfa4c
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/64:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  2037  5月 31 13:48 b3d1610b801e9cf008881904a85e282add702b
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/65:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   155  5月  3 10:47 2759d023cd0476a44912dc5dc8ed5c842b0941
+-r--r--r--@   1 sam  staff   458  5月  3 10:47 524b5e59d7b2f4b7ddc8478813796c676ba870
+-r--r--r--@   1 sam  staff   429  5月  3 10:47 68c6f3fb8e5295e29ebc7cb8bddea1d382785c
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/67:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   977  5月  3 10:47 a3cf54374db605e01cd476ca080a870e56250d
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/68:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   607  5月  4 16:52 de8ea8080c64ea17feebc531361b26e253b0a0
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/69:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   267  5月  3 10:47 caab3daa06c7956d055564cca42432c8d7a07b
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/6a:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   605  5月  3 10:47 1d4d5e002ccee54a9ba8391d7a11bc60f33c09
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/6b:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    54  5月  3 10:47 16b5fb3963117e148e350b0e7266e69fb8d8d9
+-r--r--r--@   1 sam  staff    54  5月  3 10:47 6fd434d9ce6b91b1f8c16b7fbf8002e8ab945e
+-r--r--r--@   1 sam  staff   216  5月  4 16:52 ee87c5c2ea9ee5bab2154147969986182742ae
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/6c:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 11:06 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   313  5月  3 10:47 281667aa2332841b46350bcdea8cf73984c53b
+-r--r--r--@   1 sam  staff   190  5月  3 11:06 56d6eea7cbdb16fc0024a2edfab78c7d29ddb1
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/6d:
+total 48
+drwxr-xr-x@   8 sam  staff   256  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   317  5月  3 10:47 4dd981d7c57846b1ca3529370a9b435e1ee984
+-r--r--r--@   1 sam  staff   285  5月  3 10:47 6f9b72dd8dbfc6604664b72757ef26c6e14fc2
+-r--r--r--@   1 sam  staff  1282  5月  3 10:47 7abc81de083468150fb98d853461e1e9549429
+-r--r--r--@   1 sam  staff   932  5月  3 10:47 84b540411365d2b1e43d5e635cda4bb6c71492
+-r--r--r--@   1 sam  staff   345  5月 31 13:48 a8890760cd4547d96a8890ced9a53a611b22d7
+-r--r--r--@   1 sam  staff   200  5月  3 11:43 c90741ac94af1563ab298851ce6d1abfeea7d9
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/6e:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月 10 20:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   335  5月 10 20:48 73e313fb2b53bfea153efc2b0702caed96483a
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/6f:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   158  5月  3 10:47 37efb227346a8feb8b804966023d873851955e
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/70:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   234  5月  3 10:47 b3ceb071523f190e517b9b030bcfa7d71f0d10
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/71:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   749  5月  4 16:52 3c0569f96edfc01fbff574d1cdedddeac84de5
+-r--r--r--@   1 sam  staff  2546  5月 31 13:48 57e26341fe4c9636ba488888dffb6acdd87407
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/72:
+total 40
+drwxr-xr-x@   7 sam  staff   224  5月  4 23:02 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   184  5月  3 10:47 6395bcf421f91cde8f0593246027432e2677a4
+-r--r--r--@   1 sam  staff   379  5月  4 23:02 730799660f840feb8d08d837cbe3bed24dd3d7
+-r--r--r--@   1 sam  staff    54  5月  3 10:47 8082beb95101a8e404f87e811ec8f8e4d9607f
+-r--r--r--@   1 sam  staff    87  5月  3 10:47 b108272ee8266aed2a481fe98d782581896f1d
+-r--r--r--@   1 sam  staff   157  5月  3 10:47 f13779e5ba434016a26a8c767d7e4e82764e7d
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/73:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   701  5月 31 13:48 15ca78a251adbb0078f3f4052f282dfa1ae403
+-r--r--r--@   1 sam  staff   159  5月 31 13:48 211e0846ea2d053d480166cb56f6286d9c5211
+-r--r--r--@   1 sam  staff   458  5月 10 20:48 d63c0055003f1e22a9aaf915f18e97b7d28df6
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/74:
+total 40
+drwxr-xr-x@   7 sam  staff   224  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   659  5月  3 10:47 5c5e6abd3de5e9d379c6fda6027f63b47366ac
+-r--r--r--@   1 sam  staff  3454  5月 31 13:48 8775f3e8cd78fe816e2aec0325b3cf9a9a42ef
+-r--r--r--@   1 sam  staff  2762  5月  3 10:47 8b3764b34d2a11b7336f92326c6e73272e83ac
+-r--r--r--@   1 sam  staff   949  5月  3 10:47 9d4f03f785186ba3b01e86706bd4fded190e95
+-r--r--r--@   1 sam  staff   114  5月  3 10:47 aafe3d8b198c25521818736e67da83568a4cc2
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/75:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  4 23:02 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   154  5月  3 10:47 53f9c45bbb62913d7883de1a13c9aeca0e2dc0
+-r--r--r--@   1 sam  staff   560  5月  3 10:47 77f1f62b5752ce3e196f3742cc1a51e839633a
+-r--r--r--@   1 sam  staff   151  5月  4 23:02 8cc01b28fa648fbfd660765ad876e9dfbf44fb
+-r--r--r--@   1 sam  staff    54  5月  3 10:47 c207fed990e9f8add54ed841a1cdf6dba61dd8
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/76:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  1142  5月  3 10:47 751018ad18458cd7258ee95905f0c1c1c1de41
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/77:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月 10 22:32 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   190  5月 10 22:32 7e0e6eb0d291a488e3ec9075e11f3627e7a219
+-r--r--r--@   1 sam  staff   570  5月  3 10:47 843b513fe502581062666b4e1211d50a4abad2
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/78:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月 10 22:32 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   808  5月  3 10:47 14d2583b08042abb3be6a18bc8bd88a0786829
+-r--r--r--@   1 sam  staff   504  5月 10 22:32 296203fbb349043a9fc0bd35e194d8acdde082
+-r--r--r--@   1 sam  staff   146  5月  3 10:47 ba97f9b348d8e00eea1e9e2e2b84b7fc0fb23c
+-r--r--r--@   1 sam  staff   639  5月  4 16:52 e309a7a1c7f0b140bd39120b4a612fd73c7f5d
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/79:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   142  5月  3 10:47 3a45e5fa0b8abf84805ff20f647c4ba3efeb99
+-r--r--r--@   1 sam  staff    56  5月  3 10:47 550f5daaabb7578b144d3d38677cd1392b2fb1
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/7a:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   151  5月  3 10:47 0e7b9987db788c382727324531508c337ad78a
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/7b:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月 10 22:32 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   148  5月 10 22:32 225af68b1935462d5bb9f3992a2dd8f91d5ec5
+-r--r--r--@   1 sam  staff   593  5月  3 10:47 5f569d83d3aa3292e3ea40dabaf5d7c7acda7a
+-r--r--r--@   1 sam  staff    47  5月  3 10:47 c3d0f2e2dfb32b113654b2ba8b0f912e918d7e
+-r--r--r--@   1 sam  staff   115  5月  3 10:47 e620754c8d587df35a48fc179d72f2c37cebc5
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/7c:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 10 20:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   823  5月 10 20:48 6512ad6d0cdd38cadc68e42cd9ea59a7b9b8e8
+-r--r--r--@   1 sam  staff   219  5月  3 10:47 b682d9b6c5647ae5f258b6d963aa556a26ee2e
+-r--r--r--@   1 sam  staff   108  5月  3 10:47 f9999c3ab4296935f65eb6d270ec4c9126c485
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/7d:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   442  5月  3 10:47 5d38123250e0eddf3d0ac241b593bfd4e09ce6
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/7e:
+total 64
+drwxr-xr-x@   8 sam  staff   256  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  1060  5月  3 10:47 120666af29020fef9affe2e3736ed4207b54ac
+-r--r--r--@   1 sam  staff    64  5月  3 10:47 2b1bd72005780f885799254f63b6c4fd304f5a
+-r--r--r--@   1 sam  staff   168  5月  3 10:47 3649acc2c165b62750e2ca02b80f8ee0da6c4d
+-r--r--r--@   1 sam  staff   981  5月  3 10:47 7eb43634de8af370360d5d0407e0c72dd258bb
+-r--r--r--@   1 sam  staff  2022  5月  3 10:47 b01bcb300360a8760e0a6398dfacb33ceb6eb9
+-r--r--r--@   1 sam  staff  8313  5月  3 10:47 b5afafe0be99c7bff135bf49e08b255c4ca5aa
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/7f:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   457  5月  4 16:52 2c3ea3919aa74e1b9e8ee56b29264458c0b705
+-r--r--r--@   1 sam  staff   955  5月  3 10:47 7a4a3927aa46b0d56c46709f4eb3e3c5de8cbd
+-r--r--r--@   1 sam  staff   759  5月  3 10:47 9d4a4f687ff725b99d29aa0a7601ed769f5def
+-r--r--r--@   1 sam  staff   698  5月  3 11:43 f316cc4f1c4eccc6aaa04ebdffdd5f4a3efc81
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/80:
+total 40
+drwxr-xr-x@   7 sam  staff   224  5月  3 11:06 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   149  5月  3 10:47 2315f1dae0f9d628b88e904b57045a53cc7153
+-r--r--r--@   1 sam  staff   859  5月  3 11:06 2c5b16f37c5e22d0cdfeb1b869e3a2f0db48d2
+-r--r--r--@   1 sam  staff   245  5月  3 10:47 3d8e72af6f8c2ddcc5eec4098a7b7089e04c07
+-r--r--r--@   1 sam  staff  2671  5月  3 10:47 658fa6649683eaf8d4f370d1d75ea12c39425b
+-r--r--r--@   1 sam  staff   209  5月  3 10:47 95b5f0b4e78f5568e6ee5a48d83ada05afd92e
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/81:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    83  5月  3 10:47 0730db878886417750d7315a07f799c6e5b3e4
+-r--r--r--@   1 sam  staff    57  5月  3 10:47 a798f8d943a6bce7c2ff1eaeec461e0af56dc7
+-r--r--r--@   1 sam  staff   157  5月  3 10:47 ac3ecabc3d4ba780502cfe0408bcfbcff2ada5
+-r--r--r--@   1 sam  staff   266  5月  3 10:47 d386f3d1be92c95ffa5314cd071e919025f513
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/82:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   114  5月  3 10:47 d2e33091adba199b6085cd0305a8aa1e217661
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/83:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   277  5月  3 10:47 1c36a854d1b25b807b88dd5b7634ec1d39b6d1
+-r--r--r--@   1 sam  staff   674  5月  3 10:47 2504bd5604cc139a63d493013d1e4bd43f0e4c
+-r--r--r--@   1 sam  staff   223  5月  3 10:47 9bc5b5e4a561676fca44a61674d3990b5acd48
+-r--r--r--@   1 sam  staff   402  5月  3 10:47 d8a2a8eaebbbc0f45d0230c1aad18c86339f59
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/84:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   278  5月  3 10:47 0534013b6005e41c2257c775f7b313fe4af5d1
+-r--r--r--@   1 sam  staff   111  5月  3 10:47 b4266e7328348fe2a4011cfa010e54045b57e2
+-r--r--r--@   1 sam  staff    54  5月  3 10:47 c5147410ddec377c27f81b52261ee72992aa73
+-r--r--r--@   1 sam  staff   239  5月  3 10:47 d159315c161f74593145724483725dc83bbee0
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/85:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    55  5月  3 10:47 1f9a69073ea3489c14492b2d82953747b98b96
+-r--r--r--@   1 sam  staff   223  5月  3 11:06 2be66c68846041ca0c523a1f175a2f43a62d3e
+-r--r--r--@   1 sam  staff   290  5月  4 16:52 afb0883073cbc3a4d9f25e758c714fefdd4331
+-r--r--r--@   1 sam  staff   539  5月  3 10:47 d42d7f92f8897cff8c426bbe8b52f4bf48ca6a
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/86:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   602  5月 31 13:48 5fdfd0ae9bed89d7efd023e4253e310731c06e
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/87:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   151  5月  3 10:47 462010464882bb73abe5fb4451e97a28e36615
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/88:
+total 40
+drwxr-xr-x@   7 sam  staff   224  5月  3 11:43 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   216  5月  3 10:47 2fd1149f0c8f1ef6ec6d6239ea5b9e2d71177d
+-r--r--r--@   1 sam  staff    86  5月  3 10:47 30a2f8f9567f5463bbaf2f922260f09b56950c
+-r--r--r--@   1 sam  staff   102  5月  3 10:47 5ee1826bde41b6fe99e7b870869711a6f801e4
+-r--r--r--@   1 sam  staff   310  5月  3 10:47 71ed84bee35e943d3563f016f916f7c2f3b576
+-r--r--r--@   1 sam  staff    95  5月  3 11:43 e10dfa29829bbfaa8bd4d5764423294673b399
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/89:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  4 23:02 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    72  5月  4 23:02 76433b2597de51f8631b4bca62508608f08541
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/8a:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 11:43 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  1856  5月  3 11:43 92225435efd00c716cea8777cdaf49c98e6219
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/8b:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    16  5月  3 10:47 137891791fe96927ad78e64b0aad7bded08bdc
+-r--r--r--@   1 sam  staff   546  5月 31 13:48 d3e1cd7eb32df945b2707ab885c621dff428b0
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/8c:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   129  5月  3 10:47 3a44912da4ceef66aaed33ea386a9758c27686
+-r--r--r--@   1 sam  staff  2467  5月  3 10:47 c58499c5f8f40f861b30507a28f99b5baa0a6e
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/8d:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 10 22:32 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   147  5月  3 10:47 0a2d580b467a3ddd1ad70d9bf904130a0f1008
+-r--r--r--@   1 sam  staff   617  5月  4 16:52 393e9b028859aa1f20808d80c2fdc69a1cdd56
+-r--r--r--@   1 sam  staff   379  5月 10 22:32 64ad34e1e08ad4875886bc90bac8cb30fb3171
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/8e:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    53  5月  3 10:47 173ba9c5178d2b6bf2a929e5f1307f72a4fb8a
+-r--r--r--@   1 sam  staff   237  5月  3 10:47 9c74d3dd2541d573bb7e7c9eca30d0c5645184
+-r--r--r--@   1 sam  staff    98  5月  3 10:47 e3afa71f646201b70bf7e3e8a899875314bfdc
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/8f:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  1914  5月  3 10:47 0f65f7e7f7a77781af65d82501109530d444f4
+-r--r--r--@   1 sam  staff   199  5月  3 10:47 bf472dffb750c8855312afa08a64af61803e15
+-r--r--r--@   1 sam  staff   214  5月  3 10:47 f705334e94f810a46eefc8997a25900bbe7e03
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/90:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  2926  5月  3 10:47 896cbf96942699eaff86046ef37f33c0382371
+-r--r--r--@   1 sam  staff   232  5月 10 20:48 ac5bd9915501f32ec8acd41ccc4ca9137e6ac2
+-r--r--r--@   1 sam  staff   716  5月 31 13:48 d2c299196b1cd29ec4b2dea4c82d79b929c897
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/91:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月 10 22:32 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   437  5月  3 10:47 0c83f08e3186bae3a6f13b19ae8b0e4b5c5a0d
+-r--r--r--@   1 sam  staff   526  5月  4 16:52 5e80f6d9f5e73aa12876e33e76647c0ab25ba5
+-r--r--r--@   1 sam  staff   457  5月 10 22:32 e17a62adac9128bf191186ce5e9314edca5a67
+-r--r--r--@   1 sam  staff   112  5月  3 10:47 e7a056fd07ce1f3284ad799cfa61e2722e118d
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/92:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   131  5月  3 10:47 7d7cca0badb13577152bf8753ce3552358f53b
+-r--r--r--@   1 sam  staff   279  5月 10 20:48 88117ed14cbfa687bc818d13388cbaf8a13df1
+-r--r--r--@   1 sam  staff   278  5月 31 13:48 978f95cccbc58eb34a937ba4213cdb4e8c8be8
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/93:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   516  5月  3 10:47 0e3e2826443854216ead62ceebd5853586fe3e
+-r--r--r--@   1 sam  staff  1877  5月  3 10:47 8e9b53f6850d97c693b3e3107968fbced5050c
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/94:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   176  5月  4 16:52 5f586a137d7b9f04f17e873f601c3e2878ae8f
+-r--r--r--@   1 sam  staff   185  5月  3 11:43 a77b231290a08241bd6cf268ae2788f11eb918
+-r--r--r--@   1 sam  staff   459  5月  3 10:47 d8f19e2f0359da65955c705542a7fce86ef3e4
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/95:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   473  5月  3 10:47 94971fc5798c608bcecc65397c8884a2be405b
+-r--r--r--@   1 sam  staff   321  5月  3 10:47 a685af943e9173f12cfe3180a7d0c0ce26facc
+-r--r--r--@   1 sam  staff   458  5月  4 16:52 be7e4659f91c31ba9434c34d59d8f4eb0f0da0
+-r--r--r--@   1 sam  staff   163  5月  3 10:47 f7d31e986e42c31e6f8f891c1803c7a92011ce
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/96:
+total 48
+drwxr-xr-x@   7 sam  staff   224  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   725  5月 31 13:48 586edf13ff983eeec6d619c6632cb942ae2fa1
+-r--r--r--@   1 sam  staff    86  5月  3 10:47 78bb11e054fb3237064d42a7d5c1c38705ca7d
+-r--r--r--@   1 sam  staff  1473  5月  3 10:47 945c7474664f9743ca136ad4ea1d21adf7fac5
+-r--r--r--@   1 sam  staff  4410  5月 31 13:48 a0b0738e80c24ed3d33ac2cab9550c4a5ca28f
+-r--r--r--@   1 sam  staff   228  5月  4 16:52 ec66c3bc0770ba918eda54b1dfe46adc2989f4
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/97:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    54  5月 31 13:48 6712cf5d268da8862eb8368fd08194838f0a6a
+-r--r--r--@   1 sam  staff   747  5月  3 10:47 a7436eca703e57dfaf7cc221361af1a597ed92
+-r--r--r--@   1 sam  staff   266  5月  3 10:47 e4a17163c79bc93a4a451f3a8fed5796d4050d
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/99:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:02 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   113  5月  4 23:02 52ce4533ee77a57045aef14cf7d005352dc0f3
+-r--r--r--@   1 sam  staff   314  5月  3 10:47 eb35416808336752225ff9df62597f26897003
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/9a:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  4 23:01 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   506  5月  4 23:01 0c59dd280d358ebdd7c7a90a51b4066177463a
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/9b:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   222  5月 31 13:48 18e1fe36adf6139de6629e03b387f6466d762f
+-r--r--r--@   1 sam  staff  1424  5月  3 10:47 9f29d249e60a929a13156720c4ba19e4124ed3
+-r--r--r--@   1 sam  staff   745  5月  3 10:47 b54df9458dd4dda4ba111353cd388bc8b02fb0
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/9c:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  1112  5月  3 10:47 7ac3790eb95d2b73546625f48f5fcdb4d2e9ca
+-r--r--r--@   1 sam  staff  1489  5月  3 10:47 95bd092dcfee41eefc568659373218be8e2128
+-r--r--r--@   1 sam  staff  2977  5月  3 10:47 d5ac4182d45190b7d1342491c2eef6bc7bb5c8
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/9d:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  2616  5月  4 16:52 7dca0490e45b4c1f745244a34d2cccf96c66cd
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/9f:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月 10 22:32 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   381  5月  3 10:47 55ea7a32d855a35a91cc86076f562c0d984c8e
+-r--r--r--@   1 sam  staff  1113  5月 10 22:32 6ff140a4626931b0739ff7d1ea3b4b83f6bbb5
+-r--r--r--@   1 sam  staff   194  5月  3 10:47 96cc6fd36284f576c478ce0f237455a61a6347
+-r--r--r--@   1 sam  staff   337  5月  3 10:47 d66a5875f088d1071b48e87b1102c128663be8
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/a0:
+total 56
+drwxr-xr-x@   8 sam  staff   256  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  4973  5月 31 13:48 05f8bb3d5d9cf29e8231981fc5f0ced21fbf62
+-r--r--r--@   1 sam  staff   196  5月 10 22:32 29994af29d227f52e977add6a9e33e61f98dd6
+-r--r--r--@   1 sam  staff   546  5月 10 22:32 31013edde78653da3589114b1e7272faa3079f
+-r--r--r--@   1 sam  staff    66  5月  3 11:43 3795183ba2e19641396be89cb09457630dc9bb
+-r--r--r--@   1 sam  staff   108  5月  3 11:43 76f87dbc7fda768674e11b6184e991e1a8a1a8
+-r--r--r--@   1 sam  staff  1959  5月  4 16:52 ff4b79a584dc2f6811d87a26b4ee7c3d11c3f3
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/a1:
+total 24
+drwxr-xr-x@   4 sam  staff   128  5月 10 22:32 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   259  5月  3 10:47 bb768516f126e2427877d66e5fc5628fd6083f
+-r--r--r--@   1 sam  staff  4976  5月 10 22:32 c7995c39dbcad7ec8fe51aa1a52cfe0772d0c8
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/a2:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    63  5月  3 10:47 0502b7f06d848452da0d93ce8830c1d86b05dd
+-r--r--r--@   1 sam  staff   664  5月  3 10:47 2e430383202604019e2765d977d2f7cb742270
+-r--r--r--@   1 sam  staff   242  5月  3 10:47 e13b57cf8599c9389911ebef4d8e979d8aea03
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/a3:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   879  5月  3 10:47 8a2f3e5c2c0518851f2d337b7826d602d79641
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/a4:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:02 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    69  5月  3 10:47 03104aea27cf7792a59550b36194bf398e4549
+-r--r--r--@   1 sam  staff   190  5月  4 23:02 2bb157191f6caa82da10e0cd235443c4c81162
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/a5:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   111  5月  3 11:43 2c83a061d6da4832195231711860fcb7dce7dd
+-r--r--r--@   1 sam  staff   131  5月  3 10:47 46e7574703c1a080753e71999e6f698ef55927
+-r--r--r--@   1 sam  staff   514  5月  3 10:47 48aab8a3230e799ef7a9d83aa19ee726bc5b21
+-r--r--r--@   1 sam  staff   188  5月  4 16:52 eade95675d0a949b76628fd2014f0715578c33
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/a7:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   859  5月  3 11:43 1518c6a39f011405e060e59e0d845fbc31d344
+-r--r--r--@   1 sam  staff  2938  5月  3 11:05 41b648cd1d558474cda9c76d48265e39be9e0d
+-r--r--r--@   1 sam  staff  3137  5月  4 16:52 b8cdd787793ef4c87b2c2530b4d4b9df4e7a18
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/a8:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  1125  5月 31 13:48 2d2aa80240531f5e5a325d211ece94c5dca7b7
+-r--r--r--@   1 sam  staff  1183  5月  3 10:47 a28d9bff9f33877613f84ff7b77fbc2a150bd4
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/a9:
+total 32
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  4244  5月  3 10:47 7512cb6c413dfb45b1c1e6c08d2cb9062410df
+-r--r--r--@   1 sam  staff  1218  5月  3 10:47 a5ac97b9df4d719ef798feb07408333e5e03a2
+-r--r--r--@   1 sam  staff   860  5月  3 10:47 bf8956099b13903ffd22901e89311f7aead879
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/aa:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   494  5月  3 10:47 149a274b89872aa6b8cee199ac6f04bdbd3d41
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/ab:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   190  5月  3 10:47 a0889c292bc748813c7c477adfa951fc07d9dc
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/ac:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   802  5月  3 10:47 03203bf4b0c053da876c3330d971ef23563d33
+-r--r--r--@   1 sam  staff  2111  5月 31 13:48 0f2448fc15e475bced73eabd485e46e77da390
+-r--r--r--@   1 sam  staff   269  5月  3 10:47 e23aef6763c6fdba15424abaed01b4c6b79e6d
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/ae:
+total 48
+drwxr-xr-x@   8 sam  staff   256  5月 10 22:32 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  1007  5月  3 10:47 511a0db8b20a3e2677692b24d7ccfbd8c6d851
+-r--r--r--@   1 sam  staff    87  5月  3 10:47 7244e7b31c93c3d86509c2743d4ac6b233ef92
+-r--r--r--@   1 sam  staff   824  5月  3 10:47 7fa1fc33803a4d53947ad0e27a83f02fb55569
+-r--r--r--@   1 sam  staff   286  5月  3 10:47 9a39f315639c58ae5013c8c63bde957be67127
+-r--r--r--@   1 sam  staff   351  5月  3 10:47 a3ddbf49a2bfb005964969fb068816cbc2d526
+-r--r--r--@   1 sam  staff   239  5月 10 22:32 bfe8a542e9a328016bf618f16a6dbe44a23bc3
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/af:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   469  5月  3 10:47 0e058cebc09b31b6da32d6e6204d7502ae7c97
+-r--r--r--@   1 sam  staff   896  5月  3 10:47 6ed0eaee2c2b64231c49e3b1458f266f8c52f9
+-r--r--r--@   1 sam  staff  1487  5月  3 10:47 a46217ef9e9fadf69a299b26f025762647701c
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/b0:
+total 616
+drwxr-xr-x@   5 sam  staff     160  5月 10 20:48 .
+drwxr-xr-x@ 248 sam  staff    7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff     685  5月 10 20:48 862a0f1f3af935820cca8c83a890303afbb3e1
+-r--r--r--@   1 sam  staff  305052  5月  4 23:01 b7b8b2a9d04516e8ebfd309c1f5095cf477b73
+-r--r--r--@   1 sam  staff     282  5月  3 10:47 bbd948b53002ecae38b5fd933a0a341219a1eb
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/b1:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   156  5月  3 10:47 f2235c4eebd2a2626fd46811ae9666ee1c40d5
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/b2:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   593  5月  3 10:47 1e103ee346d3ca1b8fb2e59d0c60156cba0567
+-r--r--r--@   1 sam  staff   461  5月  3 10:47 b866a86c18b96e0813664becb8aca5ca2aa387
+-r--r--r--@   1 sam  staff   183  5月  3 10:47 cb8a12ce3b586049ce23bab223ee829e3990eb
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/b3:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   137  5月 31 13:48 1b2aa0653354c74ab8c2dd5ab0a11afd2b0927
+-r--r--r--@   1 sam  staff  1559  5月  3 10:47 8672b54a6da5b922b7f55edeec0cdab6d1f988
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/b4:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   131  5月  4 16:52 2a89d31c5b9064fb235825e13e3cabd504050d
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/b5:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   222  5月  3 10:47 35bd6e77080d0897d40cb9c64a34aae680cf95
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/b6:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   659  5月  3 10:47 5958ebaf832f10e678c22b6f9c482c28885a79
+-r--r--r--@   1 sam  staff    85  5月  3 10:47 aea2a09df220f9126053bf6f0045b1fbcaf2cf
+-r--r--r--@   1 sam  staff    75  5月  3 10:47 efef35e1bc30abf3466898a5a45829c80f2e30
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/b7:
+total 48
+drwxr-xr-x@   8 sam  staff   256  5月  4 16:52 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   153  5月  3 10:47 091d5c621ebe29fb3a5319d438495a3e7cba29
+-r--r--r--@   1 sam  staff  1316  5月  3 10:47 100e42fb6418afc0082dd7e27eafd1b0a7e717
+-r--r--r--@   1 sam  staff   158  5月  3 10:47 19dbc0c1ad3c5bfca5c51fa74e7761349e2feb
+-r--r--r--@   1 sam  staff   759  5月  4 16:52 51d9f08d6b93c5bf4d5704c62f1bd253cae99e
+-r--r--r--@   1 sam  staff   331  5月  3 11:05 74ac6746671dbf23b5b5265ec6d039715afe52
+-r--r--r--@   1 sam  staff   305  5月  3 10:47 bb7163ab0d6826f6156682c238e8a06ae0f074
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/b8:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   694  5月  3 10:47 cb281f61334c7d7bc23b1cede13ad728d04d44
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/b9:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   297  5月 31 13:48 648a7a7c112e188a158229914cfccd1dc9ff08
+-r--r--r--@   1 sam  staff   545  5月  3 11:43 95e9a8dd7f7e70fc675ae3f4b24b569a41274d
+-r--r--r--@   1 sam  staff   230  5月  3 11:43 b6a8479cc0163d87d790dd386bf1d93d6159d7
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/ba:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  1205  5月  3 10:47 1f00ce41753ffdb95c4d456c45cca3e7dadf3d
+-r--r--r--@   1 sam  staff   111  5月  3 10:47 48e299a91a29a64e2f9834cf5b0b1d3c080fb4
+-r--r--r--@   1 sam  staff   499  5月  3 10:47 70b7b7a09e4d26258cd6af14a4492b112800bc
+-r--r--r--@   1 sam  staff  1412  5月  3 10:47 95b5d4f73b6765bf4e2a5608a9eca00d1e75a0
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/bb:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  4 23:02 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   823  5月  4 23:02 ee3e974703b491404cc85be187308606796a98
+-r--r--r--@   1 sam  staff   554  5月  3 10:47 feb3d4d884237e4b16534e4054f81c163cf4bb
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/bc:
+total 32
+drwxr-xr-x@   6 sam  staff   192  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    87  5月  3 10:47 34280ae9a4d8926822cd32e409720cb6a84c3d
+-r--r--r--@   1 sam  staff  1037  5月  3 10:47 35caa0d31762d7246044991121b6a884ec743a
+-r--r--r--@   1 sam  staff    87  5月  3 10:47 3b2d996a479a75391d3be74611a67e23577f82
+-r--r--r--@   1 sam  staff    52  5月  3 10:47 d911863504a8fb024f24dfea3260a1f887f98b
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/bd:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   180  5月  3 10:47 c2eafff237b94dfacec09ceb513da7797dfac4
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/be:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  3 11:43 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  1403  5月  3 10:47 547e2852ddc1981515de914aaa19df2efdc10b
+-r--r--r--@   1 sam  staff   457  5月  3 11:43 d3a6c7bdd466ec2fbc0a8dc6490054036fe7b9
+-r--r--r--@   1 sam  staff   123  5月  3 10:47 ea5e90944de35645cf887479c90682e26aa28e
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/bf:
+total 48
+drwxr-xr-x@   8 sam  staff   256  5月 10 22:32 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   261  5月  3 11:05 466f2bf1f926810104635b225168874b679360
+-r--r--r--@   1 sam  staff   335  5月 10 22:32 84c84a878b282db228d58ae330c44f53b1ebd6
+-r--r--r--@   1 sam  staff    54  5月  3 10:47 8b69f2ad4eb98ffbf8603c07b8feda9d112d41
+-r--r--r--@   1 sam  staff    54  5月  4 16:52 a8be0c6f328ef762f1e7c15e71bfab3f349320
+-r--r--r--@   1 sam  staff   319  5月  3 10:47 b8bcd2fc0ba02bd864a0b617f555e981001e19
+-r--r--r--@   1 sam  staff   545  5月  3 10:47 d035373ff24c526d307586e524d542fe6ea185
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/c0:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   155  5月  3 10:47 10228ccf3fc6d2b96681d47d7b6827ae6f4125
+-r--r--r--@   1 sam  staff    83  5月  3 10:47 4897dd0936def02377d3a228f57d2e7382440c
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/c1:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff  1879  5月  3 10:47 72ac607ba70b63bdca0b129aa0278f6f2a6c1f
+-r--r--r--@   1 sam  staff   166  5月  3 10:47 7cc292f639b946a195b63955180031fa0f7660
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/c2:
+total 40
+drwxr-xr-x@   7 sam  staff   224  5月  3 11:06 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   190  5月  3 10:47 55f051182169daa6e6108b5c5ca8c72486c18b
+-r--r--r--@   1 sam  staff    28  5月  3 10:47 7d8893a99490cc432461db991faf1b276e005f
+-r--r--r--@   1 sam  staff   276  5月  3 11:06 aeeb88af5586102b3103dafe8f5c93afc31dda
+-r--r--r--@   1 sam  staff   459  5月  3 11:06 cae557e0bc574c3841cb83a16b076a62043485
+-r--r--r--@   1 sam  staff   443  5月  3 11:06 f758852443a20b1a57334f914be86cfc4b2425
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/c3:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    85  5月  3 10:47 09cc7d839bdaeadacc8e77acad0fbfae3284d7
+-r--r--r--@   1 sam  staff   150  5月  4 16:52 1613947f9c6e99c1aea64415ffbedd19098206
+-r--r--r--@   1 sam  staff   204  5月 31 13:48 26070928eca09ede91b1ea90e3ecdc9bbd193a
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/c4:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   184  5月  3 10:47 133149a46ab897cc324478e17b86fc559abeb3
+-r--r--r--@   1 sam  staff   260  5月  3 10:47 302e6b96b9fb68108f31e83500442ac8dcb7df
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/c5:
+total 16
+drwxr-xr-x@   4 sam  staff   128  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   663  5月  3 10:47 b4137c371200309562eb578fe87d0ff7a3856d
+-r--r--r--@   1 sam  staff    93  5月  3 10:47 e10a0af3015ab376326972eea871e310c6bcb0
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/c6:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   887  5月  3 10:47 7e003954c9899725d8143d5717094ef996c6bd
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/c7:
+total 24
+drwxr-xr-x@   5 sam  staff   160  5月  4 23:01 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   329  5月  4 23:01 5fe5b0aad20a009f2c2a2512977c7915bf05be
+-r--r--r--@   1 sam  staff  2292  5月  3 10:47 7d988b333c2e7d10fe72249da431129d163360
+-r--r--r--@   1 sam  staff   259  5月  3 10:47 e663ffa23ab1705325ee39732b548c939df544
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/c8:
+total 56
+drwxr-xr-x@   5 sam  staff    160  5月 31 13:48 .
+drwxr-xr-x@ 248 sam  staff   7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff    570  5月  3 11:05 3f4a48da33fd004a4fea36bdc622f97f1b2773
+-r--r--r--@   1 sam  staff    334  5月  4 16:52 a917733178773a6a74086a622920d45b19660d
+-r--r--r--@   1 sam  staff  18292  5月 31 13:48 a9cb4c1dfc714f92c669e0275b2c0285f85d6b
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/c9:
+total 8
+drwxr-xr-x@   3 sam  staff    96  5月  3 10:47 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   196  5月  3 10:47 0e68c8c36155589a6690be0c9d48b5124a44f7
+
+/Users/jack/Desktop/临时/imooc_claw/imooc_claw_dev/.git/objects/ca:
+total 56
+drwxr-xr-x@   9 sam  staff   288  5月 10 22:32 .
+drwxr-xr-x@ 248 sam  staff  7936  5月 31 13:48 ..
+-r--r--r--@   1 sam  staff   455  5月  3 10:47 34a15b0c63a8b5d45093268714be508fd475eb
+-r--r--r--@   1 sam  staff   228  5月  4 16:52 402a294008a32aabc758330eb73797856f3a73
+-r--r--r--@   1 sam  staff  2135  5月  3 10:47 621436c2b690489129d3ec6c6fb55dbf866f2b
+-r--r--r--@   1 sam  staff   266  5月  3 10:47 82f0211c6a6be43b31f7ab92054beea07391a2
+-r--r--r--@   1 sam  staff    47  5月  4 16:52 95916216a431346d1d1e66ef01d1e03e409dc9
+-r--r-
+
+... Output truncated at 100000 bytes.
+[Command succeeded with exit code 0]
+[Output was truncated due to size limits]

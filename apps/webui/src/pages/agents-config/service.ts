@@ -1,0 +1,327 @@
+import { request } from '@umijs/max';
+import type { AgentItem, ModelItem, SkillItem, ToolItem } from './data';
+
+type ApiResponse<T> = {
+  code: number;
+  data: T;
+  msg: string;
+  error?: string;
+};
+
+type BackendAgentItem = {
+  name: string;
+  model: string;
+  tools: string[];
+  description: string;
+  active: 0 | 1;
+  systemPrompt: string;
+};
+
+type BackendModelItem = {
+  name: string;
+  provider: string;
+  active: 0 | 1;
+  id: string;
+  base_url: string;
+  api_key: string;
+  use_env_api_key?: 0 | 1;
+  temperature: number;
+};
+
+type BackendToolItem = {
+  name: string;
+  description: string;
+  active: 0 | 1;
+  builtin: 0 | 1;
+};
+
+type BackendSkillItem = {
+  name: string;
+  description: string;
+  active: 0 | 1;
+  source: string;
+  installCommand: string;
+  installedAt: string;
+};
+
+const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3000';
+
+export const getImoocClawAgentsConfig = async (): Promise<{
+  agents: AgentItem[];
+}> => {
+  const response = await request<ApiResponse<BackendAgentItem[]>>(
+    `${API_BASE_URL}/agents`,
+  );
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || '读取 Agents 配置失败');
+  }
+
+  return {
+    agents: (response.data ?? []).map((agent) => ({
+      id: agent.name,
+      name: agent.name,
+      modelId: agent.model,
+      toolIds: agent.tools ?? [],
+      description: agent.description,
+      enabled: agent.active === 1,
+      systemPrompt: agent.systemPrompt,
+    })),
+  };
+};
+
+export const getImoocClawModelsConfig = async (): Promise<{
+  models: ModelItem[];
+}> => {
+  const response = await request<ApiResponse<BackendModelItem[]>>(
+    `${API_BASE_URL}/models`,
+  );
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || '读取 Models 配置失败');
+  }
+
+  return {
+    models: (response.data ?? []).map((model) => ({
+      // Frontend uses `id` as the persisted config key, which is `name` on the backend.
+      id: model.name,
+      name: model.name,
+      provider: model.provider,
+      model: model.id,
+      baseUrl: model.base_url,
+      apiKey: model.api_key,
+      useEnvApiKey: model.use_env_api_key !== 0,
+      temperature: model.temperature,
+      enabled: model.active === 1,
+    })),
+  };
+};
+
+export const getImoocClawToolsConfig = async (): Promise<{
+  tools: ToolItem[];
+}> => {
+  const response = await request<ApiResponse<BackendToolItem[]>>(
+    `${API_BASE_URL}/tools`,
+  );
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || '读取 Tools 配置失败');
+  }
+
+  return {
+    tools: (response.data ?? []).map((tool) => ({
+      id: tool.name,
+      name: tool.name,
+      description: tool.description,
+      builtin: tool.builtin === 1,
+      enabled: tool.active === 1,
+    })),
+  };
+};
+
+export const getImoocClawSkillsConfig = async (): Promise<{
+  skills: SkillItem[];
+}> => {
+  const response = await request<ApiResponse<BackendSkillItem[]>>(
+    `${API_BASE_URL}/skills`,
+  );
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || '读取 Skills 配置失败');
+  }
+
+  return {
+    skills: (response.data ?? []).map((skill) => ({
+      id: skill.name,
+      name: skill.name,
+      description: skill.description,
+      enabled: skill.active === 1,
+      source: skill.source,
+      installCommand: skill.installCommand,
+      installedAt: skill.installedAt,
+    })),
+  };
+};
+
+export const saveAgentItem = async (
+  agent: AgentItem,
+): Promise<{ agents: AgentItem[] }> => {
+  const payload: BackendAgentItem = {
+    name: agent.name.trim(),
+    model: agent.modelId,
+    tools: agent.toolIds ?? [],
+    description: agent.description.trim(),
+    active: agent.enabled ? 1 : 0,
+    systemPrompt: agent.systemPrompt.trim(),
+  };
+  const requestUrl = agent.id
+    ? `${API_BASE_URL}/agents/${encodeURIComponent(agent.id)}`
+    : `${API_BASE_URL}/agents`;
+  const response = agent.id
+    ? await request<ApiResponse<BackendAgentItem>>(requestUrl, {
+        method: 'PUT',
+        data: payload,
+      })
+    : await request<ApiResponse<BackendAgentItem>>(requestUrl, {
+        method: 'POST',
+        data: payload,
+      });
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || '保存 Agent 配置失败');
+  }
+
+  return getImoocClawAgentsConfig();
+};
+
+export const deleteAgentItem = async (
+  agentId: string,
+): Promise<{ agents: AgentItem[] }> => {
+  const response = await request<ApiResponse<{ deleted: true }>>(
+    `${API_BASE_URL}/agents/${encodeURIComponent(agentId)}`,
+    {
+      method: 'DELETE',
+    },
+  );
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || '删除 Agent 配置失败');
+  }
+
+  return getImoocClawAgentsConfig();
+};
+
+export const saveModelItem = async (
+  model: ModelItem,
+): Promise<{ models: ModelItem[] }> => {
+  const payload: BackendModelItem = {
+    name: model.name.trim(),
+    provider: model.provider,
+    active: model.enabled ? 1 : 0,
+    id: model.model.trim(),
+    base_url: model.baseUrl.trim(),
+    api_key: model.apiKey,
+    use_env_api_key: model.useEnvApiKey ? 1 : 0,
+    temperature: model.temperature ?? 0.7,
+  };
+  const requestUrl = model.id
+    ? `${API_BASE_URL}/models/${encodeURIComponent(model.id)}`
+    : `${API_BASE_URL}/models`;
+  const response = model.id
+    ? await request<ApiResponse<BackendModelItem>>(requestUrl, {
+        method: 'PUT',
+        data: payload,
+      })
+    : await request<ApiResponse<BackendModelItem>>(requestUrl, {
+        method: 'POST',
+        data: payload,
+      });
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || '保存 Model 配置失败');
+  }
+
+  return getImoocClawModelsConfig();
+};
+
+export const deleteModelItem = async (
+  modelName: string,
+): Promise<{ models: ModelItem[] }> => {
+  const response = await request<ApiResponse<{ deleted: true }>>(
+    `${API_BASE_URL}/models/${encodeURIComponent(modelName)}`,
+    {
+      method: 'DELETE',
+    },
+  );
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || '删除 Model 配置失败');
+  }
+
+  return getImoocClawModelsConfig();
+};
+
+export const saveToolItem = async (
+  tool: ToolItem,
+): Promise<{ tools: ToolItem[] }> => {
+  const payload: BackendToolItem = {
+    name: tool.name.trim(),
+    description: tool.description.trim(),
+    active: tool.enabled ? 1 : 0,
+    builtin: tool.builtin ? 1 : 0,
+  };
+  const response = await request<ApiResponse<BackendToolItem>>(
+    `${API_BASE_URL}/tools/${encodeURIComponent(tool.id)}`,
+    {
+      method: 'PUT',
+      data: payload,
+    },
+  );
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || '保存 Tool 配置失败');
+  }
+
+  return getImoocClawToolsConfig();
+};
+
+export const saveSkillItem = async (
+  skill: SkillItem,
+): Promise<{ skills: SkillItem[] }> => {
+  const payload: BackendSkillItem = {
+    name: skill.name.trim(),
+    description: skill.description.trim(),
+    active: skill.enabled ? 1 : 0,
+    source: skill.source,
+    installCommand: skill.installCommand,
+    installedAt: skill.installedAt,
+  };
+  const response = await request<ApiResponse<BackendSkillItem>>(
+    `${API_BASE_URL}/skills/${encodeURIComponent(skill.id)}`,
+    {
+      method: 'PUT',
+      data: payload,
+    },
+  );
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || '保存 Skill 配置失败');
+  }
+
+  return getImoocClawSkillsConfig();
+};
+
+export const installSkillByCommand = async (
+  command: string,
+): Promise<{ skills: SkillItem[] }> => {
+  const response = await request<ApiResponse<BackendSkillItem[]>>(
+    `${API_BASE_URL}/skills/install`,
+    {
+      method: 'POST',
+      data: { command },
+    },
+  );
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || '安装 Skill 失败');
+  }
+
+  return getImoocClawSkillsConfig();
+};
+
+export const deleteSkillItem = async (
+  skillId: string,
+): Promise<{ skills: SkillItem[] }> => {
+  const response = await request<ApiResponse<{ deleted: true }>>(
+    `${API_BASE_URL}/skills/${encodeURIComponent(skillId)}`,
+    {
+      method: 'DELETE',
+    },
+  );
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || '删除 Skill 失败');
+  }
+
+  return getImoocClawSkillsConfig();
+};

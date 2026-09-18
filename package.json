@@ -1,0 +1,18 @@
+{
+  "name": "imooc_claw",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "@swc/core"
+    ]
+  },
+  "scripts": {
+    "build": "npm run build -w packages/agent-core"
+  }
+}
