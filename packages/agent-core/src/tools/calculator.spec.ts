@@ -1,4 +1,4 @@
-import { calculatorTool } from './tools/calculator';
+import { calculatorTool } from './calculator';
 
 describe('calculatorTool', () => {
   it('evaluates basic arithmetic', async () => {

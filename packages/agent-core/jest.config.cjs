@@ -3,12 +3,15 @@ module.exports = {
   testEnvironment: 'node',
   testMatch: ['<rootDir>/src/**/*.spec.ts'],
   transform: {
-    '^.+\\.ts$': [
+    '^.+\\.m?[tj]sx?$': [
       'ts-jest',
       {
         tsconfig: '<rootDir>/tsconfig.json',
+        diagnostics: false,
+        isolatedModules: true,
       },
     ],
   },
   moduleFileExtensions: ['ts', 'js', 'json'],
+  transformIgnorePatterns: [],
 };

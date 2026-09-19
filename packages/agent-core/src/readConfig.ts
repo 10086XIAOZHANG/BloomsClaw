@@ -8,6 +8,105 @@ interface RootConfigFile {
   skills?: Record<string, Record<string, unknown>>;
 }
 
+export interface ActiveSkillMeta {
+  name: string;
+  description: string;
+}
+
+function getConfigPath(): string {
+  return join(homedir(), '.imooc_claw', 'imooc_claw.json');
+}
+
+function readRootConfig(): RootConfigFile | null {
+  try {
+    return JSON.parse(fs.readFileSync(getConfigPath()).toString()) as RootConfigFile;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+/** Skill 在宿主机上的物理目录（注意：沙盒 backend 读不到这里，只能用 node:fs 直读） */
+export function getSkillDir(skillName: string): string {
+  return join(homedir(), '.imooc_claw', 'skills', skillName);
+}
+
+/** 列出配置中 active 的 Skills（L1 索引用，只含 name + description） */
+export function listActiveSkills(): ActiveSkillMeta[] {
+  const config = readRootConfig();
+  if (!config) {
+    return [];
+  }
+  const skillsConfig = config.skills ?? {};
+  return Object.entries(skillsConfig)
+    .filter(([, value]) => isSkillEnabled(value as Record<string, unknown>))
+    .map(([name, value]) => ({
+      name,
+      description:
+        value && typeof (value as Record<string, unknown>).description === 'string'
+          ? String((value as Record<string, unknown>).description)
+          : '',
+    }));
+}
+
+/** 按需读取单个 active Skill 的 SKILL.md 正文（L2），未激活/不存在返回 null */
+export function readSkillBody(skillName: string): string | null {
+  const name = skillName.trim();
+  if (!name || name.includes('..') || name.includes('/') || name.includes('\\')) {
+    return null;
+  }
+  const config = readRootConfig();
+  if (!config) {
+    return null;
+  }
+  if (!isSkillEnabled((config.skills ?? {})[name])) {
+    return null;
+  }
+  const skillPath = join(getSkillDir(name), 'SKILL.md');
+  if (!fs.existsSync(skillPath)) {
+    return null;
+  }
+  try {
+    return extractSkillContent(fs.readFileSync(skillPath, 'utf8'));
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+/** 按需读取 Skill 目录内的二级文件（L3），带目录穿越防护 */
+export function readSkillResourceFile(
+  skillName: string,
+  relativePath: string,
+): { ok: boolean; content?: string; error?: string } {
+  const name = skillName.trim();
+  const rel = relativePath.replace(/\\/g, '/');
+  if (!name || !rel || rel.startsWith('/') || /(^|\/)\.\.(\/|$)/.test(rel)) {
+    return { ok: false, error: '非法路径' };
+  }
+  const config = readRootConfig();
+  if (!config) {
+    return { ok: false, error: '读取全局配置失败' };
+  }
+  if (!isSkillEnabled((config.skills ?? {})[name])) {
+    return { ok: false, error: `Skill 不存在或未激活: ${name}` };
+  }
+  const skillDir = getSkillDir(name);
+  const fullPath = join(skillDir, rel);
+  if (!fullPath.startsWith(skillDir)) {
+    return { ok: false, error: '非法路径：不允许跳出 Skill 目录' };
+  }
+  if (!fs.existsSync(fullPath) || !fs.statSync(fullPath).isFile()) {
+    return { ok: false, error: `文件不存在: ${rel}` };
+  }
+  try {
+    return { ok: true, content: fs.readFileSync(fullPath, 'utf8') };
+  } catch (error) {
+    console.error(error);
+    return { ok: false, error: `读取失败: ${rel}` };
+  }
+}
+
 export function readConfigByAgentName(agentName: string) {
   if (!agentName) {
     throw new Error('智能体不存在');

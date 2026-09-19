@@ -133,7 +133,7 @@ export async function test() {
 describe('createAgent', () => {
   it('throws when agentName is empty', async () => {
     await expect(
-      createAgent('TestAgent', {
+      createAgent('', {
         threadId: '01899282-c9d9-49c7-96a0-a1ecb17453ea',
         enableThinking: false,
       }),

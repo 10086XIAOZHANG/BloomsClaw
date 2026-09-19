@@ -14,6 +14,11 @@ import { initStreamModel } from './agents';
 import { FileSaver } from './FileSaver';
 import { CALCULATOR_TOOL_NAME, calculatorTool } from './tools/calculator';
 import { webSearchTool } from './tools/webSearch';
+import {
+  buildSkillIndexPrompt,
+  loadSkillTool,
+  readSkillResourceTool,
+} from './tools/skills';
 
 /** 所有 agent 自动加载的默认工具（不依赖 agentConfig.tools 配置） */
 export const DEFAULT_AGENT_TOOLS = ['FileTools', 'RunCommand', 'WebSearch'] as const;
@@ -221,21 +226,23 @@ function resolveToolsEnable(
 
 function buildSystemPrompt(basePrompt: string, skillNames: string[] | undefined) {
   const selectedSkills = readSelectedSkillContents(skillNames ?? []);
-  const workspaceGuardrail = `你运行在一个虚拟沙盒文件系统中，当前目录（./）即为你的工作区根目录。\n请直接使用相对路径（如 ./file.txt）进行文件读取、创建和修改。\n**严禁**在路径中包含宿主机的绝对路径（例如绝对不要使用 ${FIXED_WORKSPACE_ROOT} 这样的前缀），否则会导致路径嵌套错误。`;
-  if (selectedSkills.length === 0) {
-    return [basePrompt.trim(), workspaceGuardrail].filter(Boolean).join('\n\n');
+  const workspaceGuardrail = `你运行在一个虚拟沙盒文件系统中，当前目录（./）即为你的工作区根目录。\n请直接使用相对路径（如 ./file.txt）进行文件读取、创建和修改。\n**严禁**在路径中包含宿主机的绝对路径（例如绝对不要使用 ${FIXED_WORKSPACE_ROOT} 这样的前缀），否则会导致路径嵌套错误。\n例外：调用已加载 Skill 自带 scripts/*.py 时，允许使用其 ~/.imooc_claw/skills/<name> 绝对路径（这是唯一例外）。`;
+  // L1 常驻：只放 active Skills 的 name + description 索引（约200 token/skill），
+  // 正文走 load_skill / read_skill_resource 按用户提问按需加载，避免首轮全量注入爆 context。
+  const skillIndex = buildSkillIndexPrompt();
+  const parts = [basePrompt.trim(), workspaceGuardrail, skillIndex];
+  // 兼容逻辑：调用方显式传入 skillNames 时，首轮仍强制预加载这些 Skill 正文（L2）；
+  // 不传时仅给索引，由模型根据用户提问调用 load_skill 渐进加载。
+  if (selectedSkills.length > 0) {
+    const skillPrompt = selectedSkills
+      .map(({ name, content }) => `## Skill: ${name}\n${content.trim()}`)
+      .join('\n\n');
+    parts.push(
+      '以下是本次对话预加载的 Skills，请在回答时严格遵循其中相关流程与约束：',
+      skillPrompt,
+    );
   }
-
-  const skillPrompt = selectedSkills
-    .map(({ name, content }) => `## Skill: ${name}\n${content.trim()}`)
-    .join('\n\n');
-
-  return [
-    basePrompt.trim(),
-    workspaceGuardrail,
-    '以下是用户本次对话显式启用的 Skills，请在回答时严格遵循其中相关流程与约束：',
-    skillPrompt,
-  ].join('\n\n');
+  return parts.filter(Boolean).join('\n\n');
 }
 
 function getWorkspaceRoot(): string {
@@ -366,6 +373,9 @@ export async function createAgent(
   const customTools = [
     ...(resolvedToolsEnable.webTools ? [webSearchTool] : []),
     ...(resolvedToolsEnable.calculatorTools ? [calculatorTool] : []),
+    // Skill 渐进式加载工具常驻：模型命中索引后自行调用，与用户提问动态相关
+    loadSkillTool,
+    readSkillResourceTool,
   ];
   const bailianFileReferenceMiddleware = createBailianFileReferenceMiddleware(
     runtimeContext?.bailianFileReferences,
