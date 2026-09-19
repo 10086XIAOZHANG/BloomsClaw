@@ -37,6 +37,7 @@ import {
   getBloomsClawToolsConfig,
   listRemoteMcpTools,
   saveToolItem,
+  validateMcpConfig,
 } from '../service';
 
 type McpFormValues = {
@@ -93,6 +94,8 @@ const ToolsPage: React.FC = () => {
   const [deletingToolId, setDeletingToolId] = useState<string>();
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [validating, setValidating] = useState(false);
+  const [validatedTools, setValidatedTools] = useState<RemoteMcpToolMeta[] | null>(null);
   const [tools, setTools] = useState<ToolItem[]>([]);
   const [remoteToolsById, setRemoteToolsById] = useState<Record<string, RemoteMcpToolMeta[]>>({});
   const [remoteLoadingId, setRemoteLoadingId] = useState<string>();
@@ -151,7 +154,42 @@ const ToolsPage: React.FC = () => {
 
   const handleOpenCreate = () => {
     form.setFieldsValue(toMcpFormValues(createEmptyTool()));
+    setValidatedTools(null);
     setCreateOpen(true);
+  };
+
+  const showBackendError = (error: unknown, fallback: string) => {
+    // umi-request 在 4xx/5xx 时直接 throw response（没有 message），
+    // 后端真实报错在 error.data.msg / error.data.error 里，这里透出来，
+    // 否则用户只能看到兜底文案，无法定位是连不通还是参数错。
+    if (error && typeof error === 'object' && 'data' in error) {
+      const data = (error as { data?: { msg?: string; error?: string } }).data;
+      message.error(data?.msg || data?.error || fallback);
+      return;
+    }
+    if (error instanceof Error) {
+      message.error(error.message || fallback);
+    }
+  };
+
+  const handleValidate = async () => {
+    try {
+      const values = await form.validateFields();
+      setValidating(true);
+      setValidatedTools(null);
+      const remoteTools = await validateMcpConfig(buildMcpConfig(values));
+      setValidatedTools(remoteTools);
+      if (remoteTools.length === 0) {
+        message.warning('连接成功，但该 MCP Server 未暴露任何工具');
+      } else {
+        message.success(`连接成功，共发现 ${remoteTools.length} 个远端工具`);
+      }
+    } catch (error) {
+      setValidatedTools(null);
+      showBackendError(error, 'MCP 连接校验失败，请重试');
+    } finally {
+      setValidating(false);
+    }
   };
 
   const handleCreate = async () => {
@@ -173,11 +211,10 @@ const ToolsPage: React.FC = () => {
       });
       setTools(next.tools);
       setCreateOpen(false);
+      setValidatedTools(null);
       message.success(`MCP 工具「${name}」已创建并连通`);
     } catch (error) {
-      if (error instanceof Error) {
-        message.error(error.message || '新建 MCP 工具失败，请重试');
-      }
+      showBackendError(error, '新建 MCP 工具失败，请重试');
     } finally {
       setCreating(false);
     }
@@ -312,7 +349,7 @@ const ToolsPage: React.FC = () => {
                       {tool.description}
                     </Typography.Paragraph>
 
-                    <Space direction="vertical" style={{ width: '100%' }} size={8}>
+                    <Space orientation="vertical" style={{ width: '100%' }} size={8}>
                       <Space wrap>
                         <Tag color={tool.enabled ? 'green' : 'default'}>
                           {tool.enabled ? '已启用' : '已停用'}
@@ -366,13 +403,37 @@ const ToolsPage: React.FC = () => {
       <Modal
         title="新建 MCP 工具（一个配置 = 一个 MCP Server）"
         open={createOpen}
-        onOk={() => void handleCreate()}
-        onCancel={() => setCreateOpen(false)}
-        okText="创建并测试连接"
+        onCancel={() => {
+          setCreateOpen(false);
+          setValidatedTools(null);
+        }}
+        okText="创建并保存"
         cancelText="取消"
         confirmLoading={creating}
         destroyOnHidden
         width={640}
+        footer={[
+          <Button
+            key="cancel"
+            onClick={() => {
+              setCreateOpen(false);
+              setValidatedTools(null);
+            }}
+          >
+            取消
+          </Button>,
+          <Button key="validate" loading={validating} onClick={() => void handleValidate()}>
+            测试连接
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            loading={creating}
+            onClick={() => void handleCreate()}
+          >
+            创建并保存
+          </Button>,
+        ]}
       >
         <Form form={form} layout="vertical" preserve={false}>
           <Form.Item
@@ -440,8 +501,18 @@ const ToolsPage: React.FC = () => {
             </>
           )}
           <Typography.Paragraph type="secondary">
-            创建时会实际连接该 MCP Server 并读取工具列表，连不通则拒绝保存，保证 Agent 运行时一定可调用。
+            先点「测试连接」确认能读到远端工具列表，再点「创建并保存」。创建时后端会再连一次，连不通则拒绝保存，保证
+            Agent 运行时一定可调用。
           </Typography.Paragraph>
+          {validatedTools ? (
+            <Space wrap style={{ marginTop: 8 }}>
+              {validatedTools.map((remote) => (
+                <Tag key={remote.name} color="geekblue" title={remote.description}>
+                  {remote.name}
+                </Tag>
+              ))}
+            </Space>
+          ) : null}
         </Form>
       </Modal>
     </PageContainer>

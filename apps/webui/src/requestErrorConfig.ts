@@ -89,8 +89,10 @@ export const errorConfig: RequestConfig = {
   requestInterceptors: [
     (config: RequestOptions) => {
       // 拦截请求配置，进行个性化处理。
-      const url = config?.url?.concat('?token=123');
-      return { ...config, url };
+      // 注意：不要在这里给 url 拼接 ?token=123，会污染所有业务请求
+      // （之前 POST /tools?token=123 在 DevTools 里看起来像 400 是 token 导致，
+      // 实际 400 是后端 MCP 连通性校验抛的，被错误信息吞掉才难以定位）。
+      return { ...config };
     },
   ],
 

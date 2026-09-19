@@ -315,6 +315,24 @@ export const listRemoteMcpTools = async (
   return response.data ?? [];
 };
 
+export const validateMcpConfig = async (
+  mcp: McpConfig,
+): Promise<RemoteMcpToolMeta[]> => {
+  const response = await request<ApiResponse<{ ok: true; tools: RemoteMcpToolMeta[] }>>(
+    `${API_BASE_URL}/tools/validate`,
+    {
+      method: 'POST',
+      data: { mcp },
+    },
+  );
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || 'MCP 连接校验失败');
+  }
+
+  return response.data?.tools ?? [];
+};
+
 export const deleteToolItem = async (
   toolId: string,
 ): Promise<{ tools: ToolItem[] }> => {

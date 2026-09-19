@@ -66,6 +66,24 @@ export class ToolsService {
     return this.fetchRemoteTools(dto.mcp);
   }
 
+  /**
+   * 仅校验 MCP 配置连通性，不落盘。
+   * 给前端“新建前先测试连接”用：参数错 / 连不通直接 400，成功返回远端工具列表。
+   */
+  async validateMcpConfigAndListTools(
+    payload: unknown,
+  ): Promise<{ ok: true; tools: RemoteMcpToolMeta[] }> {
+    const candidate =
+      typeof payload === 'object' && payload !== null && !Array.isArray(payload)
+        ? (payload as Record<string, unknown>)
+        : null;
+    // 兼容两种传参：整包 { name, description, mcp } 或裸 { mcp } / 裸 mcp
+    const mcpRaw = candidate?.mcp ?? candidate?.config ?? payload;
+    const mcp = this.validateMcpConfig(mcpRaw);
+    const tools = await this.fetchRemoteTools(mcp);
+    return { ok: true, tools };
+  }
+
   async create(payload: unknown): Promise<ToolDto> {
     const toolConfig = this.validateToolPayload(payload, { isCreate: true });
     const normalizedName = toolConfig.name;
@@ -223,7 +241,8 @@ export class ToolsService {
     if (transport === 'stdio') {
       const command = this.validateRequiredString(candidate.command, 'mcp.command');
       const args = this.validateStringArray(candidate.args, 'mcp.args', { allowMissing: true }) ?? [];
-      const env = this.validateStringRecord(candidate.env, 'mcp.env', { allowMissing: true });
+      const rawEnv = this.validateStringRecord(candidate.env, 'mcp.env', { allowMissing: true });
+      const env = rawEnv && Object.keys(rawEnv).length > 0 ? rawEnv : undefined;
       const cwd = typeof candidate.cwd === 'string' && candidate.cwd.trim()
         ? candidate.cwd.trim()
         : undefined;
@@ -237,7 +256,9 @@ export class ToolsService {
         error: INVALID_TOOL_PAYLOAD,
       });
     }
-    const headers = this.validateStringRecord(candidate.headers, 'mcp.headers', { allowMissing: true });
+    const rawHeaders = this.validateStringRecord(candidate.headers, 'mcp.headers', { allowMissing: true });
+    const headers =
+      rawHeaders && Object.keys(rawHeaders).length > 0 ? rawHeaders : undefined;
     return { transport, url, ...(headers ? { headers } : {}) };
   }
 

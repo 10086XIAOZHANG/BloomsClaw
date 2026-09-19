@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { ToolDto } from './tools.types';
+import { RemoteMcpToolMeta, ToolDto } from './tools.types';
 import { ToolsService } from './tools.service';
 
 @Controller('tools')
@@ -9,6 +9,11 @@ export class ToolsController {
   @Get()
   findAll(): Promise<ToolDto[]> {
     return this.toolsService.findAll();
+  }
+
+  @Post('validate')
+  validateMcp(@Body() body: unknown): Promise<{ ok: true; tools: RemoteMcpToolMeta[] }> {
+    return this.toolsService.validateMcpConfigAndListTools(body);
   }
 
   @Get(':name/remote-tools')
