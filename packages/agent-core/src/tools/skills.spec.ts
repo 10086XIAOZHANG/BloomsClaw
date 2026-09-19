@@ -11,7 +11,7 @@ jest.mock('../readConfig', () => {
   const actual = jest.requireActual('../readConfig');
   return {
     ...actual,
-    getSkillDir: jest.fn((name: string) => `/tmp/.imooc_claw/skills/${name}`),
+    getSkillDir: jest.fn((name: string) => `/tmp/.blooms_claw/skills/${name}`),
     listActiveSkills: jest.fn(),
     readSkillBody: jest.fn(),
     readSkillResourceFile: jest.fn(),
@@ -47,7 +47,7 @@ describe('skill progressive loading', () => {
   it('load_skill 按用户命中的 skill 按需加载正文', async () => {
     const { loadSkillTool } = await import('./skills');
     mockReadSkillBody.mockReturnValue('# UI/UX Pro Max 正文');
-    mockGetSkillDir.mockReturnValue('/tmp/.imooc_claw/skills/ui-ux-pro-max');
+    mockGetSkillDir.mockReturnValue('/tmp/.blooms_claw/skills/ui-ux-pro-max');
     const result = await loadSkillTool.invoke({ skill_name: 'ui-ux-pro-max' });
     expect(mockReadSkillBody).toHaveBeenCalledWith('ui-ux-pro-max');
     expect(result).toContain('已加载');
@@ -69,7 +69,7 @@ describe('skill progressive loading', () => {
     const { readSkillResourceTool } = await import('./skills');
     const evil = await readSkillResourceTool.invoke({
       skill_name: 'ui-ux-pro-max',
-      relative_path: '../imooc_claw.json',
+      relative_path: '../blooms_claw.json',
     });
     expect(evil).toMatch(/非法/);
     expect(mockReadSkillResourceFile).not.toHaveBeenCalled();

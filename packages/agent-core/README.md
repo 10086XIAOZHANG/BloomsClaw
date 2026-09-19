@@ -1,6 +1,6 @@
-# @imooc-claw/agent-core
+# @blooms-claw/agent-core
 
-`@imooc-claw/agent-core` 是 `imooc_claw` monorepo 下的智能体核心子包。
+`@blooms-claw/agent-core` 是 `blooms_claw` monorepo 下的智能体核心子包。
 
 当前仅提供最小 `TypeScript SDK` 骨架，具体功能由后续实现补充。
 

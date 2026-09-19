@@ -98,7 +98,7 @@ const config: UmiConfig = {
    * @name layout 插件
    * @doc https://umijs.org/docs/max/layout-menu
    */
-  title: 'Ant Design Pro',
+  title: 'BloomsClaw',
   layout: {
     locale: true,
     ...defaultSettings,
@@ -205,6 +205,8 @@ const config: UmiConfig = {
     'process.env.COMMIT_HASH': process.env.COMMIT_HASH || '',
     'process.env.CF_PAGES_COMMIT_SHA': process.env.CF_PAGES_COMMIT_SHA || '',
     __APP_VERSION__: JSON.stringify(require('./../package.json').version),
+    __UMI_VERSION__: JSON.stringify(require('@umijs/max/package.json').version),
+    __UTOO_VERSION__: JSON.stringify('1.4.13'),
   },
 };
 

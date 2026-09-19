@@ -15,7 +15,7 @@ Connect the `models` page in `apps/webui` to the backend `models` CRUD APIs.
 
 ## Scope
 
-- Add `getImoocClawModelsConfig()` in `service.ts`
+- Add `getBloomsClawModelsConfig()` in `service.ts`
 - Update `models/index.tsx` to load from backend
 - Reuse backend APIs for save and delete
 - Add delete confirmation dialog

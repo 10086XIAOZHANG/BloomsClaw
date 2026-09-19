@@ -14,7 +14,7 @@ export interface ActiveSkillMeta {
 }
 
 function getConfigPath(): string {
-  return join(homedir(), '.imooc_claw', 'imooc_claw.json');
+  return join(homedir(), '.blooms_claw', 'blooms_claw.json');
 }
 
 function readRootConfig(): RootConfigFile | null {
@@ -28,7 +28,7 @@ function readRootConfig(): RootConfigFile | null {
 
 /** Skill 在宿主机上的物理目录（注意：沙盒 backend 读不到这里，只能用 node:fs 直读） */
 export function getSkillDir(skillName: string): string {
-  return join(homedir(), '.imooc_claw', 'skills', skillName);
+  return join(homedir(), '.blooms_claw', 'skills', skillName);
 }
 
 /** 列出配置中 active 的 Skills（L1 索引用，只含 name + description） */
@@ -115,8 +115,8 @@ export function readConfigByAgentName(agentName: string) {
   // 1. 生成智能体配置的路径
   const configPath = join(
     homedir(),
-    '.imooc_claw',
-    'imooc_claw.json',
+    '.blooms_claw',
+    'blooms_claw.json',
   );
 
   try {
@@ -133,11 +133,21 @@ export function readConfigByAgentName(agentName: string) {
     if (!agentConfig) {
       return null;
     }
-    const modelName = typeof agentConfig.model === 'string' ? agentConfig.model : '';
+    const modelName = typeof agentConfig.model === 'string' ? agentConfig.model.trim() : '';
     if (!modelName) {
       return null;
     }
-    const modelConfig = modelsConfig[modelName];
+    const modelConfig =
+      modelsConfig[modelName] ??
+      Object.entries(modelsConfig).find(
+        ([key]) => key.toLowerCase() === modelName.toLowerCase(),
+      )?.[1];
+    if (!modelConfig) {
+      console.error(
+        `[readConfig] 未找到模型配置: agent=${agentName} model=${modelName} 可用模型=${Object.keys(modelsConfig).join(',') || '(空)'}`,
+      );
+      return null;
+    }
     return {agentName, agentConfig, modelName, modelConfig, rootConfig: config};
   } catch (error) {
     console.error(error);
@@ -181,8 +191,8 @@ export function readSelectedSkillContents(skillNames: string[]) {
 
   const configPath = join(
     homedir(),
-    '.imooc_claw',
-    'imooc_claw.json',
+    '.blooms_claw',
+    'blooms_claw.json',
   );
 
   try {
@@ -194,7 +204,7 @@ export function readSelectedSkillContents(skillNames: string[]) {
       .filter(Boolean)
       .filter((skillName) => isSkillEnabled(skillsConfig[skillName]))
       .map((skillName) => {
-        const skillPath = join(homedir(), '.imooc_claw', 'skills', skillName, 'SKILL.md');
+        const skillPath = join(homedir(), '.blooms_claw', 'skills', skillName, 'SKILL.md');
         if (!fs.existsSync(skillPath)) {
           return null;
         }

@@ -1,8 +1,8 @@
 {
-  "name": "@imooc-claw/agent-core",
+  "name": "@blooms-claw/agent-core",
   "version": "0.1.0",
   "private": true,
-  "description": "Core agent package for imooc_claw",
+  "description": "Core agent package for blooms_claw",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [

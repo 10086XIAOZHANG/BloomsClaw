@@ -2,7 +2,7 @@
 
 ## Goal
 
-Provide CRUD APIs for the `agents` key in `~/.imooc_claw/imooc_claw.json`.
+Provide CRUD APIs for the `agents` key in `~/.blooms_claw/blooms_claw.json`.
 
 ## Scope
 
@@ -48,7 +48,7 @@ The config file is a JSON object. The root object may contain other keys. This f
 
 - `AgentsController`: exposes REST APIs.
 - `AgentsService`: owns CRUD rules and error handling.
-- `ConfigFileService`: reads and writes `imooc_claw.json`.
+- `ConfigFileService`: reads and writes `blooms_claw.json`.
 - `ApiResponseInterceptor`: wraps successful responses as `{ code, data, msg }`.
 - `ApiExceptionFilter`: wraps error responses as `{ code, data, msg, error }`.
 - `AgentsService` maps between API DTOs and the config-file map structure.
@@ -73,7 +73,7 @@ The config file is a JSON object. The root object may contain other keys. This f
 
 ## File Handling
 
-- The config path is resolved as `~/.imooc_claw/imooc_claw.json`.
+- The config path is resolved as `~/.blooms_claw/blooms_claw.json`.
 - If the file does not exist, initialize it as `{ "agents": {} }`.
 - If the file exists without `agents`, add `agents: {}`.
 - Writes use a temp file plus rename for atomic replacement.

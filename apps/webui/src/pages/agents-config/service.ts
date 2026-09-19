@@ -46,7 +46,7 @@ type BackendSkillItem = {
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3000';
 
-export const getImoocClawAgentsConfig = async (): Promise<{
+export const getBloomsClawAgentsConfig = async (): Promise<{
   agents: AgentItem[];
 }> => {
   const response = await request<ApiResponse<BackendAgentItem[]>>(
@@ -70,7 +70,7 @@ export const getImoocClawAgentsConfig = async (): Promise<{
   };
 };
 
-export const getImoocClawModelsConfig = async (): Promise<{
+export const getBloomsClawModelsConfig = async (): Promise<{
   models: ModelItem[];
 }> => {
   const response = await request<ApiResponse<BackendModelItem[]>>(
@@ -97,7 +97,7 @@ export const getImoocClawModelsConfig = async (): Promise<{
   };
 };
 
-export const getImoocClawToolsConfig = async (): Promise<{
+export const getBloomsClawToolsConfig = async (): Promise<{
   tools: ToolItem[];
 }> => {
   const response = await request<ApiResponse<BackendToolItem[]>>(
@@ -119,7 +119,7 @@ export const getImoocClawToolsConfig = async (): Promise<{
   };
 };
 
-export const getImoocClawSkillsConfig = async (): Promise<{
+export const getBloomsClawSkillsConfig = async (): Promise<{
   skills: SkillItem[];
 }> => {
   const response = await request<ApiResponse<BackendSkillItem[]>>(
@@ -171,7 +171,7 @@ export const saveAgentItem = async (
     throw new Error(response.msg || '保存 Agent 配置失败');
   }
 
-  return getImoocClawAgentsConfig();
+  return getBloomsClawAgentsConfig();
 };
 
 export const deleteAgentItem = async (
@@ -188,7 +188,7 @@ export const deleteAgentItem = async (
     throw new Error(response.msg || '删除 Agent 配置失败');
   }
 
-  return getImoocClawAgentsConfig();
+  return getBloomsClawAgentsConfig();
 };
 
 export const saveModelItem = async (
@@ -221,7 +221,7 @@ export const saveModelItem = async (
     throw new Error(response.msg || '保存 Model 配置失败');
   }
 
-  return getImoocClawModelsConfig();
+  return getBloomsClawModelsConfig();
 };
 
 export const deleteModelItem = async (
@@ -238,7 +238,7 @@ export const deleteModelItem = async (
     throw new Error(response.msg || '删除 Model 配置失败');
   }
 
-  return getImoocClawModelsConfig();
+  return getBloomsClawModelsConfig();
 };
 
 export const saveToolItem = async (
@@ -262,7 +262,7 @@ export const saveToolItem = async (
     throw new Error(response.msg || '保存 Tool 配置失败');
   }
 
-  return getImoocClawToolsConfig();
+  return getBloomsClawToolsConfig();
 };
 
 export const saveSkillItem = async (
@@ -288,7 +288,7 @@ export const saveSkillItem = async (
     throw new Error(response.msg || '保存 Skill 配置失败');
   }
 
-  return getImoocClawSkillsConfig();
+  return getBloomsClawSkillsConfig();
 };
 
 export const installSkillByCommand = async (
@@ -306,7 +306,7 @@ export const installSkillByCommand = async (
     throw new Error(response.msg || '安装 Skill 失败');
   }
 
-  return getImoocClawSkillsConfig();
+  return getBloomsClawSkillsConfig();
 };
 
 export const deleteSkillItem = async (
@@ -323,5 +323,5 @@ export const deleteSkillItem = async (
     throw new Error(response.msg || '删除 Skill 失败');
   }
 
-  return getImoocClawSkillsConfig();
+  return getBloomsClawSkillsConfig();
 };

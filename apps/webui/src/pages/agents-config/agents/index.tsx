@@ -27,9 +27,9 @@ import type { AgentItem, ModelItem, ToolItem } from '../data';
 import { createEmptyAgent } from '../data';
 import {
   deleteAgentItem,
-  getImoocClawAgentsConfig,
-  getImoocClawModelsConfig,
-  getImoocClawToolsConfig,
+  getBloomsClawAgentsConfig,
+  getBloomsClawModelsConfig,
+  getBloomsClawToolsConfig,
   saveAgentItem,
 } from '../service';
 
@@ -73,9 +73,9 @@ const AgentsPage: React.FC = () => {
 
   const refreshPageData = async () => {
     const [agentsConfig, modelsConfig, toolsConfig] = await Promise.all([
-      getImoocClawAgentsConfig(),
-      getImoocClawModelsConfig(),
-      getImoocClawToolsConfig(),
+      getBloomsClawAgentsConfig(),
+      getBloomsClawModelsConfig(),
+      getBloomsClawToolsConfig(),
     ]);
 
     form.setFieldsValue({

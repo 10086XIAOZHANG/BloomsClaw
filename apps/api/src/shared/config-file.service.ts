@@ -25,8 +25,8 @@ const DEFAULT_ROOT_CONFIG: RootConfig = {
 export class ConfigFileService {
   private readonly configPath = join(
     homedir(),
-    '.imooc_claw',
-    'imooc_claw.json',
+    '.blooms_claw',
+    'blooms_claw.json',
   );
 
   getConfigPath(): string {

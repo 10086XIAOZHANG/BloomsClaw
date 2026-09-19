@@ -6,7 +6,7 @@ Switch the `agents` page in `apps/webui` from local mock config loading to the b
 
 ## Scope
 
-- Add `getImoocClawAgentsConfig` in the web UI service layer.
+- Add `getBloomsClawAgentsConfig` in the web UI service layer.
 - Read `http://localhost:3000/agents`.
 - Map backend agent fields to the current page form shape.
 - Update the agents page to use the new read API only.

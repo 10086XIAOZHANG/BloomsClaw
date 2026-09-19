@@ -51,14 +51,14 @@ interface ModelConfigLike {
   use_env_api_key?: number;
 }
 
-const OSS_BUCKET_NAME = 'imooc-claw';
+const OSS_BUCKET_NAME = 'blooms-claw';
 const OSS_ENDPOINT = 'oss-cn-hangzhou.aliyuncs.com';
 const OSS_BUCKET_HOST = `${OSS_BUCKET_NAME}.${OSS_ENDPOINT}`;
 
 @Injectable()
 export class ModelsAttachmentsService {
   private readonly logger = new Logger(ModelsAttachmentsService.name);
-  private readonly rootDir = path.join(os.homedir(), '.imooc_claw', 'attachments');
+  private readonly rootDir = path.join(os.homedir(), '.blooms_claw', 'attachments');
   private readonly filesDir = path.join(this.rootDir, 'files');
   private readonly metaDir = path.join(this.rootDir, 'meta');
 

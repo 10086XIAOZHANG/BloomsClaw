@@ -38,9 +38,9 @@ import { useStyles } from './style';
 
 const WELCOME_TEXT = '🤖 你好，有什么可以帮你？';
 const CHATBOT_CONVERSATION_AGENT_STORAGE_KEY =
-  'imooc_claw.chatbot.conversation_agents';
+  'blooms_claw.chatbot.conversation_agents';
 const CHATBOT_CONVERSATION_ID_QUERY_KEY = 'conversationId';
-const CHATBOT_PANEL_LAYOUT_STORAGE_KEY = 'imooc_claw.chatbot.panel_layout';
+const CHATBOT_PANEL_LAYOUT_STORAGE_KEY = 'blooms_claw.chatbot.panel_layout';
 
 type ConversationAgentMap = Record<string, string>;
 type ThoughtChainExpandedMap = Record<string, string[]>;
@@ -222,7 +222,7 @@ const createInitialChatState = () => {
   };
 };
 
-const WORKSPACE_ROOT = '/Users/jack/.imooc_claw/workspaces';
+const WORKSPACE_ROOT = '/Users/jack/.blooms_claw/workspaces';
 
 const toWorkspaceFilePath = (pathSegments: string[]): string =>
   pathSegments.filter(Boolean).join('/');
@@ -709,7 +709,7 @@ const ChatbotPage: React.FC = () => {
       return;
     }
 
-    window.localStorage.removeItem('imooc_claw.chatbot.selected_agent');
+    window.localStorage.removeItem('blooms_claw.chatbot.selected_agent');
   }, []);
 
   useEffect(() => {

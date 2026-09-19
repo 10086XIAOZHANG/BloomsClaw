@@ -11,7 +11,7 @@
 采用方案 A，创建最小 `TypeScript SDK` 骨架：
 
 - 路径为 `packages/agent-core`
-- `package.json` 中的 `name` 固定为 `@imooc-claw/agent-core`
+- `package.json` 中的 `name` 固定为 `@blooms-claw/agent-core`
 - 仅创建基础工程文件，不提供任何具体功能实现
 
 ## Scope

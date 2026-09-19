@@ -2,13 +2,13 @@
 
 ## Context
 
-`tools` 页面仍通过 `getImoocClawConfig()` 从本地 mock 配置读取数据，后端 `tools` CRUD 已完成，需要把页面读取切换到真实接口。
+`tools` 页面仍通过 `getBloomsClawConfig()` 从本地 mock 配置读取数据，后端 `tools` CRUD 已完成，需要把页面读取切换到真实接口。
 
 ## Decision
 
 采用方案 C：
 
-- 新增 `getImoocClawToolsConfig()`，从 `GET /tools` 读取工具配置。
+- 新增 `getBloomsClawToolsConfig()`，从 `GET /tools` 读取工具配置。
 - 前端 `ToolItem` 移除 `category` 字段。
 - `tools` 页面不再展示 `category`，改为直接展示 `builtin` 状态。
 

@@ -28,7 +28,7 @@ import type { ModelItem } from '../data';
 import { createEmptyModel, MODEL_PROVIDER_OPTIONS } from '../data';
 import {
   deleteModelItem,
-  getImoocClawModelsConfig,
+  getBloomsClawModelsConfig,
   saveModelItem,
 } from '../service';
 
@@ -47,7 +47,7 @@ const ModelsPage: React.FC = () => {
   const loadConfig = async () => {
     setLoading(true);
     try {
-      const config = await getImoocClawModelsConfig();
+      const config = await getBloomsClawModelsConfig();
       form.setFieldsValue({ models: config.models });
     } finally {
       setLoading(false);

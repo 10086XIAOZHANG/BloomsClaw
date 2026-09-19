@@ -49,7 +49,7 @@ const INVALID_INSTALL_COMMAND = 'INVALID_INSTALL_COMMAND';
 @Injectable()
 export class SkillsService {
   private readonly logger = new Logger(SkillsService.name);
-  private readonly skillsDir = join(homedir(), '.imooc_claw', 'skills');
+  private readonly skillsDir = join(homedir(), '.blooms_claw', 'skills');
 
   constructor(private readonly configFileService: ConfigFileService) {}
 
@@ -86,7 +86,7 @@ export class SkillsService {
   async install(payload: unknown): Promise<SkillDto[]> {
     const { command } = this.validateInstallPayload(payload);
     const parsedCommand = this.parseInstallCommand(command);
-    const tempDir = await mkdtemp(join(tmpdir(), 'imooc-claw-skills-'));
+    const tempDir = await mkdtemp(join(tmpdir(), 'blooms-claw-skills-'));
     const installStartedAt = Date.now();
 
     this.debugLog(

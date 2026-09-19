@@ -21,7 +21,7 @@ import React, { useEffect, useState } from 'react';
 import type { SkillItem } from '../data';
 import {
   deleteSkillItem,
-  getImoocClawSkillsConfig,
+  getBloomsClawSkillsConfig,
   installSkillByCommand,
   saveSkillItem,
 } from '../service';
@@ -38,7 +38,7 @@ const SkillsPage: React.FC = () => {
   const loadConfig = async () => {
     setLoading(true);
     try {
-      const config = await getImoocClawSkillsConfig();
+      const config = await getBloomsClawSkillsConfig();
       setSkills(config.skills);
     } finally {
       setLoading(false);

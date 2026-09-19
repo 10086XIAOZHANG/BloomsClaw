@@ -31,7 +31,7 @@ describe('Login Page', () => {
       />,
     );
 
-    await rootContainer.findAllByText('ImoocClaw');
+    await rootContainer.findAllByText('BloomsClaw');
 
     act(() => {
       historyRef.current?.push('/user/login');
@@ -41,7 +41,7 @@ describe('Login Page', () => {
       rootContainer.baseElement?.querySelector('.ant-pro-form-login-desc')
         ?.textContent,
     ).toBe(
-      'ImoocClaw agent configuration and collaboration platform',
+      'BloomsClaw agent configuration and collaboration platform',
     );
 
     expect(rootContainer.asFragment()).toMatchSnapshot();
@@ -60,7 +60,7 @@ describe('Login Page', () => {
       />,
     );
 
-    await rootContainer.findAllByText('ImoocClaw');
+    await rootContainer.findAllByText('BloomsClaw');
 
     const userNameInput = await rootContainer.findByPlaceholderText(
       'Username: admin or user',
@@ -81,7 +81,7 @@ describe('Login Page', () => {
     (await rootContainer.findByText('Login')).click();
 
     // Wait for login to succeed and navigate to home page
-    await rootContainer.findByText('ImoocClaw', undefined, {
+    await rootContainer.findByText('BloomsClaw', undefined, {
       timeout: 10000,
     });
 

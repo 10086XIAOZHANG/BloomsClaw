@@ -23,7 +23,7 @@ import {
 /** 所有 agent 自动加载的默认工具（不依赖 agentConfig.tools 配置） */
 export const DEFAULT_AGENT_TOOLS = ['FileTools', 'RunCommand', 'WebSearch'] as const;
 
-const FIXED_WORKSPACE_ROOT = '/Users/jack/.imooc_claw/workspaces';
+const FIXED_WORKSPACE_ROOT = '/Users/jack/.blooms_claw/workspaces';
 
 const _stripTrailingSlash = (p: string): string =>
   p.endsWith('/') ? p.slice(0, -1) : p;
@@ -226,7 +226,7 @@ function resolveToolsEnable(
 
 function buildSystemPrompt(basePrompt: string, skillNames: string[] | undefined) {
   const selectedSkills = readSelectedSkillContents(skillNames ?? []);
-  const workspaceGuardrail = `你运行在一个虚拟沙盒文件系统中，当前目录（./）即为你的工作区根目录。\n请直接使用相对路径（如 ./file.txt）进行文件读取、创建和修改。\n**严禁**在路径中包含宿主机的绝对路径（例如绝对不要使用 ${FIXED_WORKSPACE_ROOT} 这样的前缀），否则会导致路径嵌套错误。\n例外：调用已加载 Skill 自带 scripts/*.py 时，允许使用其 ~/.imooc_claw/skills/<name> 绝对路径（这是唯一例外）。`;
+  const workspaceGuardrail = `你运行在一个虚拟沙盒文件系统中，当前目录（./）即为你的工作区根目录。\n请直接使用相对路径（如 ./file.txt）进行文件读取、创建和修改。\n**严禁**在路径中包含宿主机的绝对路径（例如绝对不要使用 ${FIXED_WORKSPACE_ROOT} 这样的前缀），否则会导致路径嵌套错误。\n例外：调用已加载 Skill 自带 scripts/*.py 时，允许使用其 ~/.blooms_claw/skills/<name> 绝对路径（这是唯一例外）。`;
   // L1 常驻：只放 active Skills 的 name + description 索引（约200 token/skill），
   // 正文走 load_skill / read_skill_resource 按用户提问按需加载，避免首轮全量注入爆 context。
   const skillIndex = buildSkillIndexPrompt();
@@ -353,7 +353,7 @@ export async function createAgent(
   }: CreateAgentOptions,
 ): Promise<CreateAgentResult> {
   const homePath = os.homedir();
-  const filePath = path.join(homePath, '.imooc_claw', 'memory', `${threadId}.json`);
+  const filePath = path.join(homePath, '.blooms_claw', 'memory', `${threadId}.json`);
   const checkpointer = new FileSaver(filePath);
 
   const config = readConfigByAgentName(agentName);

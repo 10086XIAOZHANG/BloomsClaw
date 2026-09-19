@@ -17,7 +17,7 @@ export interface WorkspaceTreeDto {
   treeData: WorkspaceTreeNodeDto[];
 }
 
-const WORKSPACE_ROOT = '/Users/jack/.imooc_claw/workspaces';
+const WORKSPACE_ROOT = '/Users/jack/.blooms_claw/workspaces';
 const MAX_PREVIEW_BYTES = 256 * 1024;
 const TEXT_FILE_EXTENSIONS = new Set([
   '.txt', '.md', '.mdx', '.json', '.yaml', '.yml', '.xml', '.html', '.css',

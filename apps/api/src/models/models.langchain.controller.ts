@@ -15,7 +15,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { createAgent, readConfigByAgentName } from '@imooc-claw/agent-core';
+import { createAgent, readConfigByAgentName } from '@blooms-claw/agent-core';
 import type { Response } from 'express';
 import { ModelsAttachmentsService } from './models.attachments.service';
 import type { ChatThoughtStepDto } from './models.chat-history.service';
@@ -226,13 +226,15 @@ export class ModelsLangchainController {
           id: assistantMessageId,
         });
         const agentRuntimeConfig = readConfigByAgentName(agentName);
-        if (!agentRuntimeConfig) {
-          throw new BadRequestException(`未找到智能体配置: ${agentName}`);
+        if (!agentRuntimeConfig?.modelConfig) {
+          throw new BadRequestException(
+            `未找到智能体配置: ${agentName}（model=${agentRuntimeConfig?.modelName ?? 'missing'}，请检查 ~/.blooms_claw/blooms_claw.json 中 agents.${agentName}.model 是否与 models 下的 key 大小写一致）`,
+          );
         }
         this.logger.log(
           `[deepagents-stream] agent=${agentName} model=${agentRuntimeConfig.modelName} ` +
-            `base_url=${agentRuntimeConfig.modelConfig.base_url ?? 'missing'} ` +
-            `provider=${(agentRuntimeConfig.modelConfig as any).provider ?? 'unspecified'}`,
+            `base_url=${agentRuntimeConfig.modelConfig?.base_url ?? 'missing'} ` +
+            `provider=${(agentRuntimeConfig.modelConfig as any)?.provider ?? 'unspecified'}`,
         );
         const bailianFileReferences =
           await this.modelsAttachmentsService.resolveBailianFileReferences(

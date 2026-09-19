@@ -56,10 +56,10 @@ interface SerializedCheckpoint {
 
 @Injectable()
 export class ModelsChatHistoryService {
-  private readonly memoryDir = path.join(os.homedir(), '.imooc_claw', 'memory');
+  private readonly memoryDir = path.join(os.homedir(), '.blooms_claw', 'memory');
   private readonly conversationDir = path.join(
     os.homedir(),
-    '.imooc_claw',
+    '.blooms_claw',
     'chat_history',
   );
 

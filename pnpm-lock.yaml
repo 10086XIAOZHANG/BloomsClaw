@@ -10,7 +10,7 @@ importers:
 
   apps/api:
     dependencies:
-      '@imooc-claw/agent-core':
+      '@blooms-claw/agent-core':
         specifier: workspace:*
         version: link:../../packages/agent-core
       '@nestjs/common':

@@ -32,7 +32,7 @@ describe('AgentsService', () => {
     };
 
     configFileService = {
-      getConfigPath: jest.fn().mockReturnValue('/tmp/imooc_claw.json'),
+      getConfigPath: jest.fn().mockReturnValue('/tmp/blooms_claw.json'),
       readConfig: jest.fn(async () => structuredClone(store)),
       writeConfig: jest.fn(async (nextConfig: RootConfig) => {
         store = structuredClone(nextConfig);

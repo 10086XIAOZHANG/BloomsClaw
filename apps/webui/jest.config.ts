@@ -22,6 +22,8 @@ export default async (): Promise<any> => {
       ...config.globals,
       localStorage: null,
       __APP_VERSION__: 'test',
+      __UMI_VERSION__: 'test',
+      __UTOO_VERSION__: 'test',
     },
   };
 };

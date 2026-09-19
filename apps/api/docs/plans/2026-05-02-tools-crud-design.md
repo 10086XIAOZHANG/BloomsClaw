@@ -2,7 +2,7 @@
 
 ## Goal
 
-Provide CRUD APIs for the `tools` key in `~/.imooc_claw/imooc_claw.json`.
+Provide CRUD APIs for the `tools` key in `~/.blooms_claw/blooms_claw.json`.
 
 ## Data Model
 

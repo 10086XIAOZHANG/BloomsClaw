@@ -14,7 +14,7 @@ import {
 import React, { useEffect, useMemo, useState } from 'react';
 
 import type { ToolItem } from '../data';
-import { getImoocClawToolsConfig, saveToolItem } from '../service';
+import { getBloomsClawToolsConfig, saveToolItem } from '../service';
 
 const ToolsPage: React.FC = () => {
   const { message } = App.useApp();
@@ -35,7 +35,7 @@ const ToolsPage: React.FC = () => {
   const loadConfig = async () => {
     setLoading(true);
     try {
-      const config = await getImoocClawToolsConfig();
+      const config = await getBloomsClawToolsConfig();
       setTools(config.tools);
     } finally {
       setLoading(false);

@@ -1,6 +1,6 @@
 export default {
   'pages.layouts.userLayout.title':
-    'ImoocClaw agent configuration and collaboration platform',
+    'BloomsClaw agent configuration and collaboration platform',
   'pages.login.accountLogin.tab': 'Account Login',
   'pages.login.accountLogin.errorMessage':
     'Incorrect username/password(admin/ant.design)',

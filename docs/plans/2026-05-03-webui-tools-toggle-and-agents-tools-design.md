@@ -23,7 +23,7 @@
   - `description`
   - `active`
   - `builtin`
-- 保存成功后统一返回 `getImoocClawToolsConfig()` 的最新结果。
+- 保存成功后统一返回 `getBloomsClawToolsConfig()` 的最新结果。
 
 ## Page Changes
 
