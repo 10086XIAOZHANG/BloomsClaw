@@ -5,12 +5,16 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
+import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import {
   ConfigEntry,
   ConfigFileService,
   RootConfig,
 } from '../shared/config-file.service';
-import { ToolDto } from './tools.types';
+import { McpConfigDto, RemoteMcpToolMeta, ToolDto } from './tools.types';
 
 type RawToolConfig = ConfigEntry;
 type ToolMap = Record<string, RawToolConfig>;
@@ -19,6 +23,9 @@ const TOOL_NOT_FOUND = 'TOOL_NOT_FOUND';
 const TOOL_ALREADY_EXISTS = 'TOOL_ALREADY_EXISTS';
 const INVALID_TOOL_PAYLOAD = 'INVALID_TOOL_PAYLOAD';
 const INVALID_TOOL_NAME = 'INVALID_TOOL_NAME';
+const MCP_UNREACHABLE = 'MCP_UNREACHABLE';
+
+const MCP_CONNECT_TIMEOUT_MS = 15000;
 
 @Injectable()
 export class ToolsService {
@@ -47,8 +54,20 @@ export class ToolsService {
     return this.toToolDto(normalizedName, tool);
   }
 
+  /** 连接 MCP Server 并返回其暴露的工具列表（仅透传 name + description） */
+  async listRemoteTools(name: string): Promise<RemoteMcpToolMeta[]> {
+    const dto = await this.findOne(name);
+    if (dto.builtin === 1 || !dto.mcp) {
+      throw new BadRequestException({
+        message: 'Only MCP tools support remote tool listing.',
+        error: INVALID_TOOL_PAYLOAD,
+      });
+    }
+    return this.fetchRemoteTools(dto.mcp);
+  }
+
   async create(payload: unknown): Promise<ToolDto> {
-    const toolConfig = this.validateToolPayload(payload);
+    const toolConfig = this.validateToolPayload(payload, { isCreate: true });
     const normalizedName = toolConfig.name;
     const config = await this.readRootConfig();
     const tools = this.getToolMap(config);
@@ -58,6 +77,11 @@ export class ToolsService {
         message: `Tool "${normalizedName}" already exists.`,
         error: TOOL_ALREADY_EXISTS,
       });
+    }
+
+    // 自定义工具 = MCP Server：创建前必须能连通并拉到工具列表，否则拒绝落盘
+    if (toolConfig.builtin === 0 && toolConfig.mcp) {
+      await this.fetchRemoteTools(toolConfig.mcp);
     }
 
     const storedTool = this.toStoredToolConfig(toolConfig);
@@ -75,7 +99,7 @@ export class ToolsService {
 
   async update(name: string, payload: unknown): Promise<ToolDto> {
     const currentName = this.validateName(name);
-    const toolConfig = this.validateToolPayload(payload);
+    const toolConfig = this.validateToolPayload(payload, { isCreate: false });
     const nextName = toolConfig.name;
     const config = await this.readRootConfig();
     const tools = this.getToolMap(config);
@@ -92,6 +116,10 @@ export class ToolsService {
         message: `Tool "${nextName}" already exists.`,
         error: TOOL_ALREADY_EXISTS,
       });
+    }
+
+    if (toolConfig.builtin === 0 && toolConfig.mcp) {
+      await this.fetchRemoteTools(toolConfig.mcp);
     }
 
     const storedTool = this.toStoredToolConfig(toolConfig);
@@ -141,7 +169,7 @@ export class ToolsService {
     return normalizedName;
   }
 
-  private validateToolPayload(payload: unknown): ToolDto {
+  private validateToolPayload(payload: unknown, options: { isCreate: boolean }): ToolDto {
     if (
       typeof payload !== 'object' ||
       payload === null ||
@@ -154,13 +182,137 @@ export class ToolsService {
     }
 
     const candidate = payload as Record<string, unknown>;
+    const builtin = this.validateFlag(candidate.builtin, 'builtin');
 
+    // 内置工具：只允许前端传 name/description/active/builtin，老数据无 mcp 也兼容
+    if (builtin === 1) {
+      return {
+        name: this.validateRequiredString(candidate.name, 'name'),
+        description: this.validateRequiredString(candidate.description, 'description'),
+        active: 1,
+        builtin: 1,
+      };
+    }
+
+    // 自定义工具：只能是 MCP Server，builtin 强制 0
     return {
       name: this.validateRequiredString(candidate.name, 'name'),
       description: this.validateRequiredString(candidate.description, 'description'),
       active: this.validateFlag(candidate.active, 'active'),
-      builtin: this.validateFlag(candidate.builtin, 'builtin'),
+      builtin: 0,
+      mcp: this.validateMcpConfig(candidate.mcp),
     };
+  }
+
+  private validateMcpConfig(value: unknown): McpConfigDto {
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+      throw new BadRequestException({
+        message: 'MCP tools require a valid "mcp" config object.',
+        error: INVALID_TOOL_PAYLOAD,
+      });
+    }
+    const candidate = value as Record<string, unknown>;
+    const transport = candidate.transport;
+    if (transport !== 'stdio' && transport !== 'streamableHttp' && transport !== 'sse') {
+      throw new BadRequestException({
+        message: 'Tool field "mcp.transport" must be stdio, streamableHttp or sse.',
+        error: INVALID_TOOL_PAYLOAD,
+      });
+    }
+
+    if (transport === 'stdio') {
+      const command = this.validateRequiredString(candidate.command, 'mcp.command');
+      const args = this.validateStringArray(candidate.args, 'mcp.args', { allowMissing: true }) ?? [];
+      const env = this.validateStringRecord(candidate.env, 'mcp.env', { allowMissing: true });
+      const cwd = typeof candidate.cwd === 'string' && candidate.cwd.trim()
+        ? candidate.cwd.trim()
+        : undefined;
+      return { transport, command, args, ...(env ? { env } : {}), ...(cwd ? { cwd } : {}) };
+    }
+
+    const url = this.validateRequiredString(candidate.url, 'mcp.url');
+    if (!/^https?:\/\//i.test(url)) {
+      throw new BadRequestException({
+        message: 'Tool field "mcp.url" must start with http:// or https://.',
+        error: INVALID_TOOL_PAYLOAD,
+      });
+    }
+    const headers = this.validateStringRecord(candidate.headers, 'mcp.headers', { allowMissing: true });
+    return { transport, url, ...(headers ? { headers } : {}) };
+  }
+
+  private async fetchRemoteTools(mcp: McpConfigDto): Promise<RemoteMcpToolMeta[]> {
+    const client = new Client({ name: 'blooms-claw-tools-validator', version: '1.0.0' });
+    const transport = this.buildMcpTransport(mcp);
+    try {
+      await this.withTimeout(client.connect(transport), MCP_CONNECT_TIMEOUT_MS, '连接 MCP Server 超时');
+      const result = await this.withTimeout(
+        client.listTools(),
+        MCP_CONNECT_TIMEOUT_MS,
+        '读取 MCP 工具列表超时',
+      );
+      const remoteTools = (result as { tools?: Array<{ name: string; description?: unknown }> }).tools ?? [];
+      return remoteTools.map((item) => ({
+        name: item.name,
+        description: typeof item.description === 'string' ? item.description : '',
+      }));
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new BadRequestException({
+        message: `无法连接 MCP Server: ${error instanceof Error ? error.message : '未知错误'}`,
+        error: MCP_UNREACHABLE,
+      });
+    } finally {
+      try {
+        await client.close();
+      } catch {
+        // ignore close errors
+      }
+      try {
+        await transport.close();
+      } catch {
+        // ignore close errors
+      }
+    }
+  }
+
+  private buildMcpTransport(mcp: McpConfigDto) {
+    if (mcp.transport === 'stdio') {
+      return new StdioClientTransport({
+        command: mcp.command as string,
+        args: mcp.args ?? [],
+        ...(mcp.env ? { env: mcp.env } : {}),
+        ...(mcp.cwd ? { cwd: mcp.cwd } : {}),
+        stderr: 'ignore',
+      });
+    }
+    if (mcp.transport === 'sse') {
+      return new SSEClientTransport(new URL(mcp.url as string), {
+        requestInit: mcp.headers ? { headers: mcp.headers } : undefined,
+      });
+    }
+    return new StreamableHTTPClientTransport(new URL(mcp.url as string), {
+      requestInit: mcp.headers ? { headers: mcp.headers } : undefined,
+    });
+  }
+
+  private async withTimeout<T>(promise: Promise<T>, ms: number, message: string): Promise<T> {
+    let timer: NodeJS.Timeout | undefined;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(() => reject(new Error(message)), ms);
+          timer.unref?.();
+        }),
+      ]);
+    } finally {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    }
   }
 
   private async readRootConfig(): Promise<RootConfig> {
@@ -192,30 +344,61 @@ export class ToolsService {
   private toToolDto(name: string, raw: RawToolConfig): ToolDto {
     const candidate = raw as Record<string, unknown>;
     const description = this.readString(candidate.description);
-    const active =
-      this.readFlag(candidate.active) ?? this.readBooleanAsFlag(candidate.enabled);
     const builtin =
       this.readFlag(candidate.builtin) ?? this.readBooleanAsFlag(candidate.builtin);
 
-    if (!description || active === null || builtin === null) {
+    if (!description || builtin === null) {
       throw new InternalServerErrorException(
         `Tool "${name}" has invalid config shape.`,
       );
     }
 
+    // 内置工具强制启用，前端开关置灰不可关闭，后端直接返回 active=1
+    if (builtin === 1) {
+      return {
+        name,
+        description,
+        active: 1,
+        builtin,
+      };
+    }
+
+    const active =
+      this.readFlag(candidate.active) ?? this.readBooleanAsFlag(candidate.enabled);
+
+    if (active === null) {
+      throw new InternalServerErrorException(
+        `Tool "${name}" has invalid config shape.`,
+      );
+    }
+
+    const mcp = this.readMcpConfig(candidate.mcp);
+
+    // 老数据（改造前创建的自定义工具）没有 mcp 配置：不直接 500，
+    // 返回 mcp=null，前端会提示“缺少 MCP 配置，请删除重建”，agent-core 加载时跳过
     return {
       name,
       description,
       active,
       builtin,
+      mcp,
     };
   }
 
   private toStoredToolConfig(tool: ToolDto): RawToolConfig {
+    // 内置工具强制启用，防止通过 PUT 关闭
+    if (tool.builtin === 1) {
+      return {
+        description: tool.description,
+        active: 1,
+        builtin: tool.builtin,
+      };
+    }
     return {
       description: tool.description,
       active: tool.active,
-      builtin: tool.builtin,
+      builtin: 0,
+      mcp: tool.mcp as unknown as Record<string, unknown>,
     };
   }
 
@@ -230,6 +413,60 @@ export class ToolsService {
     }
 
     return normalizedValue;
+  }
+
+  private validateStringArray(
+    value: unknown,
+    field: string,
+    options: { allowMissing?: boolean } = {},
+  ): string[] | undefined {
+    if (value === undefined && options.allowMissing) {
+      return undefined;
+    }
+    if (!Array.isArray(value) || value.some((item) => typeof item !== 'string')) {
+      throw new BadRequestException({
+        message: `Tool field "${field}" must be a string array.`,
+        error: INVALID_TOOL_PAYLOAD,
+      });
+    }
+    return value as string[];
+  }
+
+  private validateStringRecord(
+    value: unknown,
+    field: string,
+    options: { allowMissing?: boolean } = {},
+  ): Record<string, string> | undefined {
+    if (value === undefined && options.allowMissing) {
+      return undefined;
+    }
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+      throw new BadRequestException({
+        message: `Tool field "${field}" must be an object of string values.`,
+        error: INVALID_TOOL_PAYLOAD,
+      });
+    }
+    const entries = Object.entries(value as Record<string, unknown>);
+    for (const [key, item] of entries) {
+      if (!key.trim() || typeof item !== 'string') {
+        throw new BadRequestException({
+          message: `Tool field "${field}" must be an object of string values.`,
+          error: INVALID_TOOL_PAYLOAD,
+        });
+      }
+    }
+    return Object.fromEntries(entries.map(([key, item]) => [key, item as string]));
+  }
+
+  private readMcpConfig(value: unknown): McpConfigDto | null {
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+      return null;
+    }
+    try {
+      return this.validateMcpConfig(value);
+    } catch {
+      return null;
+    }
   }
 
   private validateFlag(value: unknown, field: string): 0 | 1 {

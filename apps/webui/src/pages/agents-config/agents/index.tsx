@@ -63,9 +63,10 @@ const AgentsPage: React.FC = () => {
     () =>
       tools
         .filter((item) => item.enabled)
-        .filter((item) => !DEFAULT_AUTO_TOOL_IDS.has(item.id))
+        // Agents 页只允许绑定 MCP 自定义工具；内置工具由 runtime 自动加载
+        .filter((item) => !item.builtin && !DEFAULT_AUTO_TOOL_IDS.has(item.id))
         .map((item) => ({
-          label: item.name,
+          label: `${item.name}（MCP · ${item.mcp?.transport ?? '未知传输'}）`,
           value: item.id,
         })),
     [tools],
@@ -256,9 +257,9 @@ const AgentsPage: React.FC = () => {
                           </Col>
                           <Col xs={24} md={8}>
                             <Form.Item
-                              label="可选工具"
+                              label="MCP 工具"
                               name={[field.name, 'toolIds']}
-                              extra="FileTools、RunCommand、WebSearch 已对所有 Agent 默认自动加载"
+                              extra="内置工具自动加载，这里只绑定已启用的 MCP 工具"
                             >
                               <Select
                                 mode="multiple"
@@ -266,8 +267,8 @@ const AgentsPage: React.FC = () => {
                                 options={toolOptions}
                                 placeholder={
                                   toolOptions.length > 0
-                                    ? '选择额外工具（可选）'
-                                    : '暂无额外可选工具'
+                                    ? '选择 MCP 工具（可选）'
+                                    : '暂无可用 MCP 工具，请先去 Tools 页新建'
                                 }
                               />
                             </Form.Item>

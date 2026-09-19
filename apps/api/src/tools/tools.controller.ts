@@ -11,6 +11,11 @@ export class ToolsController {
     return this.toolsService.findAll();
   }
 
+  @Get(':name/remote-tools')
+  listRemoteTools(@Param('name') name: string) {
+    return this.toolsService.listRemoteTools(name);
+  }
+
   @Get(':name')
   findOne(@Param('name') name: string): Promise<ToolDto> {
     return this.toolsService.findOne(name);

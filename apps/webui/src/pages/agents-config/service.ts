@@ -1,5 +1,5 @@
 import { request } from '@umijs/max';
-import type { AgentItem, ModelItem, SkillItem, ToolItem } from './data';
+import type { AgentItem, McpConfig, ModelItem, RemoteMcpToolMeta, SkillItem, ToolItem } from './data';
 
 type ApiResponse<T> = {
   code: number;
@@ -33,6 +33,7 @@ type BackendToolItem = {
   description: string;
   active: 0 | 1;
   builtin: 0 | 1;
+  mcp?: McpConfig | null;
 };
 
 type BackendSkillItem = {
@@ -115,6 +116,7 @@ export const getBloomsClawToolsConfig = async (): Promise<{
       description: tool.description,
       builtin: tool.builtin === 1,
       enabled: tool.active === 1,
+      mcp: tool.mcp ?? null,
     })),
   };
 };
@@ -249,17 +251,82 @@ export const saveToolItem = async (
     description: tool.description.trim(),
     active: tool.enabled ? 1 : 0,
     builtin: tool.builtin ? 1 : 0,
+    ...(tool.builtin ? {} : { mcp: tool.mcp ?? null }),
+  };
+  const response = tool.id
+    ? await request<ApiResponse<BackendToolItem>>(
+        `${API_BASE_URL}/tools/${encodeURIComponent(tool.id)}`,
+        {
+          method: 'PUT',
+          data: payload,
+        },
+      )
+    : await request<ApiResponse<BackendToolItem>>(`${API_BASE_URL}/tools`, {
+        method: 'POST',
+        data: payload,
+      });
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || '保存 Tool 配置失败');
+  }
+
+  return getBloomsClawToolsConfig();
+};
+
+export const createToolItem = async (
+  tool: ToolItem,
+): Promise<{ tools: ToolItem[] }> => {
+  if (!tool.mcp) {
+    throw new Error('MCP 工具必须填写连接配置');
+  }
+  const payload: BackendToolItem = {
+    name: tool.name.trim(),
+    description: tool.description.trim(),
+    active: tool.enabled ? 1 : 0,
+    builtin: 0,
+    mcp: tool.mcp,
   };
   const response = await request<ApiResponse<BackendToolItem>>(
-    `${API_BASE_URL}/tools/${encodeURIComponent(tool.id)}`,
+    `${API_BASE_URL}/tools`,
     {
-      method: 'PUT',
+      method: 'POST',
       data: payload,
     },
   );
 
   if (response.code !== 0) {
-    throw new Error(response.msg || '保存 Tool 配置失败');
+    throw new Error(response.msg || '新建 MCP 工具失败（请检查 MCP Server 是否可连接）');
+  }
+
+  return getBloomsClawToolsConfig();
+};
+
+export const listRemoteMcpTools = async (
+  toolId: string,
+): Promise<RemoteMcpToolMeta[]> => {
+  const response = await request<ApiResponse<RemoteMcpToolMeta[]>>(
+    `${API_BASE_URL}/tools/${encodeURIComponent(toolId)}/remote-tools`,
+  );
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || '读取 MCP 远端工具列表失败');
+  }
+
+  return response.data ?? [];
+};
+
+export const deleteToolItem = async (
+  toolId: string,
+): Promise<{ tools: ToolItem[] }> => {
+  const response = await request<ApiResponse<{ deleted: true }>>(
+    `${API_BASE_URL}/tools/${encodeURIComponent(toolId)}`,
+    {
+      method: 'DELETE',
+    },
+  );
+
+  if (response.code !== 0) {
+    throw new Error(response.msg || '删除 Tool 失败');
   }
 
   return getBloomsClawToolsConfig();

@@ -13,6 +13,7 @@ import { readConfigByAgentName, readSelectedSkillContents } from './readConfig';
 import { initStreamModel } from './agents';
 import { FileSaver } from './FileSaver';
 import { CALCULATOR_TOOL_NAME, calculatorTool } from './tools/calculator';
+import { loadMcpToolsForAgent } from './tools/mcp';
 import { webSearchTool } from './tools/webSearch';
 import {
   buildSkillIndexPrompt,
@@ -370,9 +371,18 @@ export async function createAgent(
   );
 
   const { backend, close } = await createRuntimeBackend(resolvedToolsEnable);
+  // MCP 自定义工具：读取 agentConfig.tools 绑定的 MCP Servers，按需建连后注入
+  const { tools: mcpTools, close: closeMcp } = await loadMcpToolsForAgent(agentName);
+  if (mcpTools.length > 0) {
+    console.log(
+      `[agent-core][createAgent] agent=${agentName} 已加载 MCP 工具: ` +
+        mcpTools.map((item) => item.name).join(', '),
+    );
+  }
   const customTools = [
     ...(resolvedToolsEnable.webTools ? [webSearchTool] : []),
     ...(resolvedToolsEnable.calculatorTools ? [calculatorTool] : []),
+    ...mcpTools,
     // Skill 渐进式加载工具常驻：模型命中索引后自行调用，与用户提问动态相关
     loadSkillTool,
     readSkillResourceTool,
@@ -398,7 +408,15 @@ export async function createAgent(
     middleware: middleware as any,
   });
 
-  return { model, agent, config, close };
+  return {
+    model,
+    agent,
+    config,
+    close: async () => {
+      await closeMcp();
+      await close();
+    },
+  };
 }
 
 export { readConfigByAgentName } from './readConfig';
