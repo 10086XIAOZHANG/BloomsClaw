@@ -138,6 +138,12 @@ export const useStyles = createStyles(({ css, token }) => ({
     line-height: 1.4;
   `,
 
+  selectorHint: css`
+    display: block;
+    margin-top: ${token.marginXS}px;
+    font-size: 12px;
+  `,
+
   senderShell: css`
     width: 100%;
   `,

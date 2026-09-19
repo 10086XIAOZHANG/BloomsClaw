@@ -51,8 +51,3 @@ export interface ChatAgentOption {
   value: string;
   label: string;
 }
-
-export interface ChatSkillOption {
-  value: string;
-  label: string;
-}

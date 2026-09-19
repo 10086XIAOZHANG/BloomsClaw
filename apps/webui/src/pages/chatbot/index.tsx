@@ -22,7 +22,6 @@ import type {
   ChatAttachment,
   ChatMessage,
   ChatThoughtStep,
-  ChatSkillOption,
   ConversationItem,
 } from './data';
 import {
@@ -30,7 +29,6 @@ import {
   getWorkspaceFileContent,
   getWorkspaceTree,
   listSelectableAgents,
-  listSelectableSkills,
   listChatHistory,
   streamChatCompletion,
   uploadChatAttachments,
@@ -41,13 +39,10 @@ import { useStyles } from './style';
 const WELCOME_TEXT = '🤖 你好，有什么可以帮你？';
 const CHATBOT_CONVERSATION_AGENT_STORAGE_KEY =
   'imooc_claw.chatbot.conversation_agents';
-const CHATBOT_CONVERSATION_SKILL_STORAGE_KEY =
-  'imooc_claw.chatbot.conversation_skills';
 const CHATBOT_CONVERSATION_ID_QUERY_KEY = 'conversationId';
 const CHATBOT_PANEL_LAYOUT_STORAGE_KEY = 'imooc_claw.chatbot.panel_layout';
 
 type ConversationAgentMap = Record<string, string>;
-type ConversationSkillMap = Record<string, string[]>;
 type ThoughtChainExpandedMap = Record<string, string[]>;
 type PanelResizeTarget = 'left' | 'right';
 type ChatPanelLayout = {
@@ -104,52 +99,6 @@ const writeConversationAgentMap = (conversationAgentMap: ConversationAgentMap) =
   window.localStorage.setItem(
     CHATBOT_CONVERSATION_AGENT_STORAGE_KEY,
     JSON.stringify(conversationAgentMap),
-  );
-};
-
-const readConversationSkillMap = (): ConversationSkillMap => {
-  if (typeof window === 'undefined') {
-    return {};
-  }
-
-  try {
-    const rawValue = window.localStorage.getItem(
-      CHATBOT_CONVERSATION_SKILL_STORAGE_KEY,
-    );
-    if (!rawValue) {
-      return {};
-    }
-
-    const parsed = JSON.parse(rawValue) as unknown;
-    if (!parsed || typeof parsed !== 'object') {
-      return {};
-    }
-
-    return Object.fromEntries(
-      Object.entries(parsed).flatMap(([key, value]) =>
-        Array.isArray(value)
-          ? [
-              [
-                key,
-                value.filter((item): item is string => typeof item === 'string'),
-              ],
-            ]
-          : [],
-      ),
-    );
-  } catch {
-    return {};
-  }
-};
-
-const writeConversationSkillMap = (conversationSkillMap: ConversationSkillMap) => {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  window.localStorage.setItem(
-    CHATBOT_CONVERSATION_SKILL_STORAGE_KEY,
-    JSON.stringify(conversationSkillMap),
   );
 };
 
@@ -640,11 +589,8 @@ const ChatbotPage: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [isRequesting, setIsRequesting] = useState(false);
   const [agentOptions, setAgentOptions] = useState<ChatAgentOption[]>([]);
-  const [skillOptions, setSkillOptions] = useState<ChatSkillOption[]>([]);
   const [conversationAgentMap, setConversationAgentMap] =
     useState<ConversationAgentMap>(readConversationAgentMap);
-  const [conversationSkillMap, setConversationSkillMap] =
-    useState<ConversationSkillMap>(readConversationSkillMap);
   const [thoughtChainExpandedMap, setThoughtChainExpandedMap] =
     useState<ThoughtChainExpandedMap>({});
   const [hasResolvedInitialConversation, setHasResolvedInitialConversation] =
@@ -673,13 +619,6 @@ const ChatbotPage: React.FC = () => {
 
     return agentOptions[0]?.value;
   }, [activeKey, agentOptions, conversationAgentMap]);
-  const selectedSkillNames = useMemo(
-    () =>
-      (conversationSkillMap[activeKey] ?? []).filter((skillName) =>
-        skillOptions.some((item) => item.value === skillName),
-      ),
-    [activeKey, conversationSkillMap, skillOptions],
-  );
   const uploadedAttachments = useMemo(
     () =>
       attachmentItems.flatMap((item) =>
@@ -908,10 +847,7 @@ const ChatbotPage: React.FC = () => {
 
     const loadSelections = async () => {
       try {
-        const [agents, skills] = await Promise.all([
-          listSelectableAgents(),
-          listSelectableSkills(),
-        ]);
+        const agents = await listSelectableAgents();
 
         if (cancelled) {
           return;
@@ -923,17 +859,10 @@ const ChatbotPage: React.FC = () => {
             value: item.name,
             label: item.name,
           }));
-        const nextSkillOptions = skills
-          .filter((item) => item.active === 1)
-          .map((item) => ({
-            value: item.name,
-            label: item.name,
-          }));
 
         setAgentOptions(nextAgentOptions);
-        setSkillOptions(nextSkillOptions);
       } catch (error) {
-        console.error('加载可选 Agents / Skills 失败', error);
+        console.error('加载可选 Agents 失败', error);
       }
     };
 
@@ -969,41 +898,6 @@ const ChatbotPage: React.FC = () => {
     });
   }, [agentOptions]);
 
-  useEffect(() => {
-    if (skillOptions.length === 0) {
-      return;
-    }
-
-    setConversationSkillMap((previousMap) => {
-      const nextEntries = Object.entries(previousMap).map(([conversationId, skills]) => [
-        conversationId,
-        skills.filter((skillName) =>
-          skillOptions.some((item) => item.value === skillName),
-        ),
-      ]);
-      const nextMap = Object.fromEntries(
-        nextEntries.filter(([, skills]) => skills.length > 0),
-      );
-      const isUnchanged =
-        Object.keys(previousMap).length === Object.keys(nextMap).length
-        && Object.entries(previousMap).every(([key, value]) => {
-          const nextValue = nextMap[key];
-          return (
-            Array.isArray(nextValue)
-            && value.length === nextValue.length
-            && value.every((item, index) => nextValue[index] === item)
-          );
-        });
-
-      if (isUnchanged) {
-        return previousMap;
-      }
-
-      writeConversationSkillMap(nextMap);
-      return nextMap;
-    });
-  }, [skillOptions]);
-
   const handleAgentChange = (agentName: string) => {
     setConversationAgentMap((previousMap) => {
       if (previousMap[activeKey] === agentName) {
@@ -1021,28 +915,6 @@ const ChatbotPage: React.FC = () => {
 
   const handleActiveChange = (nextActiveKey: string) => {
     setActiveKey(nextActiveKey);
-  };
-
-  const handleSkillChange = (skillNames: string[]) => {
-    setConversationSkillMap((previousMap) => {
-      const currentSkillNames = previousMap[activeKey] ?? [];
-      const isSameSelection =
-        currentSkillNames.length === skillNames.length
-        && currentSkillNames.every((item, index) => item === skillNames[index]);
-
-      if (isSameSelection) {
-        return previousMap;
-      }
-
-      const nextMap = { ...previousMap };
-      if (skillNames.length === 0) {
-        delete nextMap[activeKey];
-      } else {
-        nextMap[activeKey] = skillNames;
-      }
-      writeConversationSkillMap(nextMap);
-      return nextMap;
-    });
   };
 
   const startResize = (target: PanelResizeTarget) => (
@@ -1203,7 +1075,8 @@ const ChatbotPage: React.FC = () => {
         signal: controller.signal,
         id: targetConversation?.key ?? targetKey,
         agentName: selectedAgentName,
-        skillNames: selectedSkillNames,
+        // Skills 改为 agent 端按用户提问渐进式自动加载，前端不再手动预选
+        skillNames: [],
         attachments: currentAttachments,
         onChunk: (chunk) => {
           setMessageMap((prev) => ({
@@ -1336,16 +1209,6 @@ const ChatbotPage: React.FC = () => {
         return nextMap;
       });
     }
-    if (selectedSkillNames.length > 0) {
-      setConversationSkillMap((previousMap) => {
-        const nextMap = {
-          ...previousMap,
-          [conversation.key]: selectedSkillNames,
-        };
-        writeConversationSkillMap(nextMap);
-        return nextMap;
-      });
-    }
     setConversations((prev) => [
       conversation,
       ...prev,
@@ -1381,16 +1244,6 @@ const ChatbotPage: React.FC = () => {
         const nextMap = { ...previousMap };
         delete nextMap[conversation.key];
         writeConversationAgentMap(nextMap);
-        return nextMap;
-      });
-      setConversationSkillMap((previousMap) => {
-        if (!(conversation.key in previousMap)) {
-          return previousMap;
-        }
-
-        const nextMap = { ...previousMap };
-        delete nextMap[conversation.key];
-        writeConversationSkillMap(nextMap);
         return nextMap;
       });
       setMessageMap((prevMap) => {
@@ -1495,20 +1348,10 @@ const ChatbotPage: React.FC = () => {
               onChange={handleAgentChange}
             />
           </div>
-          <div className={styles.selectorField}>
-            <Typography.Text className={styles.selectorLabel}>
-              启用 Skills
-            </Typography.Text>
-            <Select
-              mode="multiple"
-              allowClear
-              value={selectedSkillNames}
-              options={skillOptions}
-              placeholder="可按需选择多个 Skills"
-              onChange={handleSkillChange}
-            />
-          </div>
         </div>
+        <Typography.Text type="secondary" className={styles.selectorHint}>
+          Skills 将由 Agent 按提问自动按需加载，无需手动选择。
+        </Typography.Text>
       </div>
       <div className={styles.senderShell} ref={senderShellRef}>
         <div className={styles.senderRow}>
