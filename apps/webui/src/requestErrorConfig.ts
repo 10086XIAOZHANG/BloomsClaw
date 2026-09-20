@@ -63,7 +63,7 @@ export const errorConfig: RequestConfig = {
               });
               break;
             case ErrorShowType.REDIRECT:
-              window.location.href = '/user/login';
+              // 无登录模式：后端 REDIRECT 不再跳登录页
               break;
             default:
               message.error(errorMessage);

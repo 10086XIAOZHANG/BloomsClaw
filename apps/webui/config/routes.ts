@@ -319,10 +319,11 @@ export default [
     name: 'chatbot',
     icon: 'robot',
     component: './chatbot',
+    layout: false,
   },
   {
     path: '/',
-    redirect: '/welcome',
+    redirect: '/chatbot',
   },
   {
     component: '404',

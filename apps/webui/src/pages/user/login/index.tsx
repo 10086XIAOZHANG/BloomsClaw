@@ -123,19 +123,19 @@ const Login: React.FC = () => {
    * Only allow same-origin relative paths starting with '/'
    */
   const getSafeRedirectUrl = (redirect: string | null): string => {
-    if (!redirect?.startsWith('/')) return '/';
+    if (!redirect?.startsWith('/')) return '/chatbot';
 
     // Block protocol-relative URLs (//example.com)
-    if (redirect.startsWith('//')) return '/';
+    if (redirect.startsWith('//')) return '/chatbot';
 
     try {
       const parsed = new URL(redirect, window.location.origin);
       // Only allow same-origin URLs
-      if (parsed.origin !== window.location.origin) return '/';
+      if (parsed.origin !== window.location.origin) return '/chatbot';
       // Return the path with query and hash preserved
       return `${parsed.pathname}${parsed.search}${parsed.hash}`;
     } catch {
-      return '/';
+      return '/chatbot';
     }
   };
 

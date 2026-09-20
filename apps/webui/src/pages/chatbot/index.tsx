@@ -1,21 +1,32 @@
 import {
+  BulbOutlined,
+  CodeOutlined,
+  CompassOutlined,
+  EditOutlined,
   FileExcelOutlined,
   FileImageOutlined,
   FileOutlined,
-  FolderOpenOutlined,
   FileTextOutlined,
+  FolderOpenOutlined,
+  FolderOutlined,
+  LeftOutlined,
   PaperClipOutlined,
+  PlusOutlined,
   ReloadOutlined,
+  RightOutlined,
+  RobotOutlined,
+  SearchOutlined,
+  SettingOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { PageContainer } from '@ant-design/pro-components';
 import { Attachments, Bubble, Conversations, FileCard, Folder, Sender, ThoughtChain, XProvider } from '@ant-design/x';
 import type { BubbleItemType, BubbleListProps, FileCardProps, ThoughtChainItemType } from '@ant-design/x';
 import XMarkdown from '@ant-design/x-markdown';
-import { App, Avatar, Button, Card, Select, Space, Tag, Typography } from 'antd';
+import { App, Avatar, Button, ConfigProvider, Input, Select, Space, Tooltip, Typography } from 'antd';
 import type { RcFile, UploadFile } from 'antd/es/upload/interface';
 import type { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { history } from '@umijs/max';
 
 import type {
   ChatAgentOption,
@@ -36,7 +47,14 @@ import {
 } from './service';
 import { useStyles } from './style';
 
-const WELCOME_TEXT = '🤖 你好，有什么可以帮你？';
+const WELCOME_TEXT = '你好，我是 BloomsClaw';
+const WELCOME_SUB = '有问题尽管问我，或试试下面的灵感';
+const DOUBAO_SUGGESTS = [
+  { icon: <EditOutlined />, bg: '#eef0ff', title: '帮我写作', desc: '起草文案、润色文章、生成大纲', prompt: '帮我写一篇关于 AI 智能体发展趋势的短文大纲' },
+  { icon: <CodeOutlined />, bg: '#e6f7ef', title: '帮我编程', desc: '写代码、查 Bug、解释逻辑', prompt: '用 TypeScript 写一个带重试的 fetch 封装，并解释关键逻辑' },
+  { icon: <BulbOutlined />, bg: '#fff4e0', title: '出谋划策', desc: '头脑风暴、做计划、给建议', prompt: '帮我制定一份两周学会 AI 智能体编排的学习计划' },
+  { icon: <SearchOutlined />, bg: '#f0eaff', title: '查资料总结', desc: '提炼要点、对比分析、做摘要', prompt: '总结一下大模型 Agent 的核心能力，并对比 ReAct 与 Plan-and-Execute' },
+];
 const CHATBOT_CONVERSATION_AGENT_STORAGE_KEY =
   'blooms_claw.chatbot.conversation_agents';
 const CHATBOT_CONVERSATION_ID_QUERY_KEY = 'conversationId';
@@ -190,12 +208,17 @@ const STREAMING_TEXT_STYLE: React.CSSProperties = {
   wordBreak: 'break-word',
 };
 const AI_AVATAR_STYLE: React.CSSProperties = {
-  background: 'transparent',
-  fontSize: 22,
+  background: 'linear-gradient(135deg, #4d6bfe 0%, #8a9bff 100%)',
+  color: '#fff',
+  fontSize: 14,
+  fontWeight: 800,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  marginTop: '-2px',
+};
+const USER_AVATAR_STYLE: React.CSSProperties = {
+  background: '#1d1d1f',
+  color: '#fff',
 };
 
 const sanitizeThinkText = (content: string): string =>
@@ -203,8 +226,9 @@ const sanitizeThinkText = (content: string): string =>
     .replace(THINK_TAG_PATTERN, '')
     .replace(THINK_TAG_PREFIX_PATTERN, '');
 
-const aiAvatarNode = <Avatar style={AI_AVATAR_STYLE}>🤖</Avatar>;
-const DRAFT_CONVERSATION_LABEL = '💬 新对话';
+const aiAvatarNode = <Avatar style={AI_AVATAR_STYLE}>B</Avatar>;
+const userAvatarNode = <Avatar icon={<UserOutlined />} style={USER_AVATAR_STYLE} />;
+const DRAFT_CONVERSATION_LABEL = '新对话';
 
 const createDraftConversation = (): ConversationItem => ({
   key: crypto.randomUUID(),
@@ -557,11 +581,13 @@ const toThoughtChainItems = (
 const roleConfig: BubbleListProps['role'] = {
   user: {
     placement: 'end',
-    avatar: <Avatar icon={<UserOutlined />} />,
+    avatar: userAvatarNode,
+    variant: 'filled',
   },
   ai: {
     placement: 'start',
     avatar: aiAvatarNode,
+    variant: 'borderless',
     typing: { effect: 'typing', step: 2, interval: 20 },
     contentRender: (
       content: string,
@@ -1332,283 +1358,423 @@ const ChatbotPage: React.FC = () => {
     [activeMessages, styles.thoughtChainWrap, thoughtChainExpandedMap],
   );
 
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [workspaceVisible, setWorkspaceVisible] = useState(false);
+
+  const filteredConversations = useMemo(() => {
+    const kw = searchKeyword.trim().toLowerCase();
+    if (!kw) return conversations;
+    return conversations.filter((c) =>
+      String(c.label ?? '').toLowerCase().includes(kw),
+    );
+  }, [conversations, searchKeyword]);
+
   const hasMessages = activeMessages.length > 0;
   const composerNode = (
     <div className={styles.composerStack}>
-      <div className={styles.selectorsCard}>
-        <div className={styles.selectorGrid}>
-          <div className={styles.selectorField}>
-            <Typography.Text className={styles.selectorLabel}>
-              当前 Agent
-            </Typography.Text>
-            <Select
-              value={selectedAgentName}
-              options={agentOptions}
-              placeholder="请选择 Agent"
-              onChange={handleAgentChange}
-            />
-          </div>
+      <div className={styles.composerBox}>
+        <div className={styles.senderShell} ref={senderShellRef}>
+          <Sender
+            prefix={
+              <Attachments
+                ref={attachmentsRef}
+                customRequest={handleAttachmentUpload}
+                onChange={({ fileList }) =>
+                  handleAttachmentItemsChange(fileList as AttachmentItem[])
+                }
+                beforeUpload={() => true}
+                getDropContainer={() => senderShellRef.current ?? document.body}
+                multiple
+                maxCount={10}
+              >
+                <Button
+                  type="text"
+                  icon={<PaperClipOutlined />}
+                  className={styles.toolBtn}
+                />
+              </Attachments>
+            }
+            header={
+              attachmentItems.length > 0 ? (
+                <div className={styles.attachmentPreview}>
+                  <FileCard.List
+                    size="small"
+                    overflow="wrap"
+                    removable
+                    items={attachmentItems.map((item) => {
+                      const attachment = item.response;
+                      const fallbackName = item.name ?? attachment?.name ?? 'unknown';
+                      const fileExtension = fallbackName.includes('.')
+                        ? fallbackName.slice(fallbackName.lastIndexOf('.') + 1).toLowerCase()
+                        : '';
+                      const fallbackKind: ChatAttachment['kind'] =
+                        attachment?.kind ??
+                        (item.type?.startsWith('image/')
+                          ? 'image'
+                          : ['md', 'mdx', 'doc', 'docx', 'pdf', 'txt', 'rtf', 'ppt', 'pptx'].includes(fileExtension)
+                            ? 'document'
+                            : ['csv', 'xlsx', 'xls'].includes(fileExtension)
+                              ? 'spreadsheet'
+                              : ['py', 'js', 'jsx', 'ts', 'tsx', 'java', 'go', 'rs', 'c', 'cpp', 'h', 'json', 'yaml', 'yml', 'xml', 'html', 'css'].includes(fileExtension)
+                                ? 'text'
+                                : 'binary');
+                      const fallbackSize =
+                        typeof item.size === 'number' ? item.size : attachment?.size ?? 0;
+                      const placeholderAttachment: ChatAttachment = {
+                        token: item.uid ?? item.response?.token ?? fallbackName,
+                        name: fallbackName,
+                        kind: fallbackKind,
+                        size: fallbackSize,
+                        mimeType: item.type ?? attachment?.mimeType ?? 'application/octet-stream',
+                      };
+                      const preview = attachment ?? placeholderAttachment;
+                      const previewSrc =
+                        preview.kind === 'image'
+                          ? getAttachmentPreviewUrl(item)
+                          : attachment?.url;
+                      const isUploading = item.status === 'uploading';
+                      const hasError = item.status === 'error';
+                      const description = hasError
+                        ? '上传失败，可右侧删除重试'
+                        : undefined;
+                      return toFileCardProps(preview, {
+                        src: previewSrc,
+                        loading: isUploading,
+                        description,
+                      });
+                    })}
+                    onRemove={(target) => {
+                      const nextItems = attachmentItems.filter(
+                        (item) =>
+                          (item.response?.token ?? item.uid ?? item.name) !== target.key,
+                      );
+                      handleAttachmentItemsChange(nextItems);
+                    }}
+                  />
+                </div>
+              ) : null
+            }
+            value={inputValue}
+            onChange={setInputValue}
+            loading={isRequesting}
+            onSubmit={sendMessage}
+            onCancel={abort}
+            onPasteFile={(files) => {
+              Array.from(files).forEach((file) => {
+                attachmentsRef.current?.upload(file);
+              });
+            }}
+            placeholder={
+              selectedAgentName
+                ? '输入消息，Enter 发送，Shift + Enter 换行'
+                : '请先在左下角选择可用的 Agent'
+            }
+            autoSize={{ minRows: 2, maxRows: 8 }}
+            style={{ width: '100%' }}
+          />
         </div>
-        <Typography.Text type="secondary" className={styles.selectorHint}>
-          Skills 将由 Agent 按提问自动按需加载，无需手动选择。
-        </Typography.Text>
       </div>
-      <div className={styles.senderShell} ref={senderShellRef}>
-        <div className={styles.senderRow}>
-          <div className={styles.attachmentRail}>
-            <Attachments
-              ref={attachmentsRef}
-              customRequest={handleAttachmentUpload}
-              onChange={({ fileList }) =>
-                handleAttachmentItemsChange(fileList as AttachmentItem[])
-              }
-              beforeUpload={() => true}
-              getDropContainer={() => senderShellRef.current ?? document.body}
-              multiple
-              maxCount={10}
-            >
-              <Button
-                type="text"
-                icon={<PaperClipOutlined />}
-                className={styles.attachmentTrigger}
-              />
-            </Attachments>
-          </div>
-          <div className={styles.senderPanel}>
-            <Sender
-              header={
-                attachmentItems.length > 0 ? (
-                  <div className={styles.attachmentPreview}>
-                    <FileCard.List
-                      size="small"
-                      overflow="wrap"
-                      removable
-                      items={attachmentItems.map((item) => {
-                        const attachment = item.response;
-                        const fallbackName = item.name ?? attachment?.name ?? 'unknown';
-                        const fileExtension = fallbackName.includes('.')
-                          ? fallbackName.slice(fallbackName.lastIndexOf('.') + 1).toLowerCase()
-                          : '';
-                        const fallbackKind: ChatAttachment['kind'] =
-                          attachment?.kind ??
-                          (item.type?.startsWith('image/')
-                            ? 'image'
-                            : ['md', 'mdx', 'doc', 'docx', 'pdf', 'txt', 'rtf', 'ppt', 'pptx'].includes(fileExtension)
-                              ? 'document'
-                              : ['csv', 'xlsx', 'xls'].includes(fileExtension)
-                                ? 'spreadsheet'
-                                : ['py', 'js', 'jsx', 'ts', 'tsx', 'java', 'go', 'rs', 'c', 'cpp', 'h', 'json', 'yaml', 'yml', 'xml', 'html', 'css'].includes(fileExtension)
-                                  ? 'text'
-                                  : 'binary');
-                        const fallbackSize =
-                          typeof item.size === 'number' ? item.size : attachment?.size ?? 0;
-                        const placeholderAttachment: ChatAttachment = {
-                          token: item.uid ?? item.response?.token ?? fallbackName,
-                          name: fallbackName,
-                          kind: fallbackKind,
-                          size: fallbackSize,
-                          mimeType: item.type ?? attachment?.mimeType ?? 'application/octet-stream',
-                        };
-                        const preview = attachment ?? placeholderAttachment;
-                        const previewSrc =
-                          preview.kind === 'image'
-                            ? getAttachmentPreviewUrl(item)
-                            : attachment?.url;
-                        const isUploading = item.status === 'uploading';
-                        const hasError = item.status === 'error';
-                        const description = hasError
-                          ? '上传失败，可右侧删除重试'
-                          : undefined;
-                        return toFileCardProps(preview, {
-                          src: previewSrc,
-                          loading: isUploading,
-                          description,
-                        });
-                      })}
-                      onRemove={(target) => {
-                        const nextItems = attachmentItems.filter(
-                          (item) =>
-                            (item.response?.token ?? item.uid ?? item.name) !== target.key,
-                        );
-                        handleAttachmentItemsChange(nextItems);
-                      }}
-                    />
-                  </div>
-                ) : null
-              }
-              value={inputValue}
-              onChange={setInputValue}
-              loading={isRequesting}
-              onSubmit={sendMessage}
-              onCancel={abort}
-              onPasteFile={(files) => {
-                Array.from(files).forEach((file) => {
-                  attachmentsRef.current?.upload(file);
-                });
-              }}
-              placeholder={
-                selectedAgentName
-                  ? '输入消息，按 Enter 发送，或附带文件一起提问...'
-                  : '请先选择可用的 Agent'
-              }
-              autoSize={{ minRows: hasMessages ? 2 : 3, maxRows: 8 }}
-              style={{ width: '100%' }}
-              styles={{
-                input: { paddingBlock: 0 },
-                content: {
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 8,
-                },
-              }}
-            />
-          </div>
-        </div>
+      <div className={styles.composerHint}>
+        内容由 AI 生成，仅供参考 · Skills 由 Agent 按需自动加载
       </div>
     </div>
   );
 
   return (
-    <PageContainer
-      className={styles.pageContainer}
-      ghost
-      childrenContentStyle={{
-        paddingBlock: 0,
-        height: 'calc(100vh - 100px)',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        padding: 0,
-        paddingInline: 0,
+    <ConfigProvider
+      theme={{
+        token: {
+          colorBgBase: '#ffffff',
+          colorTextBase: '#1d1d1f',
+          colorLink: '#4d6bfe',
+          fontFamily:
+            "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif",
+        },
+        components: {
+          Input: {
+            colorBgContainer: '#f4f4f5',
+            colorBorder: 'transparent',
+            colorText: '#1d1d1f',
+            colorTextPlaceholder: '#a1a1aa',
+          },
+          Select: {
+            colorBgContainer: '#ffffff',
+            colorBorder: '#e4e4e7',
+            colorText: '#1d1d1f',
+            colorTextPlaceholder: '#a1a1aa',
+            optionSelectedBg: '#ececf1',
+          },
+          Button: {
+            colorPrimary: '#1d1d1f',
+            colorPrimaryHover: '#000000',
+            colorPrimaryActive: '#000000',
+            colorTextLightSolid: '#ffffff',
+            primaryShadow: 'none',
+          },
+          Avatar: {
+            colorTextLightSolid: '#ffffff',
+          },
+        },
       }}
     >
-      <Card
-        variant="borderless"
-        style={{
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-        styles={{
-          body: {
-            flex: 1,
-            padding: 0,
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-          },
-        }}
-      >
-        <XProvider>
-          <div className={styles.layout} ref={layoutRef}>
-            <div
-              className={styles.sidebar}
-              style={{ width: panelLayout.leftWidth, flex: `0 0 ${panelLayout.leftWidth}px` }}
-            >
-              <Conversations
-                items={conversations}
-                activeKey={activeKey}
-                onActiveChange={handleActiveChange}
-                groupable
-                menu={(conversation) => ({
-                  items: [{ key: 'delete', label: '删除', danger: true }],
-                  onClick: async ({ key }) => {
-                    if (key === 'delete') {
-                      await removeConversation(conversation);
-                    }
-                  },
-                })}
-                creation={{ onClick: newChat, label: '新建对话' }}
+    <div className={styles.pageContainer}>
+      <XProvider>
+        <div className={styles.layout} ref={layoutRef}>
+          {!sidebarCollapsed && (
+            <>
+              <div
+                className={styles.sidebar}
+                style={{ width: panelLayout.leftWidth, flex: `0 0 ${panelLayout.leftWidth}px` }}
+              >
+                <div className={styles.sideHeader}>
+                  <div className={styles.logo}>B</div>
+                  <span className={styles.appName}>BloomsClaw</span>
+                  <div style={{ flex: 1 }} />
+                  <Tooltip title="收起边栏">
+                    <Button
+                      type="text"
+                      size="small"
+                      icon={<LeftOutlined />}
+                      className={styles.topIconBtn}
+                      onClick={() => setSidebarCollapsed(true)}
+                    />
+                  </Tooltip>
+                </div>
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  className={styles.newChatBtn}
+                  onClick={newChat}
+                  style={{ marginBottom: 10 }}
+                >
+                  新建对话
+                </Button>
+                <div className={styles.navMenu}>
+                  <button
+                    type="button"
+                    className={styles.navItem}
+                    onClick={() => history.push('/welcome')}
+                  >
+                    <CompassOutlined />
+                    <span>BloomsClaw 介绍</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.navItem}
+                    onClick={() => history.push('/agents-config/agents')}
+                  >
+                    <RobotOutlined />
+                    <span>Agent 配置</span>
+                    <SettingOutlined className={styles.navArrow} />
+                  </button>
+                </div>
+                <div className={styles.searchInput}>
+                  <Input
+                    prefix={<SearchOutlined style={{ color: '#a1a1aa' }} />}
+                    placeholder="搜索历史对话"
+                    variant="filled"
+                    value={searchKeyword}
+                    onChange={(e) => setSearchKeyword(e.target.value)}
+                    allowClear
+                  />
+                </div>
+                <div className={styles.convList}>
+                  <Conversations
+                    items={filteredConversations}
+                    activeKey={activeKey}
+                    onActiveChange={handleActiveChange}
+                    groupable
+                    menu={(conversation) => ({
+                      items: [{ key: 'delete', label: '删除', danger: true }],
+                      onClick: async ({ key }) => {
+                        if (key === 'delete') {
+                          await removeConversation(conversation);
+                        }
+                      },
+                    })}
+                  />
+                </div>
+                <div className={styles.sideFooter}>
+                  <div className={styles.agentRow}>
+                    <span className={styles.agentAvatar}>🤖</span>
+                    <Select
+                      value={selectedAgentName}
+                      options={agentOptions}
+                      placeholder="选择 Agent"
+                      onChange={handleAgentChange}
+                      variant="borderless"
+                      style={{ flex: 1 }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                className={styles.resizeHandle}
+                onMouseDown={startResize('left')}
               />
-            </div>
+            </>
+          )}
 
-            <div
-              className={styles.resizeHandle}
-              onMouseDown={startResize('left')}
-            />
-
-            <div className={styles.main}>
-              {hasMessages && (
-                <div key={activeKey} className={styles.messages}>
-                  <Bubble.List
-                    key={activeKey}
-                    items={bubbleItems}
-                    role={roleConfig}
-                    styles={{ root: { maxWidth: 940 } }}
+          <div className={styles.main}>
+            <div className={styles.topbar}>
+              {sidebarCollapsed && (
+                <div style={{ position: 'absolute', left: 14, display: 'flex', gap: 4 }}>
+                  <Tooltip title="展开边栏">
+                    <Button
+                      type="text"
+                      icon={<RightOutlined />}
+                      className={styles.topIconBtn}
+                      onClick={() => setSidebarCollapsed(false)}
+                    />
+                  </Tooltip>
+                  <Button
+                    type="text"
+                    icon={<PlusOutlined />}
+                    className={styles.topIconBtn}
+                    onClick={newChat}
                   />
                 </div>
               )}
+              <Select
+                value={selectedAgentName}
+                options={agentOptions}
+                placeholder="选择 Agent"
+                onChange={handleAgentChange}
+                variant="borderless"
+                className={styles.modelSwitch}
+                suffixIcon={<span style={{ fontSize: 11, color: '#71717a' }}>▾</span>}
+              />
+              <div className={styles.topActions}>
+                <Tooltip title={workspaceVisible ? '隐藏工作区' : '显示工作区文件'}>
+                  <Button
+                    type="text"
+                    icon={<FolderOutlined />}
+                    className={styles.topIconBtn}
+                    onClick={() => setWorkspaceVisible((v) => !v)}
+                  />
+                </Tooltip>
+                <Tooltip title="新对话">
+                  <Button
+                    type="text"
+                    icon={<EditOutlined />}
+                    className={styles.topIconBtn}
+                    onClick={newChat}
+                  />
+                </Tooltip>
+              </div>
+            </div>
 
-              <div
-                className={hasMessages ? styles.footer : styles.footerCenter}
-              >
-                {!hasMessages && (
+            {hasMessages ? (
+              <div key={activeKey} className={styles.messages}>
+                <Bubble.List
+                  key={activeKey}
+                  items={bubbleItems}
+                  role={roleConfig}
+                />
+              </div>
+            ) : (
+              <div className={styles.messages} style={{ justifyContent: 'center' }}>
+                <div className={styles.welcomeWrap}>
                   <div className={styles.welcomeTitle}>
                     <TypewriterTitle />
                   </div>
-                )}
-                {composerNode}
-              </div>
-            </div>
-
-            <div
-              className={styles.resizeHandle}
-              onMouseDown={startResize('right')}
-            />
-
-            <div
-              className={styles.workspace}
-              style={{ width: panelLayout.rightWidth, flex: `0 0 ${panelLayout.rightWidth}px` }}
-            >
-              <div className={styles.workspaceInner}>
-                <div className={styles.workspaceToolbar}>
-                  <Typography.Text type="secondary">
-                    工作区文件管理
-                  </Typography.Text>
-                  <Button
-                    size="small"
-                    icon={<ReloadOutlined />}
-                    onClick={() => {
-                      void refreshWorkspaceTree();
-                    }}
-                  >
-                    刷新
-                  </Button>
+                  <div className={styles.welcomeSub}>{WELCOME_SUB}</div>
+                  <div className={styles.suggestGrid}>
+                    {DOUBAO_SUGGESTS.map((s) => (
+                      <button
+                        key={s.title}
+                        type="button"
+                        className={styles.suggestCard}
+                        onClick={() => {
+                          setInputValue(s.prompt);
+                        }}
+                      >
+                        <span className={styles.suggestIcon} style={{ background: s.bg }}>
+                          {s.icon}
+                        </span>
+                        <span>
+                          <div className={styles.suggestTitle}>{s.title}</div>
+                          <div className={styles.suggestDesc}>{s.desc}</div>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <Folder
-                  className={styles.workspaceFolder}
-                  treeData={workspaceTree}
-                  fileContentService={workspaceFileContentService}
-                  expandedPaths={workspaceExpandedPaths}
-                  onExpandedPathsChange={setWorkspaceExpandedPaths}
-                  selectedFile={selectedWorkspaceFile}
-                  onSelectedFileChange={(file) => {
-                    setSelectedWorkspaceFile(file.path);
-                  }}
-                  defaultExpandAll={false}
-                  directoryTitle={(
-                    <Space size={8}>
-                      <FolderOpenOutlined />
-                      <span>{WORKSPACE_ROOT}</span>
-                    </Space>
-                  )}
-                  previewTitle={({ title, path }) => (
-                    <span>{toWorkspaceFilePath(path) || String(title)}</span>
-                  )}
-                  emptyRender="工作区目录为空"
-                  previewRender={(file, info) => (
-                    <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                      {file.content ? info.originNode : '请选择一个文件查看内容'}
-                    </div>
-                  )}
-                />
               </div>
-            </div>
+            )}
+
+            <div className={styles.footer}>{composerNode}</div>
           </div>
-        </XProvider>
-      </Card>
-    </PageContainer>
+
+          {workspaceVisible && (
+            <>
+              <div
+                className={styles.resizeHandle}
+                onMouseDown={startResize('right')}
+              />
+              <div
+                className={styles.workspace}
+                style={{ width: panelLayout.rightWidth, flex: `0 0 ${panelLayout.rightWidth}px` }}
+              >
+                <div className={styles.workspaceInner}>
+                  <div className={styles.workspaceToolbar}>
+                    <Typography.Text strong style={{ fontSize: 13 }}>
+                      工作区文件
+                    </Typography.Text>
+                    <Space size={4}>
+                      <Button
+                        size="small"
+                        type="text"
+                        icon={<ReloadOutlined />}
+                        onClick={() => {
+                          void refreshWorkspaceTree();
+                        }}
+                      />
+                      <Button
+                        size="small"
+                        type="text"
+                        onClick={() => setWorkspaceVisible(false)}
+                      >
+                        隐藏
+                      </Button>
+                    </Space>
+                  </div>
+                  <Folder
+                    className={styles.workspaceFolder}
+                    treeData={workspaceTree}
+                    fileContentService={workspaceFileContentService}
+                    expandedPaths={workspaceExpandedPaths}
+                    onExpandedPathsChange={setWorkspaceExpandedPaths}
+                    selectedFile={selectedWorkspaceFile}
+                    onSelectedFileChange={(file) => {
+                      setSelectedWorkspaceFile(file.path);
+                    }}
+                    defaultExpandAll={false}
+                    directoryTitle={(
+                      <Space size={8}>
+                        <FolderOpenOutlined />
+                        <span style={{ fontSize: 12 }}>{WORKSPACE_ROOT}</span>
+                      </Space>
+                    )}
+                    previewTitle={({ title, path }) => (
+                      <span>{toWorkspaceFilePath(path) || String(title)}</span>
+                    )}
+                    emptyRender="工作区目录为空"
+                    previewRender={(file, info) => (
+                      <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                        {file.content ? info.originNode : '请选择一个文件查看内容'}
+                      </div>
+                    )}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </XProvider>
+    </div>
+    </ConfigProvider>
   );
 };
 

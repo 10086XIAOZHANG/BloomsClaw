@@ -99,6 +99,11 @@ const config: UmiConfig = {
    * @doc https://umijs.org/docs/max/layout-menu
    */
   title: 'BloomsClaw',
+  favicons: ['/favicon.svg'],
+  links: [
+    { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
+    { rel: 'alternate icon', href: '/favicon.ico' },
+  ],
   layout: {
     locale: true,
     ...defaultSettings,
