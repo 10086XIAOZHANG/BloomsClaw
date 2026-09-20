@@ -134,7 +134,28 @@ const config: UmiConfig = {
       variant: 'filled',
       theme: {
         token: {
-          fontFamily: 'AlibabaSans, sans-serif',
+          fontFamily: "'Fira Sans', AlibabaSans, sans-serif",
+          colorPrimary: '#22C55E',
+          colorBgBase: '#0F172A',
+          colorTextBase: '#F8FAFC',
+          colorBorder: '#475569',
+          colorLink: '#22C55E',
+          borderRadius: 10,
+          wireframe: false,
+        },
+        components: {
+          Card: {
+            colorBgContainer: '#1B2336',
+            colorBorderSecondary: 'rgba(255,255,255,0.12)',
+          },
+          Layout: {
+            bodyBg: '#0F172A',
+            headerBg: 'rgba(15,23,42,0.72)',
+            siderBg: '#0F172A',
+          },
+          Statistic: {
+            contentFontSize: 28,
+          },
         },
       },
     },

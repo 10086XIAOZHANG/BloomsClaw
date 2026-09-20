@@ -1,3 +1,16 @@
 @import "tailwindcss";
 
 @source "./src";
+
+@theme {
+  --font-sans: "Fira Sans", "AlibabaSans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Fira Code", ui-monospace, monospace;
+  --color-primary: #1e293b;
+  --color-accent: #22c55e;
+  --color-background: #0f172a;
+  --color-foreground: #f8fafc;
+  --color-card: #1b2336;
+  --color-muted: #272f42;
+  --color-muted-foreground: #94a3b8;
+  --color-border: #475569;
+}

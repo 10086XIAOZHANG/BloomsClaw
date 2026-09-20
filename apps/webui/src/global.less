@@ -1,3 +1,30 @@
+/**
+ * BloomsClaw 全局设计 tokens（ui-ux-pro-max 设计系统）
+ * Dark tech + status green · Glassmorphism · Fira Code/Sans
+ * 详见 design-system/blooms-claw/MASTER.md
+ */
+:root {
+  --color-primary: #1e293b;
+  --color-on-primary: #ffffff;
+  --color-accent: #22c55e;
+  --color-on-accent: #0f172a;
+  --color-background: #0f172a;
+  --color-foreground: #f8fafc;
+  --color-card: #1b2336;
+  --color-card-foreground: #f8fafc;
+  --color-muted: #272f42;
+  --color-muted-foreground: #94a3b8;
+  --color-border: #475569;
+  --color-destructive: #ef4444;
+  --color-ring: #ffffff;
+  --glass-bg: rgba(27, 35, 54, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-blur: 16px;
+  --space-density: 16px;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+
 @font-face {
   font-family: "AlibabaSans";
   font-style: normal;
@@ -46,8 +73,69 @@ body,
   margin: 0;
   padding: 0;
   font-family:
-    AlibabaSans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    'Fira Sans', AlibabaSans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
     sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+
+code,
+pre,
+.mono,
+.ant-statistic-content-value {
+  font-family: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Glassmorphism 卡片：毛玻璃 + 微边框 + 纵深 */
+.glass-card {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: 0 8px 32px rgba(2, 6, 23, 0.45);
+}
+
+/* 可点击元素：指针 + 150-300ms 过渡（skill 规则 cursor-pointer / state-transition） */
+a,
+button,
+.ant-card-hoverable,
+.ant-btn {
+  cursor: pointer;
+}
+a,
+button,
+.ant-card,
+.ant-btn,
+.ant-menu-item {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+/* 可见焦点环（skill 规则 focus-states / focus-appearance） */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* 动效降级（skill 规则 reduced-motion） */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 移动端视口与密度（skill 规则 viewport-units / mobile-first） */
+.page-container {
+  min-height: 100dvh;
 }
 
 .colorWeak {

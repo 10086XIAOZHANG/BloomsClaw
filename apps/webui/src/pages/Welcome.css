@@ -1,33 +1,263 @@
-.welcome-gradient-title {
-  background: linear-gradient(135deg, #1677ff 0%, #722ed1 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* BloomsClaw Welcome — Real-Time / Operations + Glassmorphism（ui-ux-pro-max 设计系统） */
+
+.welcome-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  padding: 40px 32px 28px;
+}
+
+.hero-glow {
+  position: absolute;
+  inset: -40% -10% auto;
+  height: 70%;
+  background: radial-gradient(ellipse 60% 80% at 50% 0%, rgba(34, 197, 94, 0.22), transparent 70%);
+  pointer-events: none;
+}
+
+.hero-body {
+  position: relative;
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #22c55e;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px !important;
+}
+
+.hero-eyebrow-sub {
+  font-size: 13px !important;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+  animation: live-pulse 2s infinite;
+}
+
+@keyframes live-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
+  70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.hero-title {
+  color: #f8fafc !important;
+  font-size: clamp(28px, 4vw, 40px) !important;
+  line-height: 1.2 !important;
+  margin-bottom: 12px !important;
+  text-wrap: balance;
+}
+
+.hero-gradient {
+  background: linear-gradient(135deg, #22c55e 0%, #4ade80 45%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  color: #94a3b8 !important;
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+  max-width: 60ch;
+  margin: 0 auto 24px !important;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+/* 每屏唯一主 CTA（skill 规则 primary-action） */
+.cta-primary {
+  background: #22c55e !important;
+  border-color: #22c55e !important;
+  color: #0f172a !important;
+  font-weight: 600;
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.35) !important;
+}
+
+.cta-primary:hover {
+  background: #4ade80 !important;
+  border-color: #4ade80 !important;
+  color: #0f172a !important;
+  transform: translateY(-1px);
+}
+
+.cta-ghost {
+  background: transparent !important;
+  border-color: #475569 !important;
+  color: #f8fafc !important;
+}
+
+.cta-ghost:hover {
+  border-color: #22c55e !important;
+  color: #22c55e !important;
+}
+
+.hero-metrics {
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 20px;
+}
+
+.hero-metrics .ant-statistic-title {
+  color: #94a3b8 !important;
+  font-size: 13px;
+}
+
+.hero-metrics .ant-statistic-content {
+  font-family: 'Fira Code', monospace;
+}
+
+/* ---------- Sections ---------- */
+.section-title {
+  color: #f8fafc !important;
+  margin-bottom: 16px !important;
+}
+
+/* Stagger 入场（skill motion: stagger 300-450ms + reduced-motion 降级） */
+.stagger-item {
+  animation: stagger-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes stagger-in {
+  from { opacity: 0; transform: scale(0.96) translateY(14px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ---------- Feature cards ---------- */
+.feature-card {
+  height: 100%;
+  border-radius: 12px !important;
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(34, 197, 94, 0.4) !important;
+}
+
+.feature-card:focus-visible {
+  outline: 2px solid #22c55e;
+  outline-offset: 2px;
+}
+
+.feature-icon {
+  font-size: 28px;
+  color: #22c55e;
+  margin-bottom: 12px;
+}
+
+.feature-title {
+  color: #f8fafc !important;
+  margin-bottom: 8px !important;
+}
+
+.feature-desc {
+  color: #94a3b8 !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  margin-bottom: 12px !important;
+  max-width: 60ch;
+}
+
+.feature-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: #22c55e;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ---------- Steps ---------- */
+.step-card {
+  border-radius: 12px !important;
+}
+
+.step-no {
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: #22c55e;
+  letter-spacing: 0.08em;
+}
+
+.step-title {
+  color: #f8fafc !important;
+  margin: 8px 0 !important;
+}
+
+.step-desc {
+  color: #94a3b8 !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  margin-bottom: 0 !important;
+}
+
+/* ---------- CTA band ---------- */
+.cta-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  border-radius: 16px;
+  padding: 28px 32px;
+}
+
+.cta-title {
+  color: #f8fafc !important;
+  margin-bottom: 8px !important;
+}
+
+.cta-desc {
+  color: #94a3b8 !important;
+  margin-bottom: 0 !important;
+}
+
+.cta-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Markdown（保留原有排版能力，深色适配） ---------- */
 .welcome-markdown .x-markdown {
   --md-heading-weight: 600;
-  --md-code-bg: rgba(0, 0, 0, 0.04);
-  --md-code-border: rgba(0, 0, 0, 0.06);
-  --md-pre-bg: #f6f8fa;
-  --md-pre-border: rgba(0, 0, 0, 0.06);
-  --md-blockquote-bg: rgba(0, 0, 0, 0.04);
-  --md-blockquote-border: #1677ff;
-  --md-blockquote-color: rgba(0, 0, 0, 0.45);
-  --md-link-color: #1677ff;
-  --md-link-hover: #4096ff;
-  --md-th-bg: rgba(0, 0, 0, 0.04);
-  --md-table-border: rgba(0, 0, 0, 0.06);
-  --md-tr-hover-bg: rgba(0, 0, 0, 0.02);
-}
-
-[data-theme="dark"] .welcome-markdown .x-markdown {
   --md-code-bg: rgba(255, 255, 255, 0.08);
   --md-code-border: rgba(255, 255, 255, 0.1);
   --md-pre-bg: #161b22;
   --md-pre-border: rgba(255, 255, 255, 0.1);
   --md-blockquote-bg: rgba(255, 255, 255, 0.06);
-  --md-blockquote-color: rgba(255, 255, 255, 0.45);
+  --md-blockquote-border: #22c55e;
+  --md-blockquote-color: rgba(255, 255, 255, 0.55);
+  --md-link-color: #22c55e;
+  --md-link-hover: #4ade80;
   --md-th-bg: rgba(255, 255, 255, 0.06);
   --md-table-border: rgba(255, 255, 255, 0.1);
   --md-tr-hover-bg: rgba(255, 255, 255, 0.04);
@@ -82,6 +312,7 @@
   background: var(--md-code-bg);
   border: 1px solid var(--md-code-border);
   border-radius: 4px;
+  font-family: 'Fira Code', monospace;
 }
 
 .welcome-markdown .x-markdown pre {
@@ -173,4 +404,20 @@
 
 .welcome-markdown .x-markdown .heading-anchor:hover .anchor-link {
   opacity: 1;
+}
+
+/* 响应式断点（skill 规则 breakpoint-consistency: 375/768/1024/1440） */
+@media (max-width: 768px) {
+  .welcome-page {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .hero {
+    padding: 28px 20px 20px;
+  }
+
+  .cta-band {
+    padding: 20px;
+  }
 }
