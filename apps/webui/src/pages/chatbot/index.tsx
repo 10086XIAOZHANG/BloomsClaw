@@ -246,7 +246,7 @@ const createInitialChatState = () => {
   };
 };
 
-const WORKSPACE_ROOT = '/Users/jack/.blooms_claw/workspaces';
+const SANDBOX_WORKSPACE_ROOT = 'sandbox:/workspace';
 
 const toWorkspaceFilePath = (pathSegments: string[]): string =>
   pathSegments.filter(Boolean).join('/');
@@ -654,14 +654,14 @@ const ChatbotPage: React.FC = () => {
   );
   const workspaceFileContentService = useMemo(
     () => ({
-      loadFileContent: async (filePath: string) => getWorkspaceFileContent(filePath),
+      loadFileContent: async (filePath: string) => getWorkspaceFileContent(filePath, activeKey),
     }),
-    [],
+    [activeKey],
   );
   const refreshWorkspaceTree = useCallback(
     async (options?: { silent?: boolean }) => {
       try {
-        const workspace = await getWorkspaceTree();
+        const workspace = await getWorkspaceTree(activeKey);
         setWorkspaceTree(workspace.treeData);
         setWorkspaceExpandedPaths((previousPaths) =>
           previousPaths.length > 0
@@ -677,7 +677,7 @@ const ChatbotPage: React.FC = () => {
         }
       }
     },
-    [message],
+    [message, activeKey],
   );
 
   const normalizeAttachmentItem = (item: AttachmentItem): AttachmentItem => {
@@ -1754,16 +1754,16 @@ const ChatbotPage: React.FC = () => {
                     directoryTitle={(
                       <Space size={8}>
                         <FolderOpenOutlined />
-                        <span style={{ fontSize: 12 }}>{WORKSPACE_ROOT}</span>
+                        <span style={{ fontSize: 12 }}>{`${SANDBOX_WORKSPACE_ROOT} · ${activeKey.slice(0, 8)}`}</span>
                       </Space>
                     )}
                     previewTitle={({ title, path }) => (
                       <span>{toWorkspaceFilePath(path) || String(title)}</span>
                     )}
                     emptyRender="工作区目录为空"
-                    previewRender={(file, info) => (
+                    previewRender={(_file, info) => (
                       <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                        {file.content ? info.originNode : '请选择一个文件查看内容'}
+                        {info.originNode}
                       </div>
                     )}
                   />

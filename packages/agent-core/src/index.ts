@@ -1,20 +1,19 @@
-import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createMiddleware } from 'langchain';
 import { SystemMessage } from '@langchain/core/messages';
 import {
   createDeepAgent,
-  FilesystemBackend,
-  LocalShellBackend,
 } from 'deepagents';
 
 import { readConfigByAgentName, readSelectedSkillContents } from './readConfig';
 import { initStreamModel } from './agents';
 import { FileSaver } from './FileSaver';
+import { DockerSandboxBackend } from './sandbox';
 import { CALCULATOR_TOOL_NAME, calculatorTool } from './tools/calculator';
 import { loadMcpToolsForAgent } from './tools/mcp';
 import { webSearchTool } from './tools/webSearch';
+import { createSandboxTools } from './tools/sandbox';
 import {
   buildSkillIndexPrompt,
   loadSkillTool,
@@ -24,30 +23,28 @@ import {
 /** 所有 agent 自动加载的默认工具（不依赖 agentConfig.tools 配置） */
 export const DEFAULT_AGENT_TOOLS = ['FileTools', 'RunCommand', 'WebSearch'] as const;
 
-const FIXED_WORKSPACE_ROOT = '/Users/jack/.blooms_claw/workspaces';
-
 const _stripTrailingSlash = (p: string): string =>
   p.endsWith('/') ? p.slice(0, -1) : p;
-
-const _ROOT_NO_SLASH = _stripTrailingSlash(FIXED_WORKSPACE_ROOT);
-const _ROOT_WITHOUT_LEADING_SLASH = _ROOT_NO_SLASH.startsWith('/')
-  ? _ROOT_NO_SLASH.slice(1)
-  : _ROOT_NO_SLASH;
 
 function _normalizeStringArg(value: unknown): unknown {
   if (typeof value !== 'string' || !value) {
     return value;
   }
 
-  if (value === _ROOT_NO_SLASH || value === `${_ROOT_NO_SLASH}/`) {
+  const hostRoot = process.env.BLOOMS_CLAW_WORKSPACES_DIR?.trim() ||
+    path.join(os.homedir(), '.blooms_claw', 'workspaces');
+  const root = _stripTrailingSlash(hostRoot);
+  const rootWithoutLeadingSlash = root.startsWith('/') ? root.slice(1) : root;
+
+  if (value === root || value === `${root}/`) {
     return '/';
   }
-  if (value.startsWith(`${_ROOT_NO_SLASH}/`)) {
-    const stripped = value.slice(_ROOT_NO_SLASH.length);
+  if (value.startsWith(`${root}/`)) {
+    const stripped = value.slice(root.length);
     return stripped.startsWith('/') ? stripped : `/${stripped}`;
   }
-  if (value.startsWith(`${_ROOT_WITHOUT_LEADING_SLASH}/`)) {
-    const stripped = value.slice(_ROOT_WITHOUT_LEADING_SLASH.length);
+  if (value.startsWith(`${rootWithoutLeadingSlash}/`)) {
+    const stripped = value.slice(rootWithoutLeadingSlash.length);
     return stripped.startsWith('/') ? stripped : `/${stripped}`;
   }
 
@@ -184,7 +181,7 @@ export interface CreateAgentResult {
   close: () => Promise<void>;
 }
 
-type RuntimeBackend = FilesystemBackend | LocalShellBackend | undefined;
+type RuntimeBackend = DockerSandboxBackend | undefined;
 
 function resolveToolsEnable(
   toolsEnable: CreateAgentToolsEnableOptions | undefined,
@@ -227,7 +224,7 @@ function resolveToolsEnable(
 
 function buildSystemPrompt(basePrompt: string, skillNames: string[] | undefined) {
   const selectedSkills = readSelectedSkillContents(skillNames ?? []);
-  const workspaceGuardrail = `你运行在一个虚拟沙盒文件系统中，当前目录（./）即为你的工作区根目录。\n请直接使用相对路径（如 ./file.txt）进行文件读取、创建和修改。\n**严禁**在路径中包含宿主机的绝对路径（例如绝对不要使用 ${FIXED_WORKSPACE_ROOT} 这样的前缀），否则会导致路径嵌套错误。\n例外：调用已加载 Skill 自带 scripts/*.py 时，允许使用其 ~/.blooms_claw/skills/<name> 绝对路径（这是唯一例外）。`;
+  const workspaceGuardrail = `你运行在一个 Docker 隔离沙箱文件系统中，当前目录（./）即为你的工作区根目录。\n请直接使用相对路径（如 ./file.txt）进行文件读取、创建和修改。\n**严禁**在路径中包含宿主机绝对路径；所有命令都在临时隔离容器中执行，禁止尝试访问宿主机、Docker socket、外部工作区或绕过沙箱限制。\n例外：调用已加载 Skill 自带 scripts/*.py 时，允许使用其 ~/.blooms_claw/skills/<name> 绝对路径（这是唯一例外）。`;
   // L1 常驻：只放 active Skills 的 name + description 索引（约200 token/skill），
   // 正文走 load_skill / read_skill_resource 按用户提问按需加载，避免首轮全量注入爆 context。
   const skillIndex = buildSkillIndexPrompt();
@@ -244,11 +241,6 @@ function buildSystemPrompt(basePrompt: string, skillNames: string[] | undefined)
     );
   }
   return parts.filter(Boolean).join('\n\n');
-}
-
-function getWorkspaceRoot(): string {
-  fs.mkdirSync(FIXED_WORKSPACE_ROOT, { recursive: true });
-  return FIXED_WORKSPACE_ROOT;
 }
 
 function buildFileReferenceSystemContent(
@@ -301,45 +293,30 @@ function createBailianFileReferenceMiddleware(
 }
 
 async function createRuntimeBackend(
+  threadId: string,
   toolsEnable: CreateAgentToolsEnableOptions,
 ): Promise<{
   backend: RuntimeBackend;
   close: () => Promise<void>;
 }> {
-  const workspaceRoot = getWorkspaceRoot();
-
-  if (toolsEnable.shellTools) {
-    const backend = await LocalShellBackend.create({
-      rootDir: workspaceRoot,
-      virtualMode: true,
-      inheritEnv: true,
-      timeout: 120,
-      maxOutputBytes: 100_000,
-    });
-
+  if (!toolsEnable.fileTools && !toolsEnable.shellTools) {
     return {
-      backend: _wrapBackendWithPathNormalization(backend) as LocalShellBackend,
-      close: async () => {
-        await backend.close();
-      },
-    };
-  }
-
-  if (toolsEnable.fileTools) {
-    return {
-      backend: _wrapBackendWithPathNormalization(
-        new FilesystemBackend({
-          rootDir: workspaceRoot,
-          virtualMode: true,
-        }),
-      ) as FilesystemBackend,
+      backend: undefined,
       close: async () => {},
     };
   }
 
+  const backend = await DockerSandboxBackend.create({
+    threadId,
+    timeoutSec: 120,
+    maxOutputBytes: 100_000,
+  });
+
   return {
-    backend: undefined,
-    close: async () => {},
+    backend,
+    close: async () => {
+      await backend.close();
+    },
   };
 }
 
@@ -370,7 +347,10 @@ export async function createAgent(
     skillNames,
   );
 
-  const { backend, close } = await createRuntimeBackend(resolvedToolsEnable);
+  const { backend, close } = await createRuntimeBackend(
+    threadId,
+    resolvedToolsEnable,
+  );
   // MCP 自定义工具：读取 agentConfig.tools 绑定的 MCP Servers，按需建连后注入
   const { tools: mcpTools, close: closeMcp } = await loadMcpToolsForAgent(agentName);
   if (mcpTools.length > 0) {
@@ -379,7 +359,10 @@ export async function createAgent(
         mcpTools.map((item) => item.name).join(', '),
     );
   }
-  const customTools = [
+  const sandboxTools = backend ? createSandboxTools(backend) : [];
+  const customTools: any[] = [
+    ...(resolvedToolsEnable.fileTools && sandboxTools[0] ? [sandboxTools[0]] : []),
+    ...(resolvedToolsEnable.shellTools && sandboxTools[1] ? [sandboxTools[1]] : []),
     ...(resolvedToolsEnable.webTools ? [webSearchTool] : []),
     ...(resolvedToolsEnable.calculatorTools ? [calculatorTool] : []),
     ...mcpTools,
@@ -419,4 +402,6 @@ export async function createAgent(
   };
 }
 
+export { DockerSandboxBackend, getHostWorkspaceDir } from './sandbox';
+export { createSandboxTools } from './tools/sandbox';
 export { readConfigByAgentName } from './readConfig';

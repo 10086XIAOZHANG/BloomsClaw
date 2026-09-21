@@ -279,8 +279,12 @@ export const deleteChatHistory = async (id: string): Promise<void> => {
   await parseApiResponse<{ deleted: true }>(response);
 };
 
-export const getWorkspaceTree = async (): Promise<WorkspaceTreeResponse> => {
-  const response = await fetch(createWorkspaceTreeUrl(), {
+export const getWorkspaceTree = async (threadId?: string): Promise<WorkspaceTreeResponse> => {
+  const url = createWorkspaceTreeUrl();
+  const finalUrl = threadId?.trim()
+    ? `${url}${url.includes('?') ? '&' : '?'}id=${encodeURIComponent(threadId.trim())}`
+    : url;
+  const response = await fetch(finalUrl, {
     method: 'GET',
   });
 
@@ -289,8 +293,13 @@ export const getWorkspaceTree = async (): Promise<WorkspaceTreeResponse> => {
 
 export const getWorkspaceFileContent = async (
   filePath: string,
+  threadId?: string,
 ): Promise<string> => {
-  const response = await fetch(createWorkspaceFileUrl(filePath), {
+  const baseUrl = createWorkspaceFileUrl(filePath);
+  const finalUrl = threadId?.trim()
+    ? `${baseUrl}&id=${encodeURIComponent(threadId.trim())}`
+    : baseUrl;
+  const response = await fetch(finalUrl, {
     method: 'GET',
   });
 

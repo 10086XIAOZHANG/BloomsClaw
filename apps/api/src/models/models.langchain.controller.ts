@@ -102,15 +102,18 @@ export class ModelsLangchainController {
   }
 
   @Get('workspace/tree')
-  getWorkspaceTree() {
-    return this.modelsWorkspaceService.getWorkspaceTree();
+  getWorkspaceTree(@Query('id') threadId?: string) {
+    return this.modelsWorkspaceService.getWorkspaceTree(threadId);
   }
 
   @Get('workspace/file')
-  getWorkspaceFile(@Query('path') filePath: string) {
+  async getWorkspaceFile(
+    @Query('path') filePath: string,
+    @Query('id') threadId?: string,
+  ) {
     return {
       path: filePath,
-      content: this.modelsWorkspaceService.readFileContent(filePath),
+      content: await this.modelsWorkspaceService.readFileContent(filePath, threadId),
     };
   }
 

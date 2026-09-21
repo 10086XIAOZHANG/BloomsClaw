@@ -1,10 +1,12 @@
-import fs from 'node:fs';
-import path from 'node:path';
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { DockerSandboxBackend, getHostWorkspaceDir } from '@blooms-claw/agent-core';
+import fs from 'node:fs';
+import path from 'node:path';
 
 export interface WorkspaceTreeNodeDto {
   title: string;
@@ -17,65 +19,88 @@ export interface WorkspaceTreeDto {
   treeData: WorkspaceTreeNodeDto[];
 }
 
-const WORKSPACE_ROOT = '/Users/jack/.blooms_claw/workspaces';
-const MAX_PREVIEW_BYTES = 256 * 1024;
-const TEXT_FILE_EXTENSIONS = new Set([
-  '.txt', '.md', '.mdx', '.json', '.yaml', '.yml', '.xml', '.html', '.css',
-  '.scss', '.less', '.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs',
-  '.py', '.java', '.go', '.rs', '.sh', '.zsh', '.bash', '.env', '.sql',
-  '.csv', '.log', '.conf', '.ini',
-]);
+const MAX_PREVIEW_CHARS = 256 * 1024;
+const DEFAULT_THREAD_ID = 'default';
 
 @Injectable()
 export class ModelsWorkspaceService {
-  getWorkspaceRoot(): string {
-    return WORKSPACE_ROOT;
+  private readonly logger = new Logger(ModelsWorkspaceService.name);
+  private readonly sandboxes = new Map<string, DockerSandboxBackend>();
+
+  async getWorkspaceRoot(threadId = DEFAULT_THREAD_ID): Promise<string> {
+    await this.getSandbox(threadId);
+    return '/';
   }
 
-  getWorkspaceTree(): WorkspaceTreeDto {
-    fs.mkdirSync(WORKSPACE_ROOT, { recursive: true });
-
-    return {
-      rootPath: WORKSPACE_ROOT,
-      treeData: this.readTreeNodes(WORKSPACE_ROOT),
-    };
+  async getWorkspaceTree(threadId = DEFAULT_THREAD_ID): Promise<WorkspaceTreeDto> {
+    try {
+      const sandbox = await this.getSandbox(threadId);
+      const treeData = await this.readTreeNodes(sandbox, '/');
+      return { rootPath: '/', treeData };
+    } catch (error) {
+      this.logger.warn(
+        `沙箱工作区不可用，回退到宿主机目录: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      return this.getHostWorkspaceTree(threadId);
+    }
   }
 
-  readFileContent(relativePath: string): string {
-    const normalizedRelativePath = relativePath.trim();
-    if (!normalizedRelativePath) {
+  async readFileContent(relativePath: string, threadId = DEFAULT_THREAD_ID): Promise<string> {
+    const normalizedPath = String(relativePath ?? '').trim();
+    if (!normalizedPath) {
       throw new BadRequestException('文件路径不能为空');
     }
 
-    const absolutePath = this.resolveWorkspacePath(normalizedRelativePath);
-    const stat = fs.statSync(absolutePath);
-    if (stat.isDirectory()) {
-      throw new BadRequestException('当前路径是文件夹，无法预览内容');
+    const sandbox = await this.getSandbox(threadId);
+    const result = await sandbox.read(normalizedPath, 0, 10_000);
+    if (result.error || result.content == null) {
+      throw new NotFoundException(result.error ?? `文件不存在：${normalizedPath}`);
     }
 
-    const extension = path.extname(absolutePath).toLowerCase();
-    if (!TEXT_FILE_EXTENSIONS.has(extension)) {
-      return [
-        `当前文件类型暂不支持在线预览。`,
-        `文件名：${path.basename(absolutePath)}`,
-        `扩展名：${extension || '无'}`,
-        `大小：${stat.size} bytes`,
-      ].join('\n');
+    if (result.content.length <= MAX_PREVIEW_CHARS) {
+      return result.content;
     }
-
-    const buffer = fs.readFileSync(absolutePath);
-    const text = buffer.subarray(0, MAX_PREVIEW_BYTES).toString('utf8');
-    if (buffer.length <= MAX_PREVIEW_BYTES) {
-      return text;
-    }
-
-    return `${text}\n\n[预览已截断，仅显示前 ${MAX_PREVIEW_BYTES} bytes]`;
+    return `${result.content.slice(0, MAX_PREVIEW_CHARS)}\n\n[预览已截断，仅显示前 ${MAX_PREVIEW_CHARS} 个字符]`;
   }
 
-  private readTreeNodes(directoryPath: string): WorkspaceTreeNodeDto[] {
-    const entries = fs.readdirSync(directoryPath, { withFileTypes: true });
+  async closeWorkspace(threadId: string): Promise<void> {
+    const sandbox = this.sandboxes.get(threadId);
+    if (!sandbox) {
+      return;
+    }
+    this.sandboxes.delete(threadId);
+    await sandbox.close();
+  }
+
+  private async getSandbox(threadId: string): Promise<DockerSandboxBackend> {
+    const normalizedThreadId = String(threadId ?? '').trim() || DEFAULT_THREAD_ID;
+    const existing = this.sandboxes.get(normalizedThreadId);
+    if (existing) {
+      await existing.ensure();
+      return existing;
+    }
+
+    const sandbox = await DockerSandboxBackend.create({
+      threadId: normalizedThreadId,
+    });
+    this.sandboxes.set(normalizedThreadId, sandbox);
+    return sandbox;
+  }
+
+  private getHostWorkspaceTree(threadId: string): WorkspaceTreeDto {
+    const root = getHostWorkspaceDir(threadId || DEFAULT_THREAD_ID);
+    return { rootPath: '/', treeData: this.readHostTreeNodes(root, '/') };
+  }
+
+  private readHostTreeNodes(absDir: string, virtualDir: string): WorkspaceTreeNodeDto[] {
+    let entries: fs.Dirent[];
+    try {
+      entries = fs.readdirSync(absDir, { withFileTypes: true });
+    } catch {
+      return [];
+    }
     return entries
-      .filter((entry) => !entry.isSymbolicLink())
+      .filter((entry) => !entry.isSymbolicLink() && !entry.name.startsWith('.'))
       .sort((left, right) => {
         if (left.isDirectory() !== right.isDirectory()) {
           return left.isDirectory() ? -1 : 1;
@@ -83,33 +108,40 @@ export class ModelsWorkspaceService {
         return left.name.localeCompare(right.name, 'zh-Hans-CN');
       })
       .map((entry) => {
-        const absolutePath = path.join(directoryPath, entry.name);
+        const virtualPath = virtualDir === '/' ? `/${entry.name}` : `${virtualDir}/${entry.name}`;
         return {
           title: entry.name,
           path: entry.name,
           children: entry.isDirectory()
-            ? this.readTreeNodes(absolutePath)
+            ? this.readHostTreeNodes(path.join(absDir, entry.name), virtualPath)
             : undefined,
         };
       });
   }
 
-  private resolveWorkspacePath(relativePath: string): string {
-    const safeRelativePath = relativePath.replace(/^\/+/, '');
-    const absolutePath = path.resolve(WORKSPACE_ROOT, safeRelativePath);
-    const normalizedRoot = path.resolve(WORKSPACE_ROOT);
-
-    if (
-      absolutePath !== normalizedRoot
-      && !absolutePath.startsWith(`${normalizedRoot}${path.sep}`)
-    ) {
-      throw new BadRequestException('只允许访问工作区目录内的文件');
+  private async readTreeNodes(
+    sandbox: DockerSandboxBackend,
+    directoryPath: string,
+  ): Promise<WorkspaceTreeNodeDto[]> {
+    const result = await sandbox.ls(directoryPath);
+    if (result.error) {
+      throw new NotFoundException(result.error);
     }
 
-    if (!fs.existsSync(absolutePath)) {
-      throw new NotFoundException(`文件不存在：${relativePath}`);
+    const files = result.files ?? [];
+    const nodes: WorkspaceTreeNodeDto[] = [];
+    for (const file of files) {
+      const isDirectory = file.is_dir === true;
+      const childPath = file.path.replace(/\/$/, '');
+      const name = childPath.split('/').pop() || childPath;
+      nodes.push({
+        title: name,
+        path: name,
+        children: isDirectory
+          ? await this.readTreeNodes(sandbox, childPath)
+          : undefined,
+      });
     }
-
-    return absolutePath;
+    return nodes;
   }
 }
