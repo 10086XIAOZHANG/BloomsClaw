@@ -37,6 +37,7 @@ import type {
 } from './data';
 import { AvatarDropdown } from '@/components/RightContent/AvatarDropdown';
 import { UserAuthModal } from '@/components/UserAuthModal';
+import { subscribeUserChange } from '@/utils/userSession';
 import {
   deleteChatHistory,
   getWorkspaceFileContent,
@@ -645,6 +646,20 @@ const ChatbotPage: React.FC = () => {
   const [workspaceVisible, setWorkspaceVisible] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
+  const [userSessionVersion, setUserSessionVersion] = useState(0);
+
+  useEffect(() => {
+    return subscribeUserChange(() => {
+      setConversations([]);
+      setMessageMap({});
+      setActiveKey('');
+      setWorkspaceTree([]);
+      setWorkspaceExpandedPaths([]);
+      setSelectedWorkspaceFile(undefined);
+      setHasResolvedInitialConversation(false);
+      setUserSessionVersion((version) => version + 1);
+    });
+  }, []);
   const activeMessages = messageMap[activeKey] ?? [];
   const filteredConversations = useMemo(() => {
     const kw = searchKeyword.trim().toLowerCase();
@@ -828,6 +843,19 @@ const ChatbotPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    return subscribeUserChange(() => {
+      setConversations([]);
+      setMessageMap({});
+      setActiveKey('');
+      setWorkspaceTree([]);
+      setWorkspaceExpandedPaths([]);
+      setSelectedWorkspaceFile(undefined);
+      setHasResolvedInitialConversation(false);
+      setUserSessionVersion((version) => version + 1);
+    });
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
 
     const loadHistory = async () => {
@@ -838,6 +866,10 @@ const ChatbotPage: React.FC = () => {
         }
 
         if (historyConversations.length === 0) {
+          const draftConversation = createDraftConversation();
+          setConversations([draftConversation]);
+          setMessageMap({ [draftConversation.key]: [] });
+          setActiveKey(draftConversation.key);
           setHasResolvedInitialConversation(true);
           return;
         }
@@ -882,7 +914,7 @@ const ChatbotPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [userSessionVersion]);
 
   useEffect(() => {
     let cancelled = false;
