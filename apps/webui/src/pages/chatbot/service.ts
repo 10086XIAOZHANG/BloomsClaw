@@ -1,3 +1,5 @@
+import { getCurrentUserId } from '@/utils/userSession';
+
 const CHAT_STREAM_API_BASE_URL =
   process.env.CHAT_STREAM_API_URL ??
   process.env.API_BASE_URL ??
@@ -178,6 +180,7 @@ export const streamChatCompletion = async (
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
+      userId: getCurrentUserId(),
       input,
       id,
       agentName,
@@ -264,7 +267,9 @@ export const listSelectableSkills = async (): Promise<ChatSelectableSkill[]> => 
 };
 
 export const listChatHistory = async (): Promise<ChatHistoryConversation[]> => {
-  const response = await fetch(createChatHistoryUrl(), {
+  const url = createChatHistoryUrl();
+  const finalUrl = `${url}${url.includes('?') ? '&' : '?'}userId=${encodeURIComponent(getCurrentUserId())}`;
+  const response = await fetch(finalUrl, {
     method: 'GET',
   });
 
@@ -272,7 +277,9 @@ export const listChatHistory = async (): Promise<ChatHistoryConversation[]> => {
 };
 
 export const deleteChatHistory = async (id: string): Promise<void> => {
-  const response = await fetch(createChatHistoryUrl(id), {
+  const url = createChatHistoryUrl(id);
+  const finalUrl = `${url}${url.includes('?') ? '&' : '?'}userId=${encodeURIComponent(getCurrentUserId())}`;
+  const response = await fetch(finalUrl, {
     method: 'DELETE',
   });
 
@@ -281,9 +288,12 @@ export const deleteChatHistory = async (id: string): Promise<void> => {
 
 export const getWorkspaceTree = async (threadId?: string): Promise<WorkspaceTreeResponse> => {
   const url = createWorkspaceTreeUrl();
-  const finalUrl = threadId?.trim()
-    ? `${url}${url.includes('?') ? '&' : '?'}id=${encodeURIComponent(threadId.trim())}`
-    : url;
+  const params = new URLSearchParams();
+  if (threadId?.trim()) {
+    params.set('id', threadId.trim());
+  }
+  params.set('userId', getCurrentUserId());
+  const finalUrl = `${url}?${params.toString()}`;
   const response = await fetch(finalUrl, {
     method: 'GET',
   });
@@ -295,10 +305,13 @@ export const getWorkspaceFileContent = async (
   filePath: string,
   threadId?: string,
 ): Promise<string> => {
-  const baseUrl = createWorkspaceFileUrl(filePath);
-  const finalUrl = threadId?.trim()
-    ? `${baseUrl}&id=${encodeURIComponent(threadId.trim())}`
-    : baseUrl;
+  const url = createWorkspaceFileUrl(filePath);
+  const params = new URLSearchParams();
+  if (threadId?.trim()) {
+    params.set('id', threadId.trim());
+  }
+  params.set('userId', getCurrentUserId());
+  const finalUrl = `${url}&${params.toString()}`;
   const response = await fetch(finalUrl, {
     method: 'GET',
   });

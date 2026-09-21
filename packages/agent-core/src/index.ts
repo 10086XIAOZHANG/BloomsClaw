@@ -168,6 +168,7 @@ export interface CreateAgentToolsEnableOptions {
 
 export interface CreateAgentOptions {
   threadId: string;
+  userId?: string;
   enableThinking?: boolean;
   skillNames?: string[];
   toolsEnable?: CreateAgentToolsEnableOptions;
@@ -294,6 +295,7 @@ function createBailianFileReferenceMiddleware(
 
 async function createRuntimeBackend(
   threadId: string,
+  userId: string,
   toolsEnable: CreateAgentToolsEnableOptions,
 ): Promise<{
   backend: RuntimeBackend;
@@ -307,7 +309,7 @@ async function createRuntimeBackend(
   }
 
   const backend = await DockerSandboxBackend.create({
-    threadId,
+    threadId: `${userId}-${threadId}`,
     timeoutSec: 120,
     maxOutputBytes: 100_000,
   });
@@ -324,6 +326,7 @@ export async function createAgent(
   agentName: string,
   {
     threadId,
+    userId = 'default',
     enableThinking = true,
     skillNames,
     toolsEnable,
@@ -331,7 +334,14 @@ export async function createAgent(
   }: CreateAgentOptions,
 ): Promise<CreateAgentResult> {
   const homePath = os.homedir();
-  const filePath = path.join(homePath, '.blooms_claw', 'memory', `${threadId}.json`);
+  const filePath = path.join(
+    homePath,
+    '.blooms_claw',
+    'users',
+    userId,
+    'memory',
+    `${threadId}.json`,
+  );
   const checkpointer = new FileSaver(filePath);
 
   const config = readConfigByAgentName(agentName);
@@ -349,6 +359,7 @@ export async function createAgent(
 
   const { backend, close } = await createRuntimeBackend(
     threadId,
+    userId,
     resolvedToolsEnable,
   );
   // MCP 自定义工具：读取 agentConfig.tools 绑定的 MCP Servers，按需建连后注入

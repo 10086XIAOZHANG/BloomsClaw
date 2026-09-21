@@ -71,13 +71,13 @@ export class ModelsLangchainController {
   ) {}
 
   @Get('history')
-  listHistory() {
-    return this.modelsChatHistoryService.listConversations();
+  listHistory(@Query('userId') userId = 'default') {
+    return this.modelsChatHistoryService.listConversations(userId);
   }
 
   @Delete('history/:id')
-  removeHistory(@Param('id') id: string) {
-    this.modelsChatHistoryService.removeConversation(id);
+  removeHistory(@Param('id') id: string, @Query('userId') userId = 'default') {
+    this.modelsChatHistoryService.removeConversation(id, userId);
     return { deleted: true };
   }
 
@@ -102,18 +102,26 @@ export class ModelsLangchainController {
   }
 
   @Get('workspace/tree')
-  getWorkspaceTree(@Query('id') threadId?: string) {
-    return this.modelsWorkspaceService.getWorkspaceTree(threadId);
+  getWorkspaceTree(
+    @Query('id') threadId?: string,
+    @Query('userId') userId = 'default',
+  ) {
+    return this.modelsWorkspaceService.getWorkspaceTree(threadId, userId);
   }
 
   @Get('workspace/file')
   async getWorkspaceFile(
     @Query('path') filePath: string,
     @Query('id') threadId?: string,
+    @Query('userId') userId = 'default',
   ) {
     return {
       path: filePath,
-      content: await this.modelsWorkspaceService.readFileContent(filePath, threadId),
+      content: await this.modelsWorkspaceService.readFileContent(
+        filePath,
+        threadId,
+        userId,
+      ),
     };
   }
 
@@ -153,6 +161,7 @@ export class ModelsLangchainController {
       id?: string;
       agentName?: string;
       skill?: string | string[];
+      userId?: string;
     },
     @Res() res: Response,
   ) {
@@ -165,6 +174,7 @@ export class ModelsLangchainController {
         attachments: [],
       },
       res,
+      query.userId,
     );
   }
 
@@ -177,10 +187,11 @@ export class ModelsLangchainController {
       agentName?: string;
       skillNames?: string[];
       attachments?: Array<{ token?: string }>;
+      userId?: string;
     },
     @Res() res: Response,
   ) {
-    return this.streamChat(body, res);
+    return this.streamChat(body, res, body.userId);
   }
 
   private async streamChat(
@@ -192,11 +203,13 @@ export class ModelsLangchainController {
       attachments?: Array<{ token?: string }>;
     },
     res: Response,
+    userId?: string,
   ) {
     const input = (payload.input ?? '').trim();
     const attachments = this.modelsAttachmentsService.resolveAttachments(
       payload.attachments,
     );
+    const currentUserId = userId ?? 'default';
 
     if (!input && attachments.length === 0) {
       this.logger.warn('[agent-stream] request ignored because input and attachments are empty');
@@ -224,10 +237,10 @@ export class ModelsLangchainController {
           id: userMessageId,
           content: userContent,
           attachments,
-        });
+        }, currentUserId);
         this.modelsChatHistoryService.ensureAssistantMessage(chatId, {
           id: assistantMessageId,
-        });
+        }, currentUserId);
         const agentRuntimeConfig = readConfigByAgentName(agentName);
         if (!agentRuntimeConfig?.modelConfig) {
           throw new BadRequestException(
@@ -253,6 +266,7 @@ export class ModelsLangchainController {
         );
         const { agent, close, config } = await createAgent(agentName, {
           threadId: chatId,
+          userId: currentUserId,
           enableThinking: true,
           skillNames,
           runtimeContext: {
@@ -308,7 +322,7 @@ export class ModelsLangchainController {
             if (thinkingDelta) {
               if (!hasReasoning) {
                 hasReasoning = true;
-                this.emitThoughtStep(res, chatId, assistantMessageId, {
+                this.emitThoughtStep(res, chatId, assistantMessageId, currentUserId, {
                   key: reasoningStepKey,
                   title: '深度思考',
                   description: '模型正在分析问题并规划执行步骤',
@@ -325,6 +339,7 @@ export class ModelsLangchainController {
                 chatId,
                 assistantMessageId,
                 thinkingDelta,
+                currentUserId,
               );
             }
 
@@ -334,7 +349,7 @@ export class ModelsLangchainController {
             if (toolCalls.length > 0) {
               if (hasReasoning && !reasoningCompleted) {
                 reasoningCompleted = true;
-                this.emitThoughtStep(res, chatId, assistantMessageId, {
+                this.emitThoughtStep(res, chatId, assistantMessageId, currentUserId, {
                   key: reasoningStepKey,
                   title: '深度思考',
                   description: '分析完成，开始执行任务',
@@ -342,7 +357,7 @@ export class ModelsLangchainController {
                 });
               }
 
-              this.emitThoughtStep(res, chatId, assistantMessageId, {
+              this.emitThoughtStep(res, chatId, assistantMessageId, currentUserId, {
                 key: `${assistantMessageId}:plan:${toolCalls[0].key}`,
                 title: '任务分配',
                 description: '已规划待执行任务',
@@ -354,7 +369,7 @@ export class ModelsLangchainController {
             if (contentDelta) {
               if (hasReasoning && !reasoningCompleted) {
                 reasoningCompleted = true;
-                this.emitThoughtStep(res, chatId, assistantMessageId, {
+                this.emitThoughtStep(res, chatId, assistantMessageId, currentUserId, {
                   key: reasoningStepKey,
                   title: '深度思考',
                   description: '分析完成，开始组织最终回答',
@@ -364,7 +379,7 @@ export class ModelsLangchainController {
 
               if (!hasAnswer) {
                 hasAnswer = true;
-                this.emitThoughtStep(res, chatId, assistantMessageId, {
+                this.emitThoughtStep(res, chatId, assistantMessageId, currentUserId, {
                   key: answerStepKey,
                   title: '生成回答',
                   description: '整理并输出最终答复',
@@ -381,6 +396,7 @@ export class ModelsLangchainController {
                 chatId,
                 assistantMessageId,
                 contentDelta,
+                currentUserId,
               );
             }
 
@@ -390,7 +406,7 @@ export class ModelsLangchainController {
           if (event?.event === 'on_tool_start') {
             if (hasReasoning && !reasoningCompleted) {
               reasoningCompleted = true;
-              this.emitThoughtStep(res, chatId, assistantMessageId, {
+              this.emitThoughtStep(res, chatId, assistantMessageId, currentUserId, {
                 key: reasoningStepKey,
                 title: '深度思考',
                 description: '分析完成，开始执行任务',
@@ -399,7 +415,7 @@ export class ModelsLangchainController {
             }
 
             const stepKey = this.getStepKey(assistantMessageId, event);
-            this.emitThoughtStep(res, chatId, assistantMessageId, {
+            this.emitThoughtStep(res, chatId, assistantMessageId, currentUserId, {
               key: stepKey,
               title: this.formatToolTitle(event?.name),
               description: '正在调用工具',
@@ -411,7 +427,7 @@ export class ModelsLangchainController {
 
           if (event?.event === 'on_tool_end') {
             const stepKey = this.getStepKey(assistantMessageId, event);
-            this.emitThoughtStep(res, chatId, assistantMessageId, {
+            this.emitThoughtStep(res, chatId, assistantMessageId, currentUserId, {
               key: stepKey,
               title: this.formatToolTitle(event?.name),
               description: '工具调用完成',
@@ -423,7 +439,7 @@ export class ModelsLangchainController {
 
           if (event?.event === 'on_tool_error') {
             const stepKey = this.getStepKey(assistantMessageId, event);
-            this.emitThoughtStep(res, chatId, assistantMessageId, {
+            this.emitThoughtStep(res, chatId, assistantMessageId, currentUserId, {
               key: stepKey,
               title: this.formatToolTitle(event?.name),
               description: '工具调用失败',
@@ -434,7 +450,7 @@ export class ModelsLangchainController {
         }
 
         if (hasReasoning && !reasoningCompleted) {
-          this.emitThoughtStep(res, chatId, assistantMessageId, {
+          this.emitThoughtStep(res, chatId, assistantMessageId, currentUserId, {
             key: reasoningStepKey,
             title: '深度思考',
             description: '分析完成',
@@ -443,7 +459,7 @@ export class ModelsLangchainController {
         }
 
         if (hasAnswer) {
-          this.emitThoughtStep(res, chatId, assistantMessageId, {
+          this.emitThoughtStep(res, chatId, assistantMessageId, currentUserId, {
             key: answerStepKey,
             title: '生成回答',
             description: '最终答复已完成',
@@ -454,6 +470,7 @@ export class ModelsLangchainController {
           chatId,
           assistantMessageId,
           'done',
+          currentUserId,
         );
 
         if (!res.writableEnded) {
@@ -482,6 +499,7 @@ export class ModelsLangchainController {
             chatId,
             assistantMessageId,
             'error',
+            currentUserId,
           );
       } finally {
         if (closeAgent) {
@@ -524,6 +542,7 @@ export class ModelsLangchainController {
     res: Response,
     chatId: string,
     assistantMessageId: string,
+    userId: string,
     step: ChatThoughtStepDto,
   ) {
     this.writeChunk(res, {
@@ -535,6 +554,7 @@ export class ModelsLangchainController {
       chatId,
       assistantMessageId,
       step,
+      userId,
     );
   }
 

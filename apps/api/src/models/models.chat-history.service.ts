@@ -56,17 +56,20 @@ interface SerializedCheckpoint {
 
 @Injectable()
 export class ModelsChatHistoryService {
-  private readonly memoryDir = path.join(os.homedir(), '.blooms_claw', 'memory');
-  private readonly conversationDir = path.join(
-    os.homedir(),
-    '.blooms_claw',
-    'chat_history',
-  );
+  private readonly baseDir = path.join(os.homedir(), '.blooms_claw', 'users');
 
-  listConversations(): ChatHistoryConversationDto[] {
-    const persistedConversations = this.listPersistedConversations();
+  private getMemoryDir(userId = 'default'): string {
+    return path.join(this.baseDir, userId, 'memory');
+  }
+
+  private getConversationDir(userId = 'default'): string {
+    return path.join(this.baseDir, userId, 'chat_history');
+  }
+
+  listConversations(userId = 'default'): ChatHistoryConversationDto[] {
+    const persistedConversations = this.listPersistedConversations(userId);
     const persistedIds = new Set(persistedConversations.map((item) => item.id));
-    const fallbackConversations = this.listCheckpointConversations().filter(
+    const fallbackConversations = this.listCheckpointConversations(userId).filter(
       (item) => !persistedIds.has(item.id),
     );
 
@@ -75,10 +78,10 @@ export class ModelsChatHistoryService {
     );
   }
 
-  removeConversation(threadId: string): void {
+  removeConversation(threadId: string, userId = 'default'): void {
     const safeThreadId = this.normalizeThreadId(threadId);
-    const filePath = this.getFilePath(safeThreadId);
-    const persistedFilePath = this.getConversationFilePath(safeThreadId);
+    const filePath = this.getFilePath(safeThreadId, userId);
+    const persistedFilePath = this.getConversationFilePath(safeThreadId, userId);
 
     if (!fs.existsSync(filePath) && !fs.existsSync(persistedFilePath)) {
       throw new NotFoundException(`会话不存在: ${safeThreadId}`);
@@ -88,10 +91,13 @@ export class ModelsChatHistoryService {
     fs.rmSync(persistedFilePath, { force: true });
   }
 
-  readConversationById(threadId: string): ChatHistoryConversationDto | null {
+  readConversationById(threadId: string, userId = 'default'): ChatHistoryConversationDto | null {
     const safeThreadId = this.normalizeThreadId(threadId);
-    const persistedConversation = this.readPersistedConversation(safeThreadId);
-    const checkpointConversation = this.readConversationFromCheckpoint(safeThreadId);
+    const persistedConversation = this.readPersistedConversation(safeThreadId, userId);
+    const checkpointConversation = this.readConversationFromCheckpoint(
+      safeThreadId,
+      userId,
+    );
 
     if (persistedConversation && checkpointConversation) {
       return this.mergeConversationSources(
@@ -106,11 +112,13 @@ export class ModelsChatHistoryService {
   appendUserMessage(
     threadId: string,
     message: { id: string; content: string; attachments?: ChatAttachmentDto[] },
+    userId = 'default',
   ): void {
     const conversation = this.getOrCreateConversation(
       threadId,
       message.content,
       message.attachments,
+      userId,
     );
     conversation.messages.push({
       id: message.id,
@@ -126,14 +134,15 @@ export class ModelsChatHistoryService {
         || message.attachments?.[0]?.name?.slice(0, 20)
         || '新对话';
     }
-    this.writeConversation(conversation);
+    this.writeConversation(conversation, userId);
   }
 
   ensureAssistantMessage(
     threadId: string,
     message: Pick<ChatHistoryMessageDto, 'id'>,
+    userId = 'default',
   ): void {
-    const conversation = this.getOrCreateConversation(threadId);
+    const conversation = this.getOrCreateConversation(threadId, undefined, undefined, userId);
     const existing = conversation.messages.find((item) => item.id === message.id);
 
     if (!existing) {
@@ -145,7 +154,7 @@ export class ModelsChatHistoryService {
         status: 'updating',
       });
       conversation.updatedAt = new Date().toISOString();
-      this.writeConversation(conversation);
+      this.writeConversation(conversation, userId);
     }
   }
 
@@ -153,28 +162,31 @@ export class ModelsChatHistoryService {
     threadId: string,
     messageId: string,
     delta: string,
+    userId = 'default',
   ): void {
     this.updateAssistantMessage(threadId, messageId, (message) => {
       message.rawThinkContent = `${message.rawThinkContent ?? ''}${delta}`;
       message.status = 'updating';
-    });
+    }, userId);
   }
 
   appendAssistantContent(
     threadId: string,
     messageId: string,
     delta: string,
+    userId = 'default',
   ): void {
     this.updateAssistantMessage(threadId, messageId, (message) => {
       message.content = `${message.content}${delta}`;
       message.status = 'updating';
-    });
+    }, userId);
   }
 
   upsertAssistantThoughtStep(
     threadId: string,
     messageId: string,
     step: ChatThoughtStepDto,
+    userId = 'default',
   ): void {
     this.updateAssistantMessage(threadId, messageId, (message) => {
       const thoughtSteps = message.thoughtSteps ?? [];
@@ -197,13 +209,14 @@ export class ModelsChatHistoryService {
 
       message.status =
         step.status === 'error' ? 'error' : message.status ?? 'updating';
-    });
+    }, userId);
   }
 
   finalizeAssistantMessage(
     threadId: string,
     messageId: string,
     status: 'done' | 'error' = 'done',
+    userId = 'default',
   ): void {
     this.updateAssistantMessage(threadId, messageId, (message) => {
       message.status = status;
@@ -214,19 +227,20 @@ export class ModelsChatHistoryService {
             : step,
         );
       }
-    });
+    }, userId);
   }
 
-  private listPersistedConversations(): ChatHistoryConversationDto[] {
-    if (!fs.existsSync(this.conversationDir)) {
+  private listPersistedConversations(userId = 'default'): ChatHistoryConversationDto[] {
+    const dir = this.getConversationDir(userId);
+    if (!fs.existsSync(dir)) {
       return [];
     }
 
     return fs
-      .readdirSync(this.conversationDir)
+      .readdirSync(dir)
       .filter((fileName) => fileName.endsWith('.json'))
       .map((fileName) =>
-        this.readPersistedConversation(path.basename(fileName, '.json')),
+        this.readPersistedConversation(path.basename(fileName, '.json'), userId),
       )
       .filter(
         (conversation): conversation is ChatHistoryConversationDto =>
@@ -234,16 +248,17 @@ export class ModelsChatHistoryService {
       );
   }
 
-  private listCheckpointConversations(): ChatHistoryConversationDto[] {
-    if (!fs.existsSync(this.memoryDir)) {
+  private listCheckpointConversations(userId = 'default'): ChatHistoryConversationDto[] {
+    const dir = this.getMemoryDir(userId);
+    if (!fs.existsSync(dir)) {
       return [];
     }
 
     return fs
-      .readdirSync(this.memoryDir)
+      .readdirSync(dir)
       .filter((fileName) => fileName.endsWith('.json'))
       .map((fileName) =>
-        this.readConversationFromCheckpoint(path.basename(fileName, '.json')),
+        this.readConversationFromCheckpoint(path.basename(fileName, '.json'), userId),
       )
       .filter(
         (conversation): conversation is ChatHistoryConversationDto =>
@@ -253,8 +268,9 @@ export class ModelsChatHistoryService {
 
   private readPersistedConversation(
     threadId: string,
+    userId = 'default',
   ): ChatHistoryConversationDto | null {
-    const filePath = this.getConversationFilePath(this.normalizeThreadId(threadId));
+    const filePath = this.getConversationFilePath(this.normalizeThreadId(threadId), userId);
     if (!fs.existsSync(filePath)) {
       return null;
     }
@@ -291,9 +307,10 @@ export class ModelsChatHistoryService {
 
   private readConversationFromCheckpoint(
     threadId: string,
+    userId = 'default',
   ): ChatHistoryConversationDto | null {
     const safeThreadId = this.normalizeThreadId(threadId);
-    const filePath = this.getFilePath(safeThreadId);
+    const filePath = this.getFilePath(safeThreadId, userId);
 
     if (!fs.existsSync(filePath)) {
       return null;
@@ -513,21 +530,30 @@ export class ModelsChatHistoryService {
     return normalized;
   }
 
-  private getFilePath(threadId: string): string {
-    return path.join(this.memoryDir, `${threadId}.json`);
+  private getFilePath(threadId: string, userId = 'default'): string {
+    const dir = this.getMemoryDir(userId);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    return path.join(dir, `${threadId}.json`);
   }
 
-  private getConversationFilePath(threadId: string): string {
-    return path.join(this.conversationDir, `${threadId}.json`);
+  private getConversationFilePath(threadId: string, userId = 'default'): string {
+    const dir = this.getConversationDir(userId);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    return path.join(dir, `${threadId}.json`);
   }
 
   private getOrCreateConversation(
     threadId: string,
     initialUserContent?: string,
     initialAttachments?: ChatAttachmentDto[],
+    userId = 'default',
   ): ChatHistoryConversationDto {
     return (
-      this.readConversationById(threadId) ?? {
+      this.readConversationById(threadId, userId) ?? {
         id: threadId,
         label:
           initialUserContent?.slice(0, 20)
@@ -594,13 +620,13 @@ export class ModelsChatHistoryService {
     );
   }
 
-  private writeConversation(conversation: ChatHistoryConversationDto): void {
-    if (!fs.existsSync(this.conversationDir)) {
-      fs.mkdirSync(this.conversationDir, { recursive: true });
+  private writeConversation(conversation: ChatHistoryConversationDto, userId = 'default'): void {
+    if (!fs.existsSync(this.getConversationDir(userId))) {
+      fs.mkdirSync(this.getConversationDir(userId), { recursive: true });
     }
 
     fs.writeFileSync(
-      this.getConversationFilePath(conversation.id),
+      this.getConversationFilePath(conversation.id, userId),
       JSON.stringify(conversation, null, 2),
       'utf8',
     );
@@ -610,8 +636,9 @@ export class ModelsChatHistoryService {
     threadId: string,
     messageId: string,
     updater: (message: ChatHistoryMessageDto) => void,
+    userId = 'default',
   ): void {
-    const conversation = this.getOrCreateConversation(threadId);
+    const conversation = this.getOrCreateConversation(threadId, undefined, undefined, userId);
     const targetMessage = conversation.messages.find(
       (item) => item.id === messageId && item.role === 'assistant',
     );
@@ -632,7 +659,7 @@ export class ModelsChatHistoryService {
       ) ?? conversation.messages[conversation.messages.length - 1];
     updater(nextTargetMessage);
     conversation.updatedAt = new Date().toISOString();
-    this.writeConversation(conversation);
+    this.writeConversation(conversation, userId);
   }
 
   private normalizeToolCalls(value: unknown): Array<{

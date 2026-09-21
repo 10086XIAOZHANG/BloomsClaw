@@ -32,9 +32,9 @@ export class ModelsWorkspaceService {
     return '/';
   }
 
-  async getWorkspaceTree(threadId = DEFAULT_THREAD_ID): Promise<WorkspaceTreeDto> {
+  async getWorkspaceTree(threadId = DEFAULT_THREAD_ID, userId = 'default'): Promise<WorkspaceTreeDto> {
     try {
-      const sandbox = await this.getSandbox(threadId);
+      const sandbox = await this.getSandbox(threadId, userId);
       const treeData = await this.readTreeNodes(sandbox, '/');
       return { rootPath: '/', treeData };
     } catch (error) {
@@ -45,7 +45,7 @@ export class ModelsWorkspaceService {
     }
   }
 
-  async readFileContent(relativePath: string, threadId = DEFAULT_THREAD_ID): Promise<string> {
+  async readFileContent(relativePath: string, threadId = DEFAULT_THREAD_ID, userId = 'default'): Promise<string> {
     const normalizedPath = String(relativePath ?? '').trim();
     if (!normalizedPath) {
       throw new BadRequestException('文件路径不能为空');
@@ -72,8 +72,8 @@ export class ModelsWorkspaceService {
     await sandbox.close();
   }
 
-  private async getSandbox(threadId: string): Promise<DockerSandboxBackend> {
-    const normalizedThreadId = String(threadId ?? '').trim() || DEFAULT_THREAD_ID;
+  private async getSandbox(threadId: string, userId = 'default'): Promise<DockerSandboxBackend> {
+    const normalizedThreadId = String(`${userId}-${threadId ?? ''}`).trim() || DEFAULT_THREAD_ID;
     const existing = this.sandboxes.get(normalizedThreadId);
     if (existing) {
       await existing.ensure();

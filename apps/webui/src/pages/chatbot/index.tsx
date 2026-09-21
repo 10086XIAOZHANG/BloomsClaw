@@ -26,7 +26,7 @@ import { App, Avatar, Button, ConfigProvider, Input, Select, Space, Tooltip, Typ
 import type { RcFile, UploadFile } from 'antd/es/upload/interface';
 import type { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { history } from '@umijs/max';
+import { history, useModel } from '@umijs/max';
 
 import type {
   ChatAgentOption,
@@ -35,6 +35,8 @@ import type {
   ChatThoughtStep,
   ConversationItem,
 } from './data';
+import { AvatarDropdown } from '@/components/RightContent/AvatarDropdown';
+import { UserAuthModal } from '@/components/UserAuthModal';
 import {
   deleteChatHistory,
   getWorkspaceFileContent,
@@ -602,6 +604,8 @@ const roleConfig: BubbleListProps['role'] = {
 const ChatbotPage: React.FC = () => {
   const { styles } = useStyles();
   const { message } = App.useApp();
+  const { initialState } = useModel('@@initialState');
+  const currentUserName = initialState?.currentUser?.name || '未登录';
   const initialChatStateRef = useRef(createInitialChatState());
   const initialChatState = initialChatStateRef.current;
 
@@ -636,7 +640,19 @@ const ChatbotPage: React.FC = () => {
   const [workspaceExpandedPaths, setWorkspaceExpandedPaths] = useState<string[]>([]);
   const [selectedWorkspaceFile, setSelectedWorkspaceFile] = useState<string[]>();
   const [panelLayout, setPanelLayout] = useState<ChatPanelLayout>(readChatPanelLayout);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [workspaceVisible, setWorkspaceVisible] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
   const activeMessages = messageMap[activeKey] ?? [];
+  const filteredConversations = useMemo(() => {
+    const kw = searchKeyword.trim().toLowerCase();
+    if (!kw) return conversations;
+    return conversations.filter((c) =>
+      String(c.label ?? '').toLowerCase().includes(kw),
+    );
+  }, [conversations, searchKeyword]);
   const selectedAgentName = useMemo(() => {
     const storedAgentName = conversationAgentMap[activeKey];
     if (storedAgentName && agentOptions.some((item) => item.value === storedAgentName)) {
@@ -1358,18 +1374,6 @@ const ChatbotPage: React.FC = () => {
     [activeMessages, styles.thoughtChainWrap, thoughtChainExpandedMap],
   );
 
-  const [searchKeyword, setSearchKeyword] = useState('');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [workspaceVisible, setWorkspaceVisible] = useState(false);
-
-  const filteredConversations = useMemo(() => {
-    const kw = searchKeyword.trim().toLowerCase();
-    if (!kw) return conversations;
-    return conversations.filter((c) =>
-      String(c.label ?? '').toLowerCase().includes(kw),
-    );
-  }, [conversations, searchKeyword]);
-
   const hasMessages = activeMessages.length > 0;
   const composerNode = (
     <div className={styles.composerStack}>
@@ -1596,17 +1600,50 @@ const ChatbotPage: React.FC = () => {
                   />
                 </div>
                 <div className={styles.sideFooter}>
-                  <div className={styles.agentRow}>
-                    <span className={styles.agentAvatar}>🤖</span>
-                    <Select
-                      value={selectedAgentName}
-                      options={agentOptions}
-                      placeholder="选择 Agent"
-                      onChange={handleAgentChange}
-                      variant="borderless"
-                      style={{ flex: 1 }}
-                    />
-                  </div>
+                  <AvatarDropdown
+                    menu={false}
+                    onUnauthenticatedClick={() => {
+                      setAuthModalTab('login');
+                      setAuthOpen(true);
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 9,
+                        padding: '8px 10px',
+                        borderRadius: 10,
+                        cursor: 'pointer',
+                        background: '#f7f7f8',
+                      }}
+                    >
+                      <Avatar
+                        size={28}
+                        icon={<UserOutlined />}
+                        style={{
+                          flexShrink: 0,
+                          background: currentUserName !== '未登录' ? '#4d6bfe' : '#1d1d1f',
+                          color: '#fff',
+                        }}
+                      >
+                        {currentUserName !== '未登录' ? currentUserName.slice(0, 1) : undefined}
+                      </Avatar>
+                      <span
+                        style={{
+                          minWidth: 0,
+                          flex: 1,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          fontSize: 13,
+                          color: '#3f3f46',
+                        }}
+                      >
+                        {currentUserName}
+                      </span>
+                    </div>
+                  </AvatarDropdown>
                 </div>
               </div>
               <div
@@ -1646,6 +1683,30 @@ const ChatbotPage: React.FC = () => {
                 suffixIcon={<span style={{ fontSize: 11, color: '#71717a' }}>▾</span>}
               />
               <div className={styles.topActions}>
+                {!initialState?.currentUser || currentUserName === '未登录' ? (
+                  <>
+                    <Button
+                      type="text"
+                      size="small"
+                      onClick={() => {
+                        setAuthModalTab('login');
+                        setAuthOpen(true);
+                      }}
+                    >
+                      登录
+                    </Button>
+                    <Button
+                      type="primary"
+                      size="small"
+                      onClick={() => {
+                        setAuthModalTab('register');
+                        setAuthOpen(true);
+                      }}
+                    >
+                      注册
+                    </Button>
+                  </>
+                ) : null}
                 <Tooltip title={workspaceVisible ? '隐藏工作区' : '显示工作区文件'}>
                   <Button
                     type="text"
@@ -1773,6 +1834,11 @@ const ChatbotPage: React.FC = () => {
           )}
         </div>
       </XProvider>
+      <UserAuthModal
+        open={authOpen}
+        initialTab={authModalTab}
+        onClose={() => setAuthOpen(false)}
+      />
     </div>
     </ConfigProvider>
   );

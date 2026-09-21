@@ -11,6 +11,8 @@ import React from 'react';
 dayjs.extend(relativeTime);
 
 import { Question, SelectLang } from '@/components';
+import { AvatarDropdown } from '@/components/RightContent/AvatarDropdown';
+import { getStoredUser } from '@/utils/userSession';
 import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 
@@ -19,7 +21,8 @@ const isDevOrTest = isDev || process.env.CI;
 
 /**
  * @see https://umijs.org/docs/api/runtime-config#getinitialstate
- * 无登录模式：直接返回本地默认用户，不请求后端、不跳转登录
+ * 读取本地持久化的登录用户；未登录时回退到后端默认用户 'default'，
+ * 保持「无登录也可用」的既有体验。用户切换由右上角头像菜单完成并整体刷新。
  * */
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
@@ -27,16 +30,14 @@ export async function getInitialState(): Promise<{
   loading?: boolean;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
 }> {
-  const defaultUser: API.CurrentUser = {
-    name: 'Admin',
-    avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
-    userid: '00000001',
-    access: 'admin',
-  };
-  const fetchUserInfo = async () => defaultUser;
+  const stored = getStoredUser();
+  const currentUser: API.CurrentUser = stored
+    ? { name: stored.displayName, userid: stored.id, access: 'user' }
+    : { name: '未登录', userid: 'default', access: 'user' };
+  const fetchUserInfo = async () => currentUser;
   return {
     fetchUserInfo,
-    currentUser: defaultUser,
+    currentUser,
     settings: defaultSettings as Partial<LayoutSettings>,
   };
 }
@@ -63,7 +64,10 @@ export const layout: RunTimeLayoutConfig = ({
       }
       return dom;
     },
-    avatarProps: undefined,
+    avatarProps: {
+      // 右上角用户菜单（切换账号 / 退出登录）
+      render: () => <AvatarDropdown menu={false} />,
+    },
     // 无登录模式：不展示页脚
     footerRender: false,
     onPageChange: () => {

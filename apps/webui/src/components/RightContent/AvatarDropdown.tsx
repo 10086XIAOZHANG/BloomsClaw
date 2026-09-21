@@ -1,20 +1,23 @@
 import {
   LogoutOutlined,
   SettingOutlined,
+  SwapOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { history, useModel } from '@umijs/max';
 import type { MenuProps } from 'antd';
 import { Spin } from 'antd';
 import { createStyles } from 'antd-style';
-import React from 'react';
+import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
-import { outLogin } from '@/services/ant-design-pro/api';
+import { clearSession, getStoredUser } from '@/utils/userSession';
 import HeaderDropdown from '../HeaderDropdown';
+import { UserAuthModal } from '../UserAuthModal';
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
   children?: React.ReactNode;
+  onUnauthenticatedClick?: () => void;
 };
 
 export const AvatarName = () => {
@@ -44,38 +47,32 @@ const useStyles = createStyles(({ token }) => {
 export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({
   menu,
   children,
+  onUnauthenticatedClick,
 }) => {
-  /**
-   * 退出登录，并且将当前的 url 保存
-   */
-  const loginOut = async () => {
-    await outLogin();
-    const { search, pathname } = window.location;
-    const urlParams = new URL(window.location.href).searchParams;
-    const searchParams = new URLSearchParams({
-      redirect: pathname + search,
-    });
-    /** 此方法会跳转到 redirect 参数所在的位置 */
-    const redirect = urlParams.get('redirect');
-    // Note: There may be security issues, please note
-    if (window.location.pathname !== '/user/login' && !redirect) {
-      history.replace({
-        pathname: '/user/login',
-        search: searchParams.toString(),
-      });
-    }
-  };
+  const [authOpen, setAuthOpen] = useState(false);
   const { styles } = useStyles();
-
   const { initialState, setInitialState } = useModel('@@initialState');
+
+  /**
+   * 退出登录：清空本地会话后整体刷新，
+   * 使会话列表、工作区等按默认用户重新加载（无登录仍可用）。
+   */
+  const logout = () => {
+    flushSync(() => {
+      setInitialState((s) => ({ ...s, currentUser: undefined }));
+    });
+    clearSession();
+    window.location.reload();
+  };
 
   const onMenuClick: MenuProps['onClick'] = (event) => {
     const { key } = event;
     if (key === 'logout') {
-      flushSync(() => {
-        setInitialState((s) => ({ ...s, currentUser: undefined }));
-      });
-      loginOut();
+      logout();
+      return;
+    }
+    if (key === 'switch') {
+      setAuthOpen(true);
       return;
     }
     history.push(`/account/${key}`);
@@ -103,40 +100,60 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({
     return loading;
   }
 
-  const menuItems = [
-    ...(menu
-      ? [
-          {
-            key: 'center',
-            icon: <UserOutlined />,
-            label: '个人中心',
-          },
-          {
-            key: 'settings',
-            icon: <SettingOutlined />,
-            label: '个人设置',
-          },
-          {
-            type: 'divider' as const,
-          },
-        ]
-      : []),
-    {
-      key: 'logout',
-      icon: <LogoutOutlined />,
-      label: '退出登录',
-    },
-  ];
+  const isAuthenticated = Boolean(getStoredUser());
+  const menuItems = isAuthenticated
+    ? [
+        ...(menu
+          ? [
+              {
+                key: 'center',
+                icon: <UserOutlined />,
+                label: '个人中心',
+              },
+              {
+                key: 'settings',
+                icon: <SettingOutlined />,
+                label: '个人设置',
+              },
+              {
+                type: 'divider' as const,
+              },
+            ]
+          : []),
+        {
+          key: 'switch',
+          icon: <SwapOutlined />,
+          label: '切换账号',
+        },
+        {
+          key: 'logout',
+          icon: <LogoutOutlined />,
+          label: '退出登录',
+        },
+      ]
+    : [];
 
   return (
-    <HeaderDropdown
-      menu={{
-        selectedKeys: [],
-        onClick: onMenuClick,
-        items: menuItems,
-      }}
-    >
-      {children}
-    </HeaderDropdown>
+    <>
+      {isAuthenticated ? (
+        <HeaderDropdown
+          menu={{
+            selectedKeys: [],
+            onClick: onMenuClick,
+            items: menuItems,
+          }}
+        >
+          {children}
+        </HeaderDropdown>
+      ) : (
+        <span
+          onClick={onUnauthenticatedClick}
+          style={onUnauthenticatedClick ? { cursor: 'pointer' } : undefined}
+        >
+          {children}
+        </span>
+      )}
+      <UserAuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+    </>
   );
 };
