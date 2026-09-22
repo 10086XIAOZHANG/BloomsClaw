@@ -143,6 +143,8 @@ export const layout: RunTimeLayoutConfig = ({
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const request: RequestConfig = {
-  baseURL: isDev ? '' : 'https://pro-api.ant-design-demo.workers.dev',
+  // API paths are resolved by the service layer: localhost in development and
+  // same-origin /api through Nginx in production.
+  baseURL: '',
   ...errorConfig,
 };

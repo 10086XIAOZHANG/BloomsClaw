@@ -224,9 +224,12 @@ const config: UmiConfig = {
   requestRecord: {},
   exportStatic: {},
   define: {
-    'process.env.API_BASE_URL': process.env.API_BASE_URL || 'http://localhost:3000',
+    'process.env.API_BASE_URL':
+      process.env.API_BASE_URL || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3000'),
     'process.env.CHAT_STREAM_API_URL':
-      process.env.CHAT_STREAM_API_URL || process.env.API_BASE_URL || 'http://localhost:3000',
+      process.env.CHAT_STREAM_API_URL ||
+      process.env.API_BASE_URL ||
+      (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3000'),
     'process.env.CI': process.env.CI,
     'process.env.COMMIT_HASH': process.env.COMMIT_HASH || '',
     'process.env.CF_PAGES_COMMIT_SHA': process.env.CF_PAGES_COMMIT_SHA || '',

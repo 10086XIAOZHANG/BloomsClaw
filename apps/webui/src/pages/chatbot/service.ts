@@ -5,6 +5,13 @@ const CHAT_STREAM_API_BASE_URL =
   process.env.API_BASE_URL ||
   (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3000');
 
+const resolveApiBaseUrl = (baseUrl: string): string => {
+  if (baseUrl.startsWith('/')) {
+    return `${window.location.origin}${baseUrl}`;
+  }
+  return baseUrl;
+};
+
 export type ChatAttachmentKind =
   | 'image'
   | 'document'
@@ -113,39 +120,39 @@ interface ApiEnvelope<T> {
 }
 
 const createChatStreamUrl = (): string => {
-  const normalizedBase = CHAT_STREAM_API_BASE_URL.endsWith('/')
+  const normalizedBase = resolveApiBaseUrl(CHAT_STREAM_API_BASE_URL).endsWith('/')
     ? CHAT_STREAM_API_BASE_URL
-    : `${CHAT_STREAM_API_BASE_URL}/`;
+    : `${resolveApiBaseUrl(CHAT_STREAM_API_BASE_URL)}/`;
   const url = new URL('models-streaming', normalizedBase);
   return url.toString();
 };
 
 const createAttachmentUploadUrl = (): string => {
-  const normalizedBase = CHAT_STREAM_API_BASE_URL.endsWith('/')
+  const normalizedBase = resolveApiBaseUrl(CHAT_STREAM_API_BASE_URL).endsWith('/')
     ? CHAT_STREAM_API_BASE_URL
-    : `${CHAT_STREAM_API_BASE_URL}/`;
+    : `${resolveApiBaseUrl(CHAT_STREAM_API_BASE_URL)}/`;
   return new URL('models-streaming/attachments', normalizedBase).toString();
 };
 
 const createChatHistoryUrl = (id?: string): string => {
-  const normalizedBase = CHAT_STREAM_API_BASE_URL.endsWith('/')
+  const normalizedBase = resolveApiBaseUrl(CHAT_STREAM_API_BASE_URL).endsWith('/')
     ? CHAT_STREAM_API_BASE_URL
-    : `${CHAT_STREAM_API_BASE_URL}/`;
+    : `${resolveApiBaseUrl(CHAT_STREAM_API_BASE_URL)}/`;
   const url = new URL(id ? `models-streaming/history/${id}` : 'models-streaming/history', normalizedBase);
   return url.toString();
 };
 
 const createWorkspaceTreeUrl = (): string => {
-  const normalizedBase = CHAT_STREAM_API_BASE_URL.endsWith('/')
+  const normalizedBase = resolveApiBaseUrl(CHAT_STREAM_API_BASE_URL).endsWith('/')
     ? CHAT_STREAM_API_BASE_URL
-    : `${CHAT_STREAM_API_BASE_URL}/`;
+    : `${resolveApiBaseUrl(CHAT_STREAM_API_BASE_URL)}/`;
   return new URL('models-streaming/workspace/tree', normalizedBase).toString();
 };
 
 const createWorkspaceFileUrl = (filePath: string): string => {
-  const normalizedBase = CHAT_STREAM_API_BASE_URL.endsWith('/')
+  const normalizedBase = resolveApiBaseUrl(CHAT_STREAM_API_BASE_URL).endsWith('/')
     ? CHAT_STREAM_API_BASE_URL
-    : `${CHAT_STREAM_API_BASE_URL}/`;
+    : `${resolveApiBaseUrl(CHAT_STREAM_API_BASE_URL)}/`;
   const url = new URL('models-streaming/workspace/file', normalizedBase);
   url.searchParams.set('path', filePath);
   return url.toString();
@@ -246,7 +253,7 @@ export const uploadChatAttachments = async (
 
 export const listSelectableAgents = async (): Promise<ChatSelectableAgent[]> => {
   const response = await fetch(
-    `${CHAT_STREAM_API_BASE_URL.replace(/\/$/, '')}/agents?userId=${encodeURIComponent(getCurrentUserId())}`,
+    `${resolveApiBaseUrl(CHAT_STREAM_API_BASE_URL).replace(/\/$/, '')}/agents?userId=${encodeURIComponent(getCurrentUserId())}`,
     {
       method: 'GET',
     },
@@ -257,7 +264,7 @@ export const listSelectableAgents = async (): Promise<ChatSelectableAgent[]> => 
 
 export const listSelectableSkills = async (): Promise<ChatSelectableSkill[]> => {
   const response = await fetch(
-    `${CHAT_STREAM_API_BASE_URL.replace(/\/$/, '')}/skills?userId=${encodeURIComponent(getCurrentUserId())}`,
+    `${resolveApiBaseUrl(CHAT_STREAM_API_BASE_URL).replace(/\/$/, '')}/skills?userId=${encodeURIComponent(getCurrentUserId())}`,
     {
       method: 'GET',
     },

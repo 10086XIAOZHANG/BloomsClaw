@@ -233,8 +233,22 @@ const aiAvatarNode = <Avatar style={AI_AVATAR_STYLE}>B</Avatar>;
 const userAvatarNode = <Avatar icon={<UserOutlined />} style={USER_AVATAR_STYLE} />;
 const DRAFT_CONVERSATION_LABEL = '新对话';
 
+const createId = (): string => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+  }
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+};
+
 const createDraftConversation = (): ConversationItem => ({
-  key: crypto.randomUUID(),
+  key: createId(),
   label: DRAFT_CONVERSATION_LABEL,
   group: '今天',
   isDraft: true,
@@ -1116,13 +1130,13 @@ const ChatbotPage: React.FC = () => {
     );
 
     const userMessage: ChatMessage = {
-      id: crypto.randomUUID(),
+      id: createId(),
       role: 'user',
       content: userContent,
       attachments: currentAttachments,
       status: 'done',
     };
-    const assistantRequestId = crypto.randomUUID();
+    const assistantRequestId = createId();
 
     setMessageMap((prev) => ({
       ...prev,
