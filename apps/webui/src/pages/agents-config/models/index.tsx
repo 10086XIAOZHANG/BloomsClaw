@@ -265,7 +265,6 @@ const ModelsPage: React.FC = () => {
                             <Form.Item
                               label="从环境变量读取"
                               name={[field.name, 'useEnvApiKey']}
-                              valuePropName="checked"
                             >
                               <Switch
                                 checkedChildren="开启"

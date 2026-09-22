@@ -366,6 +366,16 @@ export class ModelsAttachmentsService {
   }
 
   private async ensureImageOssUrl(attachment: ResolvedAttachment): Promise<string> {
+    // 开启本地图片直读：直接把服务器本地下载 URL 交给模型，跳过 OSS 上传。
+    // 前提：API_PUBLIC_BASE_URL 指向的地址对模型服务端公网可达（例如经 Nginx 反代）。
+    if (this.useLocalImageUrl()) {
+      const localUrl = this.buildLocalAttachmentUrl(attachment.token);
+      this.logger.debug(
+        `[image-url] use local url token=${attachment.token} name=${attachment.name} url=${localUrl}`,
+      );
+      return localUrl;
+    }
+
     if (attachment.ossUrl) {
       this.logger.debug(
         `[oss-upload] reuse cached oss url token=${attachment.token} name=${attachment.name} url=${attachment.ossUrl}`,
@@ -571,6 +581,10 @@ export class ModelsAttachmentsService {
   private ensureBaseDirs() {
     fs.mkdirSync(this.filesDir, { recursive: true });
     fs.mkdirSync(this.metaDir, { recursive: true });
+  }
+
+  private useLocalImageUrl(): boolean {
+    return process.env.USE_LOCAL_IMAGE_URL === '1';
   }
 
   private getMetaPath(token: string): string {

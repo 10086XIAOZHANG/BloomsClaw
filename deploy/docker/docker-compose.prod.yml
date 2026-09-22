@@ -1,0 +1,37 @@
+# 线上部署：使用预构建镜像，不重新 build；不映射宿主机端口（agent-core 通过容器网络访问）
+services:
+  blooms-claw-sandbox:
+    image: ${SANDBOX_IMAGE:-blooms-claw-sandbox:latest}
+    restart: unless-stopped
+    expose:
+      - "8080"
+    environment:
+      PORT: "8080"
+      MAX_OUTPUT_BYTES: ${SANDBOX_MAX_OUTPUT_BYTES:-100000}
+      COMMAND_TIMEOUT_MS: ${SANDBOX_COMMAND_TIMEOUT_MS:-120000}
+    networks:
+      - blooms-claw-sandbox
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+      - /home/sandbox:rw,noexec,nosuid,size=64m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: ${SANDBOX_CPUS:-1.0}
+          memory: ${SANDBOX_MEMORY:-512M}
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  blooms-claw-sandbox:
+    name: blooms-claw-sandbox
+    driver: bridge
