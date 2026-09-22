@@ -4,7 +4,11 @@ import { Form, Input, Modal, Tabs, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { setSession, type ChatUser } from '@/utils/userSession';
 
-const API_BASE_URL = process.env.CHAT_STREAM_API_URL ?? process.env.API_BASE_URL ?? 'http://localhost:3000';
+const API_BASE_URL =
+  process.env.CHAT_STREAM_API_URL ||
+  process.env.API_PUBLIC_BASE_URL ||
+  process.env.API_BASE_URL ||
+  (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3000');
 
 interface AuthResponse { token: string; user: ChatUser; }
 interface AuthEnvelope { data?: AuthResponse; msg?: string; message?: string; }
