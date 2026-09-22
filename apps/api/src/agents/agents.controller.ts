@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { AgentsService } from './agents.service';
 import { AgentDto } from './agents.types';
 
@@ -7,28 +7,28 @@ export class AgentsController {
   constructor(private readonly agentsService: AgentsService) {}
 
   @Get()
-  findAll(): Promise<AgentDto[]> {
-    return this.agentsService.findAll();
+  findAll(@Query('userId') userId = 'default'): Promise<AgentDto[]> {
+    return this.agentsService.findAll(userId);
   }
 
   @Get(':name')
-  findOne(@Param('name') name: string): Promise<AgentDto> {
-    return this.agentsService.findOne(name);
+  findOne(@Param('name') name: string, @Query('userId') userId = 'default'): Promise<AgentDto> {
+    return this.agentsService.findOne(name, userId);
   }
 
   @Post()
-  create(@Body() body: unknown): Promise<AgentDto> {
-    return this.agentsService.create(body);
+  create(@Body() body: unknown, @Query('userId') userId = 'default'): Promise<AgentDto> {
+    return this.agentsService.create(body, userId);
   }
 
   @Put(':name')
-  update(@Param('name') name: string, @Body() body: unknown): Promise<AgentDto> {
-    return this.agentsService.update(name, body);
+  update(@Param('name') name: string, @Body() body: unknown, @Query('userId') userId = 'default'): Promise<AgentDto> {
+    return this.agentsService.update(name, body, userId);
   }
 
   @Delete(':name')
-  async remove(@Param('name') name: string): Promise<{ deleted: true }> {
-    await this.agentsService.remove(name);
+  async remove(@Param('name') name: string, @Query('userId') userId = 'default'): Promise<{ deleted: true }> {
+    await this.agentsService.remove(name, userId);
     return { deleted: true };
   }
 }

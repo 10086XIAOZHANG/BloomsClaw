@@ -49,24 +49,31 @@ const INVALID_INSTALL_COMMAND = 'INVALID_INSTALL_COMMAND';
 @Injectable()
 export class SkillsService {
   private readonly logger = new Logger(SkillsService.name);
-  private readonly skillsDir = join(homedir(), '.blooms_claw', 'skills');
 
   constructor(private readonly configFileService: ConfigFileService) {}
 
-  async findAll(): Promise<SkillDto[]> {
+  private getSkillsBaseDir(userId = 'default'): string {
+    const normalized = String(userId ?? '').trim();
+    if (!normalized || normalized === 'default') {
+      return join(homedir(), '.blooms_claw', 'skills');
+    }
+    return join(homedir(), '.blooms_claw', 'users', normalized, 'skills');
+  }
+
+  async findAll(userId = 'default'): Promise<SkillDto[]> {
     this.debugLog('skills:list', 'start');
-    const config = await this.readRootConfig();
+    const config = await this.readRootConfig(userId);
     const skills = Object.entries(this.getSkillMap(config))
-      .map(([name, value]) => this.toSkillDto(name, value))
+      .map(([name, value]) => this.toSkillDto(name, value, userId))
       .sort((left, right) => left.name.localeCompare(right.name));
     this.debugLog('skills:list', `completed count=${skills.length}`);
     return skills;
   }
 
-  async findOne(name: string): Promise<SkillDto> {
+  async findOne(name: string, userId = 'default'): Promise<SkillDto> {
     const normalizedName = this.validateName(name);
     this.debugLog('skills:get', `start name=${normalizedName}`);
-    const config = await this.readRootConfig();
+    const config = await this.readRootConfig(userId);
     const skills = this.getSkillMap(config);
     const skill = skills[normalizedName];
 
@@ -78,16 +85,17 @@ export class SkillsService {
       });
     }
 
-    const skillDto = this.toSkillDto(normalizedName, skill);
+    const skillDto = this.toSkillDto(normalizedName, skill, userId);
     this.debugLog('skills:get', `completed name=${normalizedName}`);
     return skillDto;
   }
 
-  async install(payload: unknown): Promise<SkillDto[]> {
+  async install(payload: unknown, userId = 'default'): Promise<SkillDto[]> {
     const { command } = this.validateInstallPayload(payload);
     const parsedCommand = this.parseInstallCommand(command);
     const tempDir = await mkdtemp(join(tmpdir(), 'blooms-claw-skills-'));
     const installStartedAt = Date.now();
+    const skillsBaseDir = this.getSkillsBaseDir(userId);
 
     this.debugLog(
       'skills:install',
@@ -112,21 +120,21 @@ export class SkillsService {
         });
       }
 
-      const config = await this.readRootConfig();
+      const config = await this.readRootConfig(userId);
       const skills = this.getSkillMap(config);
       const nextSkills: SkillMap = { ...skills };
       const installedAt = new Date().toISOString();
 
       for (const skill of installedSkills) {
         const existing = skills[skill.name]
-          ? this.toSkillDto(skill.name, skills[skill.name])
+          ? this.toSkillDto(skill.name, skills[skill.name], userId)
           : null;
 
         this.debugLog(
           'skills:install',
-          `syncing skill name=${skill.name} existed=${existing ? 'yes' : 'no'} targetDir=${this.getSkillDirectory(skill.name)}`,
+          `syncing skill name=${skill.name} existed=${existing ? 'yes' : 'no'} targetDir=${this.getSkillDirectory(skill.name, userId)}`,
         );
-        await this.copyInstalledSkill(tempDir, skill.name);
+        await this.copyInstalledSkill(tempDir, skill.name, skillsBaseDir);
         nextSkills[skill.name] = {
           description: skill.description,
           active: existing?.active ?? 1,
@@ -138,18 +146,21 @@ export class SkillsService {
 
       this.debugLog(
         'skills:install',
-        `writing root config path=${this.configFileService.getConfigPath()} totalSkills=${Object.keys(nextSkills).length}`,
+        `writing root config path=${this.configFileService.getConfigPath(userId)} totalSkills=${Object.keys(nextSkills).length}`,
       );
-      await this.writeRootConfig({
-        ...config,
-        skills: nextSkills,
-      });
+      await this.writeRootConfig(
+        {
+          ...config,
+          skills: nextSkills,
+        },
+        userId,
+      );
 
       const savedSkills = Object.keys(nextSkills)
         .filter((name) =>
           installedSkills.some((installedSkill) => installedSkill.name === name),
         )
-        .map((name) => this.toSkillDto(name, nextSkills[name]));
+        .map((name) => this.toSkillDto(name, nextSkills[name], userId));
 
       this.debugLog(
         'skills:install',
@@ -169,10 +180,10 @@ export class SkillsService {
     }
   }
 
-  async update(name: string, payload: unknown): Promise<SkillDto> {
+  async update(name: string, payload: unknown, userId = 'default'): Promise<SkillDto> {
     const normalizedName = this.validateName(name);
     this.debugLog('skills:update', `start name=${normalizedName}`);
-    const config = await this.readRootConfig();
+    const config = await this.readRootConfig(userId);
     const skills = this.getSkillMap(config);
     const currentSkill = skills[normalizedName];
 
@@ -185,7 +196,7 @@ export class SkillsService {
     }
 
     const mergedSkill = this.validateSkillPayload({
-      ...this.toSkillDto(normalizedName, currentSkill),
+      ...this.toSkillDto(normalizedName, currentSkill, userId),
       ...(payload as Record<string, unknown>),
       name: normalizedName,
     });
@@ -195,12 +206,15 @@ export class SkillsService {
       [normalizedName]: this.toStoredSkillConfig(mergedSkill),
     };
 
-    await this.writeRootConfig({
-      ...config,
-      skills: nextSkills,
-    });
+    await this.writeRootConfig(
+      {
+        ...config,
+        skills: nextSkills,
+      },
+      userId,
+    );
 
-    const updatedSkill = this.toSkillDto(normalizedName, nextSkills[normalizedName]);
+    const updatedSkill = this.toSkillDto(normalizedName, nextSkills[normalizedName], userId);
     this.debugLog(
       'skills:update',
       `completed name=${normalizedName} active=${updatedSkill.active}`,
@@ -208,10 +222,10 @@ export class SkillsService {
     return updatedSkill;
   }
 
-  async remove(name: string): Promise<void> {
+  async remove(name: string, userId = 'default'): Promise<void> {
     const normalizedName = this.validateName(name);
     this.debugLog('skills:remove', `start name=${normalizedName}`);
-    const config = await this.readRootConfig();
+    const config = await this.readRootConfig(userId);
     const skills = this.getSkillMap(config);
 
     if (!skills[normalizedName]) {
@@ -223,14 +237,17 @@ export class SkillsService {
     }
 
     const { [normalizedName]: _removed, ...restSkills } = skills;
-    await rm(this.getSkillDirectory(normalizedName), {
+    await rm(this.getSkillDirectory(normalizedName, userId), {
       recursive: true,
       force: true,
     });
-    await this.writeRootConfig({
-      ...config,
-      skills: restSkills,
-    });
+    await this.writeRootConfig(
+      {
+        ...config,
+        skills: restSkills,
+      },
+      userId,
+    );
     this.debugLog('skills:remove', `completed name=${normalizedName}`);
   }
 
@@ -502,11 +519,15 @@ export class SkillsService {
     );
   }
 
-  private async copyInstalledSkill(tempDir: string, skillName: string): Promise<void> {
+  private async copyInstalledSkill(
+    tempDir: string,
+    skillName: string,
+    skillsBaseDir: string,
+  ): Promise<void> {
     const sourceDir = await this.findInstalledSkillDirectory(tempDir, skillName);
-    const targetDir = this.getSkillDirectory(skillName);
+    const targetDir = join(skillsBaseDir, skillName);
 
-    await mkdir(this.skillsDir, { recursive: true });
+    await mkdir(skillsBaseDir, { recursive: true });
     await rm(targetDir, { recursive: true, force: true });
     await cp(sourceDir, targetDir, { recursive: true });
   }
@@ -534,8 +555,8 @@ export class SkillsService {
     });
   }
 
-  private getSkillDirectory(skillName: string): string {
-    return join(this.skillsDir, skillName);
+  private getSkillDirectory(skillName: string, userId = 'default'): string {
+    return join(this.getSkillsBaseDir(userId), skillName);
   }
 
   private validateName(name: string): string {
@@ -592,17 +613,17 @@ export class SkillsService {
     };
   }
 
-  private async readRootConfig(): Promise<RootConfig> {
+  private async readRootConfig(userId = 'default'): Promise<RootConfig> {
     try {
-      return await this.configFileService.readConfig();
+      return await this.configFileService.readConfig(userId);
     } catch (error) {
       throw this.wrapConfigError(error);
     }
   }
 
-  private async writeRootConfig(config: RootConfig): Promise<void> {
+  private async writeRootConfig(config: RootConfig, userId = 'default'): Promise<void> {
     try {
-      await this.configFileService.writeConfig(config);
+      await this.configFileService.writeConfig(config, userId);
     } catch (error) {
       throw this.wrapConfigError(error);
     }
@@ -618,9 +639,9 @@ export class SkillsService {
     return (config.skills ?? {}) as SkillMap;
   }
 
-  private toSkillDto(name: string, raw: RawSkillConfig): SkillDto {
+  private toSkillDto(name: string, raw: RawSkillConfig, userId = 'default'): SkillDto {
     const candidate = raw as Record<string, unknown>;
-    const document = this.readInstalledSkillDocument(name);
+    const document = this.readInstalledSkillDocument(name, userId);
     const parsedDocument = document
       ? this.parseSkillDocument(name, document)
       : { name, description: '', content: '' };
@@ -649,9 +670,9 @@ export class SkillsService {
     };
   }
 
-  private readInstalledSkillDocument(name: string): string | null {
+  private readInstalledSkillDocument(name: string, userId = 'default'): string | null {
     try {
-      const skillPath = join(this.getSkillDirectory(name), 'SKILL.md');
+      const skillPath = join(this.getSkillDirectory(name, userId), 'SKILL.md');
       return readFileSync(skillPath, 'utf8');
     } catch {
       return null;

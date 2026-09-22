@@ -13,13 +13,39 @@ export interface ActiveSkillMeta {
   description: string;
 }
 
-function getConfigPath(): string {
-  return join(homedir(), '.blooms_claw', 'blooms_claw.json');
+/** 兼容测试/沙盒临时 HOME 覆盖；os.homedir() 在模块加载时缓存，无法感知运行时改 HOME */
+function resolveHome(): string {
+  return process.env.HOME?.trim() ? process.env.HOME : homedir();
 }
 
-function readRootConfig(): RootConfigFile | null {
+/** default（未登录）用户沿用全局配置；其它用户按 userId 隔离 */
+export function resolveConfigPath(userId = 'default'): string {
+  const normalized = String(userId ?? '').trim();
+  if (!normalized || normalized === 'default') {
+    return join(resolveHome(), '.blooms_claw', 'blooms_claw.json');
+  }
+  return join(
+    resolveHome(),
+    '.blooms_claw',
+    'users',
+    normalized,
+    'blooms_claw.json',
+  );
+}
+
+function resolveSkillBaseDir(userId = 'default'): string {
+  const normalized = String(userId ?? '').trim();
+  if (!normalized || normalized === 'default') {
+    return join(resolveHome(), '.blooms_claw', 'skills');
+  }
+  return join(resolveHome(), '.blooms_claw', 'users', normalized, 'skills');
+}
+
+function readRootConfig(userId?: string): RootConfigFile | null {
   try {
-    return JSON.parse(fs.readFileSync(getConfigPath()).toString()) as RootConfigFile;
+    return JSON.parse(
+      fs.readFileSync(resolveConfigPath(userId)).toString(),
+    ) as RootConfigFile;
   } catch (error) {
     console.error(error);
     return null;
@@ -27,13 +53,13 @@ function readRootConfig(): RootConfigFile | null {
 }
 
 /** Skill 在宿主机上的物理目录（注意：沙盒 backend 读不到这里，只能用 node:fs 直读） */
-export function getSkillDir(skillName: string): string {
-  return join(homedir(), '.blooms_claw', 'skills', skillName);
+export function getSkillDir(skillName: string, userId?: string): string {
+  return join(resolveSkillBaseDir(userId), skillName);
 }
 
 /** 列出配置中 active 的 Skills（L1 索引用，只含 name + description） */
-export function listActiveSkills(): ActiveSkillMeta[] {
-  const config = readRootConfig();
+export function listActiveSkills(userId?: string): ActiveSkillMeta[] {
+  const config = readRootConfig(userId);
   if (!config) {
     return [];
   }
@@ -50,19 +76,19 @@ export function listActiveSkills(): ActiveSkillMeta[] {
 }
 
 /** 按需读取单个 active Skill 的 SKILL.md 正文（L2），未激活/不存在返回 null */
-export function readSkillBody(skillName: string): string | null {
+export function readSkillBody(skillName: string, userId?: string): string | null {
   const name = skillName.trim();
   if (!name || name.includes('..') || name.includes('/') || name.includes('\\')) {
     return null;
   }
-  const config = readRootConfig();
+  const config = readRootConfig(userId);
   if (!config) {
     return null;
   }
   if (!isSkillEnabled((config.skills ?? {})[name])) {
     return null;
   }
-  const skillPath = join(getSkillDir(name), 'SKILL.md');
+  const skillPath = join(getSkillDir(name, userId), 'SKILL.md');
   if (!fs.existsSync(skillPath)) {
     return null;
   }
@@ -78,20 +104,21 @@ export function readSkillBody(skillName: string): string | null {
 export function readSkillResourceFile(
   skillName: string,
   relativePath: string,
+  userId?: string,
 ): { ok: boolean; content?: string; error?: string } {
   const name = skillName.trim();
   const rel = relativePath.replace(/\\/g, '/');
   if (!name || !rel || rel.startsWith('/') || /(^|\/)\.\.(\/|$)/.test(rel)) {
     return { ok: false, error: '非法路径' };
   }
-  const config = readRootConfig();
+  const config = readRootConfig(userId);
   if (!config) {
     return { ok: false, error: '读取全局配置失败' };
   }
   if (!isSkillEnabled((config.skills ?? {})[name])) {
     return { ok: false, error: `Skill 不存在或未激活: ${name}` };
   }
-  const skillDir = getSkillDir(name);
+  const skillDir = getSkillDir(name, userId);
   const fullPath = join(skillDir, rel);
   if (!fullPath.startsWith(skillDir)) {
     return { ok: false, error: '非法路径：不允许跳出 Skill 目录' };
@@ -107,17 +134,13 @@ export function readSkillResourceFile(
   }
 }
 
-export function readConfigByAgentName(agentName: string) {
+export function readConfigByAgentName(agentName: string, userId?: string) {
   if (!agentName) {
     throw new Error('智能体不存在');
   }
 
   // 1. 生成智能体配置的路径
-  const configPath = join(
-    homedir(),
-    '.blooms_claw',
-    'blooms_claw.json',
-  );
+  const configPath = resolveConfigPath(userId);
 
   try {
     // 2. 读取智能体配置
@@ -184,16 +207,12 @@ function isSkillEnabled(value: Record<string, unknown> | undefined): boolean {
   return true;
 }
 
-export function readSelectedSkillContents(skillNames: string[]) {
+export function readSelectedSkillContents(skillNames: string[], userId?: string) {
   if (!Array.isArray(skillNames) || skillNames.length === 0) {
     return [];
   }
 
-  const configPath = join(
-    homedir(),
-    '.blooms_claw',
-    'blooms_claw.json',
-  );
+  const configPath = resolveConfigPath(userId);
 
   try {
     const config = JSON.parse(fs.readFileSync(configPath).toString()) as RootConfigFile;
@@ -204,7 +223,7 @@ export function readSelectedSkillContents(skillNames: string[]) {
       .filter(Boolean)
       .filter((skillName) => isSkillEnabled(skillsConfig[skillName]))
       .map((skillName) => {
-        const skillPath = join(homedir(), '.blooms_claw', 'skills', skillName, 'SKILL.md');
+        const skillPath = join(resolveSkillBaseDir(userId), skillName, 'SKILL.md');
         if (!fs.existsSync(skillPath)) {
           return null;
         }

@@ -49,7 +49,7 @@ describe('skill progressive loading', () => {
     mockReadSkillBody.mockReturnValue('# UI/UX Pro Max 正文');
     mockGetSkillDir.mockReturnValue('/tmp/.blooms_claw/skills/ui-ux-pro-max');
     const result = await loadSkillTool.invoke({ skill_name: 'ui-ux-pro-max' });
-    expect(mockReadSkillBody).toHaveBeenCalledWith('ui-ux-pro-max');
+    expect(mockReadSkillBody).toHaveBeenCalledWith('ui-ux-pro-max', undefined);
     expect(result).toContain('已加载');
     expect(result).toContain('# UI/UX Pro Max 正文');
   });

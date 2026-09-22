@@ -22,6 +22,7 @@ import {
   Typography,
 } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
+import { subscribeUserChange } from '@/utils/userSession';
 
 import type { AgentItem, ModelItem, ToolItem } from '../data';
 import { createEmptyAgent } from '../data';
@@ -101,6 +102,14 @@ const AgentsPage: React.FC = () => {
 
   useEffect(() => {
     void loadConfig();
+  }, []);
+
+  // 切换用户后重新加载该用户的 Agents / Models / Tools 配置
+  useEffect(() => {
+    const unsubscribe = subscribeUserChange(() => {
+      void loadConfig();
+    });
+    return unsubscribe;
   }, []);
 
   const handleSave = async (fieldName: number) => {

@@ -241,7 +241,7 @@ export class ModelsLangchainController {
         this.modelsChatHistoryService.ensureAssistantMessage(chatId, {
           id: assistantMessageId,
         }, currentUserId);
-        const agentRuntimeConfig = readConfigByAgentName(agentName);
+        const agentRuntimeConfig = readConfigByAgentName(agentName, currentUserId);
         if (!agentRuntimeConfig?.modelConfig) {
           throw new BadRequestException(
             `未找到智能体配置: ${agentName}（model=${agentRuntimeConfig?.modelName ?? 'missing'}，请检查 ~/.blooms_claw/blooms_claw.json 中 agents.${agentName}.model 是否与 models 下的 key 大小写一致）`,

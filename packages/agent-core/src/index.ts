@@ -16,8 +16,8 @@ import { webSearchTool } from './tools/webSearch';
 import { createSandboxTools } from './tools/sandbox';
 import {
   buildSkillIndexPrompt,
-  loadSkillTool,
-  readSkillResourceTool,
+  createLoadSkillTool,
+  createReadSkillResourceTool,
 } from './tools/skills';
 
 /** 所有 agent 自动加载的默认工具（不依赖 agentConfig.tools 配置） */
@@ -223,12 +223,16 @@ function resolveToolsEnable(
   };
 }
 
-function buildSystemPrompt(basePrompt: string, skillNames: string[] | undefined) {
-  const selectedSkills = readSelectedSkillContents(skillNames ?? []);
+function buildSystemPrompt(
+  basePrompt: string,
+  skillNames: string[] | undefined,
+  userId?: string,
+) {
+  const selectedSkills = readSelectedSkillContents(skillNames ?? [], userId);
   const workspaceGuardrail = `你运行在一个 Docker 隔离沙箱文件系统中，当前目录（./）即为你的工作区根目录。\n请直接使用相对路径（如 ./file.txt）进行文件读取、创建和修改。\n**严禁**在路径中包含宿主机绝对路径；所有命令都在临时隔离容器中执行，禁止尝试访问宿主机、Docker socket、外部工作区或绕过沙箱限制。\n例外：调用已加载 Skill 自带 scripts/*.py 时，允许使用其 ~/.blooms_claw/skills/<name> 绝对路径（这是唯一例外）。`;
   // L1 常驻：只放 active Skills 的 name + description 索引（约200 token/skill），
   // 正文走 load_skill / read_skill_resource 按用户提问按需加载，避免首轮全量注入爆 context。
-  const skillIndex = buildSkillIndexPrompt();
+  const skillIndex = buildSkillIndexPrompt(userId);
   const parts = [basePrompt.trim(), workspaceGuardrail, skillIndex];
   // 兼容逻辑：调用方显式传入 skillNames 时，首轮仍强制预加载这些 Skill 正文（L2）；
   // 不传时仅给索引，由模型根据用户提问调用 load_skill 渐进加载。
@@ -344,7 +348,7 @@ export async function createAgent(
   );
   const checkpointer = new FileSaver(filePath);
 
-  const config = readConfigByAgentName(agentName);
+  const config = readConfigByAgentName(agentName, userId);
   if (!config) {
     throw new Error(`未找到智能体配置: ${agentName}`);
   }
@@ -355,6 +359,7 @@ export async function createAgent(
   const systemPrompt = buildSystemPrompt(
     String(agentConfig.systemPrompt ?? ''),
     skillNames,
+    userId,
   );
 
   const { backend, close } = await createRuntimeBackend(
@@ -363,7 +368,7 @@ export async function createAgent(
     resolvedToolsEnable,
   );
   // MCP 自定义工具：读取 agentConfig.tools 绑定的 MCP Servers，按需建连后注入
-  const { tools: mcpTools, close: closeMcp } = await loadMcpToolsForAgent(agentName);
+  const { tools: mcpTools, close: closeMcp } = await loadMcpToolsForAgent(agentName, userId);
   if (mcpTools.length > 0) {
     console.log(
       `[agent-core][createAgent] agent=${agentName} 已加载 MCP 工具: ` +
@@ -378,8 +383,8 @@ export async function createAgent(
     ...(resolvedToolsEnable.calculatorTools ? [calculatorTool] : []),
     ...mcpTools,
     // Skill 渐进式加载工具常驻：模型命中索引后自行调用，与用户提问动态相关
-    loadSkillTool,
-    readSkillResourceTool,
+    createLoadSkillTool(userId),
+    createReadSkillResourceTool(userId),
   ];
   const bailianFileReferenceMiddleware = createBailianFileReferenceMiddleware(
     runtimeContext?.bailianFileReferences,

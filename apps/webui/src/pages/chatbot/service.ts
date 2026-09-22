@@ -246,7 +246,7 @@ export const uploadChatAttachments = async (
 
 export const listSelectableAgents = async (): Promise<ChatSelectableAgent[]> => {
   const response = await fetch(
-    `${CHAT_STREAM_API_BASE_URL.replace(/\/$/, '')}/agents`,
+    `${CHAT_STREAM_API_BASE_URL.replace(/\/$/, '')}/agents?userId=${encodeURIComponent(getCurrentUserId())}`,
     {
       method: 'GET',
     },
@@ -257,7 +257,7 @@ export const listSelectableAgents = async (): Promise<ChatSelectableAgent[]> => 
 
 export const listSelectableSkills = async (): Promise<ChatSelectableSkill[]> => {
   const response = await fetch(
-    `${CHAT_STREAM_API_BASE_URL.replace(/\/$/, '')}/skills`,
+    `${CHAT_STREAM_API_BASE_URL.replace(/\/$/, '')}/skills?userId=${encodeURIComponent(getCurrentUserId())}`,
     {
       method: 'GET',
     },

@@ -20,16 +20,17 @@ const INVALID_AGENT_NAME = 'INVALID_AGENT_NAME';
 export class AgentsService {
   constructor(private readonly configFileService: ConfigFileService) {}
 
-  async findAll(): Promise<AgentDto[]> {
-    const config = await this.readRootConfig();
-    return Object.entries(config.agents ?? {}).map(([name, value]) =>
+  async findAll(userId = 'default'): Promise<AgentDto[]> {
+    const config = await this.readRootConfig(userId);
+    const agents = config.agents ?? {};
+    return Object.entries(agents).map(([name, value]) =>
       this.toAgentDto(name, value),
     );
   }
 
-  async findOne(name: string): Promise<AgentDto> {
+  async findOne(name: string, userId = 'default'): Promise<AgentDto> {
     const normalizedName = this.validateName(name);
-    const config = await this.readRootConfig();
+    const config = await this.readRootConfig(userId);
     const agents = this.getAgentMap(config);
     const agent = agents[normalizedName];
 
@@ -43,10 +44,10 @@ export class AgentsService {
     return this.toAgentDto(normalizedName, agent);
   }
 
-  async create(payload: unknown): Promise<AgentDto> {
+  async create(payload: unknown, userId = 'default'): Promise<AgentDto> {
     const agentConfig = this.validateAgentPayload(payload);
     const normalizedName = agentConfig.name;
-    const config = await this.readRootConfig();
+    const config = await this.readRootConfig(userId);
     const agents = this.getAgentMap(config);
 
     if (agents[normalizedName]) {
@@ -65,15 +66,15 @@ export class AgentsService {
       },
     };
 
-    await this.writeRootConfig(nextConfig);
+    await this.writeRootConfig(nextConfig, userId);
     return this.toAgentDto(normalizedName, storedAgent);
   }
 
-  async update(name: string, payload: unknown): Promise<AgentDto> {
+  async update(name: string, payload: unknown, userId = 'default'): Promise<AgentDto> {
     const currentName = this.validateName(name);
     const agentConfig = this.validateAgentPayload(payload);
     const nextName = agentConfig.name;
-    const config = await this.readRootConfig();
+    const config = await this.readRootConfig(userId);
     const agents = this.getAgentMap(config);
 
     if (!agents[currentName]) {
@@ -103,13 +104,13 @@ export class AgentsService {
       agents: nextAgents,
     };
 
-    await this.writeRootConfig(nextConfig);
+    await this.writeRootConfig(nextConfig, userId);
     return this.toAgentDto(nextName, storedAgent);
   }
 
-  async remove(name: string): Promise<void> {
+  async remove(name: string, userId = 'default'): Promise<void> {
     const normalizedName = this.validateName(name);
-    const config = await this.readRootConfig();
+    const config = await this.readRootConfig(userId);
     const agents = this.getAgentMap(config);
 
     if (!agents[normalizedName]) {
@@ -120,10 +121,13 @@ export class AgentsService {
     }
 
     const { [normalizedName]: _removed, ...restAgents } = agents;
-    await this.writeRootConfig({
-      ...config,
-      agents: restAgents,
-    });
+    await this.writeRootConfig(
+      {
+        ...config,
+        agents: restAgents,
+      },
+      userId,
+    );
   }
 
   private validateName(name: string): string {
@@ -175,17 +179,17 @@ export class AgentsService {
     };
   }
 
-  private async readRootConfig(): Promise<RootConfig> {
+  private async readRootConfig(userId = 'default'): Promise<RootConfig> {
     try {
-      return await this.configFileService.readConfig();
+      return await this.configFileService.readConfig(userId);
     } catch (error) {
       throw this.wrapConfigError(error);
     }
   }
 
-  private async writeRootConfig(config: RootConfig): Promise<void> {
+  private async writeRootConfig(config: RootConfig, userId = 'default'): Promise<void> {
     try {
-      await this.configFileService.writeConfig(config);
+      await this.configFileService.writeConfig(config, userId);
     } catch (error) {
       throw this.wrapConfigError(error);
     }

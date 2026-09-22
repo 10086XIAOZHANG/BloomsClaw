@@ -23,6 +23,7 @@ import {
   Typography,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { subscribeUserChange } from '@/utils/userSession';
 
 import type { ModelItem } from '../data';
 import { createEmptyModel, MODEL_PROVIDER_OPTIONS } from '../data';
@@ -56,6 +57,14 @@ const ModelsPage: React.FC = () => {
 
   useEffect(() => {
     void loadConfig();
+  }, []);
+
+  // 切换用户后重新加载该用户的 Models 配置
+  useEffect(() => {
+    const unsubscribe = subscribeUserChange(() => {
+      void loadConfig();
+    });
+    return unsubscribe;
   }, []);
 
   const handleSave = async (fieldName: number) => {

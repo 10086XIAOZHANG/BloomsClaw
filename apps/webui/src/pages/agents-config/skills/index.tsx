@@ -17,6 +17,7 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
+import { subscribeUserChange } from '@/utils/userSession';
 
 import type { SkillItem } from '../data';
 import {
@@ -47,6 +48,14 @@ const SkillsPage: React.FC = () => {
 
   useEffect(() => {
     void loadConfig();
+  }, []);
+
+  // 切换用户后重新加载该用户的 Skills 配置，避免沿用上一个用户的列表
+  useEffect(() => {
+    const unsubscribe = subscribeUserChange(() => {
+      void loadConfig();
+    });
+    return unsubscribe;
   }, []);
 
   const handleInstall = async () => {

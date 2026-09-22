@@ -27,21 +27,32 @@ const MCP_UNREACHABLE = 'MCP_UNREACHABLE';
 
 const MCP_CONNECT_TIMEOUT_MS = 15000;
 
+const BUILTIN_TOOLS: Record<string, ToolDto> = {
+  FileTools: { name: 'FileTools', description: '文件读写工具', active: 1, builtin: 1 },
+  RunCommand: { name: 'RunCommand', description: '命令执行工具', active: 1, builtin: 1 },
+  WebSearch: { name: 'WebSearch', description: '网页搜索工具', active: 1, builtin: 1 },
+  Calculator: { name: 'Calculator', description: '数学计算工具', active: 1, builtin: 1 },
+};
+
 @Injectable()
 export class ToolsService {
   constructor(private readonly configFileService: ConfigFileService) {}
 
-  async findAll(): Promise<ToolDto[]> {
-    const config = await this.readRootConfig();
-    return Object.entries(config.tools ?? {}).map(([name, value]) =>
-      this.toToolDto(name, value),
+  async findAll(userId = 'default'): Promise<ToolDto[]> {
+    const config = await this.readRootConfig(userId);
+    const tools = {
+      ...BUILTIN_TOOLS,
+      ...(config.tools ?? {}),
+    };
+    return Object.entries(tools).map(([name, value]) =>
+      this.toToolDto(name, value as any),
     );
   }
 
-  async findOne(name: string): Promise<ToolDto> {
+  async findOne(name: string, userId = 'default'): Promise<ToolDto> {
     const normalizedName = this.validateName(name);
-    const config = await this.readRootConfig();
-    const tools = this.getToolMap(config);
+    const config = await this.readRootConfig(userId);
+    const tools = this.getVisibleToolMap(config);
     const tool = tools[normalizedName];
 
     if (!tool) {
@@ -55,8 +66,8 @@ export class ToolsService {
   }
 
   /** 连接 MCP Server 并返回其暴露的工具列表（仅透传 name + description） */
-  async listRemoteTools(name: string): Promise<RemoteMcpToolMeta[]> {
-    const dto = await this.findOne(name);
+  async listRemoteTools(name: string, userId = 'default'): Promise<RemoteMcpToolMeta[]> {
+    const dto = await this.findOne(name, userId);
     if (dto.builtin === 1 || !dto.mcp) {
       throw new BadRequestException({
         message: 'Only MCP tools support remote tool listing.',
@@ -84,10 +95,10 @@ export class ToolsService {
     return { ok: true, tools };
   }
 
-  async create(payload: unknown): Promise<ToolDto> {
+  async create(payload: unknown, userId = 'default'): Promise<ToolDto> {
     const toolConfig = this.validateToolPayload(payload, { isCreate: true });
     const normalizedName = toolConfig.name;
-    const config = await this.readRootConfig();
+    const config = await this.readRootConfig(userId);
     const tools = this.getToolMap(config);
 
     if (tools[normalizedName]) {
@@ -111,15 +122,15 @@ export class ToolsService {
       },
     };
 
-    await this.writeRootConfig(nextConfig);
+    await this.writeRootConfig(nextConfig, userId);
     return this.toToolDto(normalizedName, storedTool);
   }
 
-  async update(name: string, payload: unknown): Promise<ToolDto> {
+  async update(name: string, payload: unknown, userId = 'default'): Promise<ToolDto> {
     const currentName = this.validateName(name);
     const toolConfig = this.validateToolPayload(payload, { isCreate: false });
     const nextName = toolConfig.name;
-    const config = await this.readRootConfig();
+    const config = await this.readRootConfig(userId);
     const tools = this.getToolMap(config);
 
     if (!tools[currentName]) {
@@ -151,13 +162,13 @@ export class ToolsService {
       tools: nextTools,
     };
 
-    await this.writeRootConfig(nextConfig);
+    await this.writeRootConfig(nextConfig, userId);
     return this.toToolDto(nextName, storedTool);
   }
 
-  async remove(name: string): Promise<void> {
+  async remove(name: string, userId = 'default'): Promise<void> {
     const normalizedName = this.validateName(name);
-    const config = await this.readRootConfig();
+    const config = await this.readRootConfig(userId);
     const tools = this.getToolMap(config);
 
     if (!tools[normalizedName]) {
@@ -171,7 +182,7 @@ export class ToolsService {
     await this.writeRootConfig({
       ...config,
       tools: restTools,
-    });
+    }, userId);
   }
 
   private validateName(name: string): string {
@@ -336,17 +347,17 @@ export class ToolsService {
     }
   }
 
-  private async readRootConfig(): Promise<RootConfig> {
+  private async readRootConfig(userId = 'default'): Promise<RootConfig> {
     try {
-      return await this.configFileService.readConfig();
+      return await this.configFileService.readConfig(userId);
     } catch (error) {
       throw this.wrapConfigError(error);
     }
   }
 
-  private async writeRootConfig(config: RootConfig): Promise<void> {
+  private async writeRootConfig(config: RootConfig, userId = 'default'): Promise<void> {
     try {
-      await this.configFileService.writeConfig(config);
+      await this.configFileService.writeConfig(config, userId);
     } catch (error) {
       throw this.wrapConfigError(error);
     }
@@ -356,6 +367,14 @@ export class ToolsService {
     const message =
       error instanceof Error ? error.message : 'Failed to access config file.';
     return new InternalServerErrorException(message);
+  }
+
+  private getVisibleToolMap(config: RootConfig): ToolMap {
+    const map = this.getToolMap(config);
+    return {
+      ...BUILTIN_TOOLS,
+      ...map,
+    } as ToolMap;
   }
 
   private getToolMap(config: RootConfig): ToolMap {
@@ -380,7 +399,7 @@ export class ToolsService {
         name,
         description,
         active: 1,
-        builtin,
+        builtin: 1,
       };
     }
 

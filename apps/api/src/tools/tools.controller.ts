@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { RemoteMcpToolMeta, ToolDto } from './tools.types';
 import { ToolsService } from './tools.service';
 
@@ -7,8 +7,8 @@ export class ToolsController {
   constructor(private readonly toolsService: ToolsService) {}
 
   @Get()
-  findAll(): Promise<ToolDto[]> {
-    return this.toolsService.findAll();
+  findAll(@Query('userId') userId = 'default'): Promise<ToolDto[]> {
+    return this.toolsService.findAll(userId);
   }
 
   @Post('validate')
@@ -17,28 +17,28 @@ export class ToolsController {
   }
 
   @Get(':name/remote-tools')
-  listRemoteTools(@Param('name') name: string) {
-    return this.toolsService.listRemoteTools(name);
+  listRemoteTools(@Param('name') name: string, @Query('userId') userId = 'default') {
+    return this.toolsService.listRemoteTools(name, userId);
   }
 
   @Get(':name')
-  findOne(@Param('name') name: string): Promise<ToolDto> {
-    return this.toolsService.findOne(name);
+  findOne(@Param('name') name: string, @Query('userId') userId = 'default'): Promise<ToolDto> {
+    return this.toolsService.findOne(name, userId);
   }
 
   @Post()
-  create(@Body() body: unknown): Promise<ToolDto> {
-    return this.toolsService.create(body);
+  create(@Body() body: unknown, @Query('userId') userId = 'default'): Promise<ToolDto> {
+    return this.toolsService.create(body, userId);
   }
 
   @Put(':name')
-  update(@Param('name') name: string, @Body() body: unknown): Promise<ToolDto> {
-    return this.toolsService.update(name, body);
+  update(@Param('name') name: string, @Body() body: unknown, @Query('userId') userId = 'default'): Promise<ToolDto> {
+    return this.toolsService.update(name, body, userId);
   }
 
   @Delete(':name')
-  async remove(@Param('name') name: string): Promise<{ deleted: true }> {
-    await this.toolsService.remove(name);
+  async remove(@Param('name') name: string, @Query('userId') userId = 'default'): Promise<{ deleted: true }> {
+    await this.toolsService.remove(name, userId);
     return { deleted: true };
   }
 }

@@ -20,6 +20,7 @@ import {
   Typography,
 } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
+import { subscribeUserChange } from '@/utils/userSession';
 
 import type { McpConfig, RemoteMcpToolMeta, ToolItem } from '../data';
 import {
@@ -125,6 +126,14 @@ const ToolsPage: React.FC = () => {
 
   useEffect(() => {
     void loadConfig();
+  }, []);
+
+  // 切换用户后重新加载该用户的 Tools 配置，避免沿用上一个用户的列表
+  useEffect(() => {
+    const unsubscribe = subscribeUserChange(() => {
+      void loadConfig();
+    });
+    return unsubscribe;
   }, []);
 
   const handleToggle = async (toolId: string, checked: boolean) => {

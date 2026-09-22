@@ -1,5 +1,6 @@
 import { request } from '@umijs/max';
 import type { AgentItem, McpConfig, ModelItem, RemoteMcpToolMeta, SkillItem, ToolItem } from './data';
+import { getCurrentUserId } from '@/utils/userSession';
 
 type ApiResponse<T> = {
   code: number;
@@ -52,6 +53,7 @@ export const getBloomsClawAgentsConfig = async (): Promise<{
 }> => {
   const response = await request<ApiResponse<BackendAgentItem[]>>(
     `${API_BASE_URL}/agents`,
+    { params: { userId: getCurrentUserId() } },
   );
 
   if (response.code !== 0) {
@@ -76,6 +78,7 @@ export const getBloomsClawModelsConfig = async (): Promise<{
 }> => {
   const response = await request<ApiResponse<BackendModelItem[]>>(
     `${API_BASE_URL}/models`,
+    { params: { userId: getCurrentUserId() } },
   );
 
   if (response.code !== 0) {
@@ -103,6 +106,7 @@ export const getBloomsClawToolsConfig = async (): Promise<{
 }> => {
   const response = await request<ApiResponse<BackendToolItem[]>>(
     `${API_BASE_URL}/tools`,
+    { params: { userId: getCurrentUserId() } },
   );
 
   if (response.code !== 0) {
@@ -126,6 +130,7 @@ export const getBloomsClawSkillsConfig = async (): Promise<{
 }> => {
   const response = await request<ApiResponse<BackendSkillItem[]>>(
     `${API_BASE_URL}/skills`,
+    { params: { userId: getCurrentUserId() } },
   );
 
   if (response.code !== 0) {
@@ -163,10 +168,12 @@ export const saveAgentItem = async (
     ? await request<ApiResponse<BackendAgentItem>>(requestUrl, {
         method: 'PUT',
         data: payload,
+        params: { userId: getCurrentUserId() },
       })
     : await request<ApiResponse<BackendAgentItem>>(requestUrl, {
         method: 'POST',
         data: payload,
+        params: { userId: getCurrentUserId() },
       });
 
   if (response.code !== 0) {
@@ -183,6 +190,7 @@ export const deleteAgentItem = async (
     `${API_BASE_URL}/agents/${encodeURIComponent(agentId)}`,
     {
       method: 'DELETE',
+      params: { userId: getCurrentUserId() },
     },
   );
 
@@ -213,10 +221,12 @@ export const saveModelItem = async (
     ? await request<ApiResponse<BackendModelItem>>(requestUrl, {
         method: 'PUT',
         data: payload,
+        params: { userId: getCurrentUserId() },
       })
     : await request<ApiResponse<BackendModelItem>>(requestUrl, {
         method: 'POST',
         data: payload,
+        params: { userId: getCurrentUserId() },
       });
 
   if (response.code !== 0) {
@@ -233,6 +243,7 @@ export const deleteModelItem = async (
     `${API_BASE_URL}/models/${encodeURIComponent(modelName)}`,
     {
       method: 'DELETE',
+      params: { userId: getCurrentUserId() },
     },
   );
 
@@ -259,11 +270,13 @@ export const saveToolItem = async (
         {
           method: 'PUT',
           data: payload,
+          params: { userId: getCurrentUserId() },
         },
       )
     : await request<ApiResponse<BackendToolItem>>(`${API_BASE_URL}/tools`, {
         method: 'POST',
         data: payload,
+        params: { userId: getCurrentUserId() },
       });
 
   if (response.code !== 0) {
@@ -291,6 +304,7 @@ export const createToolItem = async (
     {
       method: 'POST',
       data: payload,
+      params: { userId: getCurrentUserId() },
     },
   );
 
@@ -306,6 +320,7 @@ export const listRemoteMcpTools = async (
 ): Promise<RemoteMcpToolMeta[]> => {
   const response = await request<ApiResponse<RemoteMcpToolMeta[]>>(
     `${API_BASE_URL}/tools/${encodeURIComponent(toolId)}/remote-tools`,
+    { params: { userId: getCurrentUserId() } },
   );
 
   if (response.code !== 0) {
@@ -323,6 +338,7 @@ export const validateMcpConfig = async (
     {
       method: 'POST',
       data: { mcp },
+      params: { userId: getCurrentUserId() },
     },
   );
 
@@ -340,6 +356,7 @@ export const deleteToolItem = async (
     `${API_BASE_URL}/tools/${encodeURIComponent(toolId)}`,
     {
       method: 'DELETE',
+      params: { userId: getCurrentUserId() },
     },
   );
 
@@ -366,6 +383,7 @@ export const saveSkillItem = async (
     {
       method: 'PUT',
       data: payload,
+      params: { userId: getCurrentUserId() },
     },
   );
 
@@ -384,6 +402,7 @@ export const installSkillByCommand = async (
     {
       method: 'POST',
       data: { command },
+      params: { userId: getCurrentUserId() },
     },
   );
 
@@ -401,6 +420,7 @@ export const deleteSkillItem = async (
     `${API_BASE_URL}/skills/${encodeURIComponent(skillId)}`,
     {
       method: 'DELETE',
+      params: { userId: getCurrentUserId() },
     },
   );
 

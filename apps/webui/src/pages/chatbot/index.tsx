@@ -945,7 +945,7 @@ const ChatbotPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [userSessionVersion]);
 
   useEffect(() => {
     if (agentOptions.length === 0) {

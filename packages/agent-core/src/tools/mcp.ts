@@ -7,6 +7,8 @@ import fs from 'fs';
 import { homedir } from 'os';
 import { join } from 'path';
 
+import { resolveConfigPath } from '../readConfig';
+
 export type McpTransportKind = 'stdio' | 'streamableHttp' | 'sse';
 
 export interface McpServerConfig {
@@ -34,14 +36,15 @@ interface RootConfigFile {
   tools?: Record<string, Record<string, unknown>>;
 }
 
-function getConfigPath(): string {
-  const home = process.env.HOME?.trim() ? process.env.HOME : homedir();
-  return join(home, '.blooms_claw', 'blooms_claw.json');
+function getConfigPath(userId?: string): string {
+  return resolveConfigPath(userId);
 }
 
-function readRootConfig(): RootConfigFile | null {
+function readRootConfig(userId?: string): RootConfigFile | null {
   try {
-    return JSON.parse(fs.readFileSync(getConfigPath()).toString()) as RootConfigFile;
+    return JSON.parse(
+      fs.readFileSync(getConfigPath(userId)).toString(),
+    ) as RootConfigFile;
   } catch (error) {
     console.error('[mcp] 读取全局配置失败', error);
     return null;
@@ -102,8 +105,8 @@ function parseMcpServerConfig(name: string, value: Record<string, unknown>): Mcp
 }
 
 /** 读取某个 agent 绑定的、且全局 active 的 MCP Servers */
-export function listMcpBindingsForAgent(agentName: string): McpToolBinding[] {
-  const config = readRootConfig();
+export function listMcpBindingsForAgent(agentName: string, userId?: string): McpToolBinding[] {
+  const config = readRootConfig(userId);
   if (!config) {
     return [];
   }
@@ -203,8 +206,8 @@ function sanitizeToolName(serverName: string, remoteName: string): string {
  * 每个远端 tool 被包装成独立的 langchain tool：`<server>__<tool>`，
  * 调用时按需建连（stdio 拉起子进程 / http 建会话），callTool 后即关闭。
  */
-export async function loadMcpToolsForAgent(agentName: string): Promise<LoadedMcpTools> {
-  const bindings = listMcpBindingsForAgent(agentName);
+export async function loadMcpToolsForAgent(agentName: string, userId?: string): Promise<LoadedMcpTools> {
+  const bindings = listMcpBindingsForAgent(agentName, userId);
   if (bindings.length === 0) {
     return { tools: [], close: async () => {} };
   }

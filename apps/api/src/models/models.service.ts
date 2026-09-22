@@ -20,16 +20,16 @@ const INVALID_MODEL_NAME = 'INVALID_MODEL_NAME';
 export class ModelsService {
   constructor(private readonly configFileService: ConfigFileService) {}
 
-  async findAll(): Promise<ModelDto[]> {
-    const config = await this.readRootConfig();
+  async findAll(userId = 'default'): Promise<ModelDto[]> {
+    const config = await this.readRootConfig(userId);
     return Object.entries(config.models ?? {}).map(([name, value]) =>
       this.toModelDto(name, value),
     );
   }
 
-  async findOne(name: string): Promise<ModelDto> {
+  async findOne(name: string, userId = 'default'): Promise<ModelDto> {
     const normalizedName = this.validateName(name);
-    const config = await this.readRootConfig();
+    const config = await this.readRootConfig(userId);
     const models = this.getModelMap(config);
     const storageKey = this.findModelStorageKeyByName(models, normalizedName);
     const model = storageKey ? models[storageKey] : undefined;
@@ -44,10 +44,10 @@ export class ModelsService {
     return this.toModelDto(storageKey!, model);
   }
 
-  async create(payload: unknown): Promise<ModelDto> {
+  async create(payload: unknown, userId = 'default'): Promise<ModelDto> {
     const modelConfig = this.validateModelPayload(payload);
     const normalizedName = modelConfig.name;
-    const config = await this.readRootConfig();
+    const config = await this.readRootConfig(userId);
     const models = this.getModelMap(config);
 
     if (this.findModelStorageKeyByName(models, normalizedName)) {
@@ -66,15 +66,15 @@ export class ModelsService {
       },
     };
 
-    await this.writeRootConfig(nextConfig);
+    await this.writeRootConfig(nextConfig, userId);
     return this.toModelDto(normalizedName, storedModel);
   }
 
-  async update(name: string, payload: unknown): Promise<ModelDto> {
+  async update(name: string, payload: unknown, userId = 'default'): Promise<ModelDto> {
     const currentName = this.validateName(name);
     const modelConfig = this.validateModelPayload(payload);
     const nextName = modelConfig.name;
-    const config = await this.readRootConfig();
+    const config = await this.readRootConfig(userId);
     const models = this.getModelMap(config);
     const currentStorageKey = this.findModelStorageKeyByName(models, currentName);
     const nextStorageKey = this.findModelStorageKeyByName(models, nextName);
@@ -107,13 +107,13 @@ export class ModelsService {
       models: nextModels,
     };
 
-    await this.writeRootConfig(nextConfig);
+    await this.writeRootConfig(nextConfig, userId);
     return this.toModelDto(nextName, storedModel);
   }
 
-  async remove(name: string): Promise<void> {
+  async remove(name: string, userId = 'default'): Promise<void> {
     const normalizedName = this.validateName(name);
-    const config = await this.readRootConfig();
+    const config = await this.readRootConfig(userId);
     const models = this.getModelMap(config);
     const storageKey = this.findModelStorageKeyByName(models, normalizedName);
 
@@ -125,10 +125,13 @@ export class ModelsService {
     }
 
     const { [storageKey]: _removed, ...restModels } = models;
-    await this.writeRootConfig({
-      ...config,
-      models: restModels,
-    });
+    await this.writeRootConfig(
+      {
+        ...config,
+        models: restModels,
+      },
+      userId,
+    );
   }
 
   private validateName(name: string): string {
@@ -173,17 +176,17 @@ export class ModelsService {
     };
   }
 
-  private async readRootConfig(): Promise<RootConfig> {
+  private async readRootConfig(userId = 'default'): Promise<RootConfig> {
     try {
-      return await this.configFileService.readConfig();
+      return await this.configFileService.readConfig(userId);
     } catch (error) {
       throw this.wrapConfigError(error);
     }
   }
 
-  private async writeRootConfig(config: RootConfig): Promise<void> {
+  private async writeRootConfig(config: RootConfig, userId = 'default'): Promise<void> {
     try {
-      await this.configFileService.writeConfig(config);
+      await this.configFileService.writeConfig(config, userId);
     } catch (error) {
       throw this.wrapConfigError(error);
     }
