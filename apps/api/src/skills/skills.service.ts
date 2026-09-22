@@ -45,6 +45,7 @@ const SKILL_NOT_FOUND = 'SKILL_NOT_FOUND';
 const INVALID_SKILL_NAME = 'INVALID_SKILL_NAME';
 const INVALID_SKILL_PAYLOAD = 'INVALID_SKILL_PAYLOAD';
 const INVALID_INSTALL_COMMAND = 'INVALID_INSTALL_COMMAND';
+const SKILL_INSTALL_FAILED = 'SKILL_INSTALL_FAILED';
 
 @Injectable()
 export class SkillsService {
@@ -388,7 +389,7 @@ export class SkillsService {
 
       throw new BadRequestException({
         message,
-        error: INVALID_INSTALL_COMMAND,
+        error: SKILL_INSTALL_FAILED,
       });
     }
   }

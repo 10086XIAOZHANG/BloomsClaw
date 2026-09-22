@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "WebSearch"
+      "WebSearch",
+      "Bash(rg \"crypto\\\\.randomUUID|randomUUID\" apps/webui/src apps/webui -g '*.{ts,tsx,js}')",
+      "Bash(rg \"crypto\\\\.randomUUID|randomUUID\" apps/webui/src -g '*.{ts,tsx,js}')",
+      "Bash(pnpm exec *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'Fix crypto.randomUUID compatibility for older browsers *)"
     ]
   }
 }
