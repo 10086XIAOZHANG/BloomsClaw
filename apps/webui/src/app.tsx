@@ -11,6 +11,7 @@ import React from 'react';
 dayjs.extend(relativeTime);
 
 import { Question, SelectLang } from '@/components';
+import MenuFooterUser from '@/components/MenuFooterUser';
 import { AvatarDropdown } from '@/components/RightContent/AvatarDropdown';
 import { getStoredUser } from '@/utils/userSession';
 import defaultSettings from '../config/defaultSettings';
@@ -104,6 +105,10 @@ export const layout: RunTimeLayoutConfig = ({
     menuHeaderRender: undefined,
     menuDataRender: (menuData) =>
       menuData.filter((item) => item.path && visibleMenuPaths.has(item.path)),
+    // 左侧菜单底部：当前用户登录标识（头像 + 昵称 / 未登录），点击可切换账号或登录
+    menuFooterRender: (props) => (
+      <MenuFooterUser collapsed={Boolean(props?.collapsed)} />
+    ),
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
     // 增加一个 loading 的状态
