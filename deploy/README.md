@@ -2,6 +2,36 @@
 
 These files mirror the configuration currently used on the Alibaba Cloud ECS server.
 
+## One-command production deployment
+
+From the repository root, run:
+
+```bash
+./deploy/deploy-prod.sh
+```
+
+The script builds `agent-core`, the NestJS API, the WebUI, and the sandbox locally; synchronizes only build outputs and deployment inputs to the remote application directory; installs workspace dependencies remotely; rebuilds the production sandbox image; restarts the API; and runs API, Nginx, and sandbox health checks.
+
+The default target is `root@47.112.192.143:/opt/blooms-claw`. Override it without editing the script:
+
+```bash
+DEPLOY_HOST=example.internal DEPLOY_USER=deploy REMOTE_DIR=/opt/blooms-claw ./deploy/deploy-prod.sh
+```
+
+The script asks for confirmation before replacing running `blooms-claw-ws-*` containers. Use `--yes` for an explicitly approved non-interactive deployment:
+
+```bash
+./deploy/deploy-prod.sh --yes
+```
+
+To build and deploy the image without replacing currently running sandbox containers, use `SKIP_SANDBOX_RESTART=1`. New sessions will use the new image, while existing sessions continue on their current containers:
+
+```bash
+SKIP_SANDBOX_RESTART=1 ./deploy/deploy-prod.sh
+```
+
+Replacing sandbox containers interrupts active agent sessions. Workspace files are bind-mounted under `/root/.blooms_claw/workspaces` and are preserved. The script does not commit, push, or synchronize production secrets and user configuration.
+
 ## Nginx
 
 Install Nginx and copy `nginx/nginx.conf` to `/etc/nginx/conf.d/blooms-claw.conf`, then run:

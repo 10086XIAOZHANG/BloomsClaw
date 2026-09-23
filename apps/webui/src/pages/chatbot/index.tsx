@@ -567,6 +567,11 @@ const toRestoredChatMessage = (
             step.key.includes('reasoning') && step.content
               ? sanitizeThinkText(step.content)
               : step.content,
+          status:
+            message.status === 'done' &&
+            (step.status === 'loading' || step.status === 'waiting')
+              ? 'success'
+              : step.status,
         }))
       : message.rawThinkContent
         ? [
@@ -581,7 +586,8 @@ const toRestoredChatMessage = (
         : undefined,
   isThinking:
     message.status === 'updating'
-    || Boolean(message.thoughtSteps?.some((step) => step.status === 'loading')),
+    || (message.status === 'waiting' &&
+      Boolean(message.thoughtSteps?.some((step) => step.status === 'waiting'))),
   status:
     message.status === 'error'
       ? 'error'
