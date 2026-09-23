@@ -47,6 +47,34 @@ export interface StreamChatOptions {
   onChunk: (chunk: ChatStreamChunk) => void;
 }
 
+export interface ChatInterruptField {
+  name: string;
+  label: string;
+  required?: boolean;
+  secret?: boolean;
+  example?: string;
+}
+
+export interface ChatInterruptPayload {
+  kind?: string;
+  question?: string;
+  fields?: ChatInterruptField[];
+  actionRequests?: Array<{
+    name?: string;
+    description?: string;
+    args?: Record<string, unknown>;
+  }>;
+  reviewConfigs?: Array<Record<string, unknown>>;
+}
+
+export interface ResumeChatOptions {
+  signal?: AbortSignal;
+  id: string;
+  agentName?: string;
+  skillNames?: string[];
+  onChunk: (chunk: ChatStreamChunk) => void;
+}
+
 export type ChatThoughtStepStatus = 'loading' | 'success' | 'error' | 'abort';
 
 export interface ChatThoughtStepChunk {
@@ -83,6 +111,12 @@ export type ChatStreamChunk =
       type: 'error';
       error: string;
       isEnd: true;
+    }
+  | {
+      id?: string;
+      type: 'interrupt';
+      interrupt: ChatInterruptPayload;
+      isEnd: true;
     };
 
 export interface ChatHistoryMessage {
@@ -92,7 +126,7 @@ export interface ChatHistoryMessage {
   attachments?: ChatAttachment[];
   rawThinkContent?: string;
   thoughtSteps?: ChatThoughtStepChunk[];
-  status?: 'updating' | 'done' | 'error';
+  status?: 'updating' | 'done' | 'error' | 'waiting';
 }
 
 export interface ChatHistoryConversation {
@@ -233,6 +267,64 @@ export const streamChatCompletion = async (
   }
 
   flushBuffer(true);
+};
+
+const createResumeUrl = (): string => {
+  const normalizedBase = resolveApiBaseUrl(CHAT_STREAM_API_BASE_URL).endsWith('/')
+    ? CHAT_STREAM_API_BASE_URL
+    : `${resolveApiBaseUrl(CHAT_STREAM_API_BASE_URL)}/`;
+  return new URL('models-streaming/resume', normalizedBase).toString();
+};
+
+const consumeChatStream = async (
+  response: Response,
+  onChunk: (chunk: ChatStreamChunk) => void,
+): Promise<void> => {
+  if (!response.ok) {
+    throw new Error(`请求失败（${response.status}）`);
+  }
+  const reader = response.body?.getReader();
+  if (!reader) {
+    throw new Error('未获取到可读流');
+  }
+  const decoder = new TextDecoder('utf-8');
+  let buffer = '';
+  const flushBuffer = (flushFinalLine = false) => {
+    const { objects, rest } = extractJsonLines(buffer, flushFinalLine);
+    buffer = rest;
+    objects.forEach((item) => onChunk(item));
+  };
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    if (chunk) {
+      buffer += chunk;
+      flushBuffer();
+    }
+  }
+  const rest = decoder.decode();
+  if (rest) buffer += rest;
+  flushBuffer(true);
+};
+
+export const resumeChatCompletion = async (
+  resume: unknown,
+  { signal, id, agentName, skillNames, onChunk }: ResumeChatOptions,
+): Promise<void> => {
+  const response = await fetch(createResumeUrl(), {
+    method: 'POST',
+    signal,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      userId: getCurrentUserId(),
+      id,
+      agentName,
+      skillNames,
+      resume,
+    }),
+  });
+  await consumeChatStream(response, onChunk);
 };
 
 export const uploadChatAttachments = async (

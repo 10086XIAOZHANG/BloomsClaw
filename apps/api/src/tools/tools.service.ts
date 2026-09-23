@@ -32,6 +32,7 @@ const BUILTIN_TOOLS: Record<string, ToolDto> = {
   RunCommand: { name: 'RunCommand', description: '命令执行工具', active: 1, builtin: 1 },
   WebSearch: { name: 'WebSearch', description: '网页搜索工具', active: 1, builtin: 1 },
   Calculator: { name: 'Calculator', description: '数学计算工具', active: 1, builtin: 1 },
+  SendEmail: { name: 'SendEmail', description: '通过 SMTP 发送邮件工具', active: 1, builtin: 1 },
 };
 
 @Injectable()

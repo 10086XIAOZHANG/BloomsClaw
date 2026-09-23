@@ -7,9 +7,29 @@ export interface ConversationItem {
   isDraft?: boolean;
 }
 
-export type ChatMessageStatus = 'updating' | 'done' | 'error';
+export type ChatMessageStatus = 'updating' | 'done' | 'error' | 'waiting';
 
-export type ChatThoughtStepStatus = 'loading' | 'success' | 'error' | 'abort';
+export interface ChatInterruptField {
+  name: string;
+  label: string;
+  required?: boolean;
+  secret?: boolean;
+  example?: string;
+}
+
+export interface ChatInterruptPayload {
+  kind?: string;
+  question?: string;
+  fields?: ChatInterruptField[];
+  actionRequests?: Array<{
+    name?: string;
+    description?: string;
+    args?: Record<string, unknown>;
+  }>;
+  reviewConfigs?: Array<Record<string, unknown>>;
+}
+
+export type ChatThoughtStepStatus = 'loading' | 'success' | 'error' | 'abort' | 'waiting';
 export type ChatAttachmentKind =
   | 'image'
   | 'document'
@@ -44,6 +64,7 @@ export interface ChatMessage {
   rawThinkContent?: string;
   isThinking?: boolean;
   thoughtSteps?: ChatThoughtStep[];
+  pendingInterrupt?: ChatInterruptPayload;
   status: ChatMessageStatus;
 }
 

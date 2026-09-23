@@ -15,7 +15,7 @@ export interface ChatHistoryMessageDto {
   attachments?: ChatAttachmentDto[];
   rawThinkContent?: string;
   thoughtSteps?: ChatThoughtStepDto[];
-  status?: 'updating' | 'done' | 'error';
+  status?: 'updating' | 'done' | 'error' | 'waiting';
 }
 
 export interface ChatHistoryConversationDto {
@@ -30,7 +30,7 @@ export interface ChatThoughtStepDto {
   title: string;
   description?: string;
   content?: string;
-  status: 'loading' | 'success' | 'error' | 'abort';
+  status: 'loading' | 'success' | 'error' | 'abort' | 'waiting';
 }
 
 interface SerializedLangChainMessage {
@@ -215,7 +215,7 @@ export class ModelsChatHistoryService {
   finalizeAssistantMessage(
     threadId: string,
     messageId: string,
-    status: 'done' | 'error' = 'done',
+    status: 'done' | 'error' | 'waiting' = 'done',
     userId = 'default',
   ): void {
     this.updateAssistantMessage(threadId, messageId, (message) => {

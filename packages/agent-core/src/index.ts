@@ -2,6 +2,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createMiddleware } from 'langchain';
 import { SystemMessage } from '@langchain/core/messages';
+import { Command, INTERRUPT, isInterrupted } from '@langchain/langgraph';
 import {
   createDeepAgent,
 } from 'deepagents';
@@ -11,9 +12,15 @@ import { initStreamModel } from './agents';
 import { FileSaver } from './FileSaver';
 import { DockerSandboxBackend } from './sandbox';
 import { CALCULATOR_TOOL_NAME, calculatorTool } from './tools/calculator';
+import { ASK_HUMAN_TOOL_NAME, askHumanTool } from './tools/askHuman';
+import { sendEmailTool } from './tools/sendEmail';
 import { loadMcpToolsForAgent } from './tools/mcp';
 import { webSearchTool } from './tools/webSearch';
-import { createSandboxTools } from './tools/sandbox';
+import {
+  createSandboxTools,
+  SANDBOX_FILE_TOOL_NAME,
+  SANDBOX_SHELL_TOOL_NAME,
+} from './tools/sandbox';
 import {
   buildSkillIndexPrompt,
   createLoadSkillTool,
@@ -21,7 +28,16 @@ import {
 } from './tools/skills';
 
 /** 所有 agent 自动加载的默认工具（不依赖 agentConfig.tools 配置） */
-export const DEFAULT_AGENT_TOOLS = ['FileTools', 'RunCommand', 'WebSearch'] as const;
+export const DEFAULT_AGENT_TOOLS = ['FileTools', 'RunCommand', 'WebSearch', 'SendEmail'] as const;
+
+/**
+ * Human-in-the-loop 默认纳入审批的危险工具（写入 / 执行命令等）：
+ * 仅当未显式指定 interruptOn.tools 时作为兜底。
+ */
+export const DEFAULT_INTERRUPT_ON_TOOLS = [
+  SANDBOX_SHELL_TOOL_NAME,
+  SANDBOX_FILE_TOOL_NAME,
+] as const;
 
 const _stripTrailingSlash = (p: string): string =>
   p.endsWith('/') ? p.slice(0, -1) : p;
@@ -164,6 +180,19 @@ export interface CreateAgentToolsEnableOptions {
   shellTools: boolean;
   webTools: boolean;
   calculatorTools: boolean;
+  emailTools: boolean;
+}
+
+/**
+ * Human-in-the-loop（人工介入）配置。
+ * - `enabled`: 是否启用 HITL
+ * - `interruptOn`: 需要人工审批的工具名 -> true（调用前暂停等待审批）
+ * - `enableAskHuman`: 是否加载 AskHuman 工具（模型主动向用户提问），默认 true
+ */
+export interface CreateAgentHumanInLoopOptions {
+  enabled: boolean;
+  interruptOn?: Record<string, boolean>;
+  enableAskHuman?: boolean;
 }
 
 export interface CreateAgentOptions {
@@ -173,6 +202,7 @@ export interface CreateAgentOptions {
   skillNames?: string[];
   toolsEnable?: CreateAgentToolsEnableOptions;
   runtimeContext?: CreateAgentRuntimeContext;
+  humanInTheLoop?: CreateAgentHumanInLoopOptions | boolean;
 }
 
 export interface CreateAgentResult {
@@ -195,6 +225,7 @@ function resolveToolsEnable(
       shellTools: toolsEnable.shellTools,
       webTools: toolsEnable.webTools,
       calculatorTools: toolsEnable.calculatorTools ?? true,
+      emailTools: toolsEnable.emailTools ?? true,
     };
   }
 
@@ -210,6 +241,7 @@ function resolveToolsEnable(
     return {
       ...defaults,
       calculatorTools: true,
+      emailTools: true,
     };
   }
 
@@ -220,7 +252,77 @@ function resolveToolsEnable(
   return {
     ...defaults,
     calculatorTools: enabledTools.has(CALCULATOR_TOOL_NAME),
+    // SendEmail 是公共内置工具，与 FileTools/RunCommand/WebSearch 一样始终加载；
+    // 实际发信前仍会通过 interrupt 索取 SMTP 凭证。
+    emailTools: true,
   };
+}
+
+export interface ResolvedHumanInLoop {
+  /** 需要人工审批的工具名 -> true；为空对象时不注入 interruptOn */
+  interruptOn: Record<string, boolean>;
+  /** 是否加载 AskHuman 提问工具 */
+  enableAskHuman: boolean;
+}
+
+function toInterruptOnMap(toolNames: string[]): Record<string, boolean> {
+  const map: Record<string, boolean> = {};
+  for (const name of toolNames) {
+    const trimmed = name.trim();
+    if (trimmed) {
+      map[trimmed] = true;
+    }
+  }
+  return map;
+}
+
+/**
+ * 解析 Human-in-the-loop 配置。
+ * 优先级：显式 options.humanInTheLoop > agentConfig.humanInTheLoop > 默认关闭。
+ * 未指定工具列表时，默认对破坏性工具（sandbox_shell / sandbox_file）开启审批。
+ * 返回 null 表示未启用 HITL。
+ */
+export function resolveHumanInLoop(
+  options: CreateAgentHumanInLoopOptions | boolean | undefined,
+  agentConfig: unknown,
+): ResolvedHumanInLoop | null {
+  const configRecord =
+    agentConfig && typeof agentConfig === 'object'
+      ? (agentConfig as Record<string, unknown>)
+      : undefined;
+  const raw = options ?? configRecord?.humanInTheLoop;
+
+  if (!raw || raw === false) {
+    return null;
+  }
+
+  const source: Record<string, unknown> =
+    raw === true ? { enabled: true } : (raw as Record<string, unknown>);
+  if (!source || source.enabled !== true) {
+    return null;
+  }
+
+  let interruptOn: Record<string, boolean>;
+  if (source.interruptOn && typeof source.interruptOn === 'object') {
+    interruptOn = {};
+    for (const [name, enabled] of Object.entries(
+      source.interruptOn as Record<string, unknown>,
+    )) {
+      if (enabled === true && name.trim()) {
+        interruptOn[name.trim()] = true;
+      }
+    }
+  } else if (Array.isArray(source.tools)) {
+    interruptOn = toInterruptOnMap(
+      source.tools.filter((item): item is string => typeof item === 'string'),
+    );
+  } else {
+    interruptOn = toInterruptOnMap([...DEFAULT_INTERRUPT_ON_TOOLS]);
+  }
+
+  const enableAskHuman = source.enableAskHuman !== false;
+
+  return { interruptOn, enableAskHuman };
 }
 
 function buildSystemPrompt(
@@ -335,6 +437,7 @@ export async function createAgent(
     skillNames,
     toolsEnable,
     runtimeContext,
+    humanInTheLoop,
   }: CreateAgentOptions,
 ): Promise<CreateAgentResult> {
   const homePath = os.homedir();
@@ -376,15 +479,18 @@ export async function createAgent(
     );
   }
   const sandboxTools = backend ? createSandboxTools(backend) : [];
+  const resolvedHumanInLoop = resolveHumanInLoop(humanInTheLoop, agentConfig);
   const customTools: any[] = [
     ...(resolvedToolsEnable.fileTools && sandboxTools[0] ? [sandboxTools[0]] : []),
     ...(resolvedToolsEnable.shellTools && sandboxTools[1] ? [sandboxTools[1]] : []),
     ...(resolvedToolsEnable.webTools ? [webSearchTool] : []),
     ...(resolvedToolsEnable.calculatorTools ? [calculatorTool] : []),
+    ...(resolvedToolsEnable.emailTools ? [sendEmailTool] : []),
     ...mcpTools,
     // Skill 渐进式加载工具常驻：模型命中索引后自行调用，与用户提问动态相关
     createLoadSkillTool(userId),
     createReadSkillResourceTool(userId),
+    ...(resolvedHumanInLoop?.enableAskHuman ? [askHumanTool] : []),
   ];
   const bailianFileReferenceMiddleware = createBailianFileReferenceMiddleware(
     runtimeContext?.bailianFileReferences,
@@ -392,10 +498,18 @@ export async function createAgent(
   const middleware = bailianFileReferenceMiddleware
     ? [bailianFileReferenceMiddleware]
     : undefined;
+  const interruptOn =
+    resolvedHumanInLoop && Object.keys(resolvedHumanInLoop.interruptOn).length > 0
+      ? resolvedHumanInLoop.interruptOn
+      : undefined;
   console.log(
     '[agent-core][createAgent] runtimeContext.bailianFileReferences=' +
       JSON.stringify(runtimeContext?.bailianFileReferences ?? null) +
-      '，middleware 注入=' + (middleware ? '已启用（1条 BailianFileReferenceMiddleware）' : '未启用'),
+      '，middleware 注入=' + (middleware ? '已启用（1条 BailianFileReferenceMiddleware）' : '未启用') +
+      '，HITL=' +
+      (resolvedHumanInLoop
+        ? `已启用 interruptOn=[${Object.keys(resolvedHumanInLoop.interruptOn).join(',')}] AskHuman=${resolvedHumanInLoop.enableAskHuman}`
+        : '未启用'),
   );
 
   const agent = createDeepAgent({
@@ -405,6 +519,7 @@ export async function createAgent(
     backend,
     tools: customTools,
     middleware: middleware as any,
+    ...(interruptOn ? { interruptOn } : {}),
   });
 
   return {
@@ -421,3 +536,40 @@ export async function createAgent(
 export { DockerSandboxBackend, getHostWorkspaceDir } from './sandbox';
 export { createSandboxTools } from './tools/sandbox';
 export { readConfigByAgentName } from './readConfig';
+export { ASK_HUMAN_TOOL_NAME, askHumanTool } from './tools/askHuman';
+export { SEND_EMAIL_TOOL_NAME, sendEmailTool } from './tools/sendEmail';
+
+/**
+ * 构造用于恢复被 Human-in-the-loop 中断的图的 Command。
+ * 审批场景传入 HITLResponse（{ decisions: [...] }），AskHuman 场景传入用户的回答字符串。
+ */
+export function buildResumeCommand(resume: unknown): Command {
+  return new Command({ resume });
+}
+
+/**
+ * 读取当前线程是否处于 Human-in-the-loop 中断等待状态。
+ * 返回待处理的中断值数组（HITLRequest 或 AskHuman 的 {question, kind}），无中断时返回 null。
+ */
+export async function getPendingInterrupts(
+  agent: { getState: (config: unknown) => Promise<{ values?: unknown }> },
+  threadId: string,
+): Promise<unknown[] | null> {
+  const state = await agent.getState({ configurable: { thread_id: threadId } });
+  const values = state?.values;
+  if (!isInterrupted(values)) {
+    return null;
+  }
+  const interrupts = (values as Record<string, { value?: unknown }[]>)[INTERRUPT];
+  return Array.isArray(interrupts)
+    ? interrupts.map((item) => item?.value)
+    : null;
+}
+export type {
+  HITLRequest,
+  HITLResponse,
+  Decision,
+  ActionRequest,
+  ReviewConfig,
+  InterruptOnConfig,
+} from 'langchain';

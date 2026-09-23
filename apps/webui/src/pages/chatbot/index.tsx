@@ -22,7 +22,7 @@ import {
 import { Attachments, Bubble, Conversations, FileCard, Folder, Sender, ThoughtChain, XProvider } from '@ant-design/x';
 import type { BubbleItemType, BubbleListProps, FileCardProps, ThoughtChainItemType } from '@ant-design/x';
 import XMarkdown from '@ant-design/x-markdown';
-import { App, Avatar, Button, ConfigProvider, Input, Select, Space, Tooltip, Typography } from 'antd';
+import { App, Avatar, Button, ConfigProvider, Form, Input, InputNumber, Select, Space, Switch, Tooltip, Typography } from 'antd';
 import type { RcFile, UploadFile } from 'antd/es/upload/interface';
 import type { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -33,6 +33,7 @@ import type {
   ChatAttachment,
   ChatMessage,
   ChatThoughtStep,
+  ChatInterruptPayload,
   ConversationItem,
 } from './data';
 import { AvatarDropdown } from '@/components/RightContent/AvatarDropdown';
@@ -44,6 +45,7 @@ import {
   getWorkspaceTree,
   listSelectableAgents,
   listChatHistory,
+  resumeChatCompletion,
   streamChatCompletion,
   uploadChatAttachments,
   type WorkspaceTreeNode,
@@ -64,7 +66,6 @@ const CHATBOT_CONVERSATION_ID_QUERY_KEY = 'conversationId';
 const CHATBOT_PANEL_LAYOUT_STORAGE_KEY = 'blooms_claw.chatbot.panel_layout';
 
 type ConversationAgentMap = Record<string, string>;
-type ThoughtChainExpandedMap = Record<string, string[]>;
 type PanelResizeTarget = 'left' | 'right';
 type ChatPanelLayout = {
   leftWidth: number;
@@ -232,6 +233,69 @@ const sanitizeThinkText = (content: string): string =>
 const aiAvatarNode = <Avatar style={AI_AVATAR_STYLE}>B</Avatar>;
 const userAvatarNode = <Avatar icon={<UserOutlined />} style={USER_AVATAR_STYLE} />;
 const DRAFT_CONVERSATION_LABEL = '新对话';
+
+type InterruptFormProps = {
+  interrupt: ChatInterruptPayload;
+  submitting: boolean;
+  onSubmit: (value: Record<string, unknown>) => void;
+};
+
+const InterruptForm: React.FC<InterruptFormProps> = ({ interrupt, submitting, onSubmit }) => {
+  const [form] = Form.useForm();
+  const fields = interrupt.fields ?? [];
+  const actions = interrupt.actionRequests ?? [];
+
+  if (actions.length > 0) {
+    return (
+      <Space direction="vertical" size={8} style={{ width: '100%' }}>
+        <Typography.Text>{interrupt.question ?? '工具执行前需要你的确认'}</Typography.Text>
+        {actions.map((action, index) => (
+          <Typography.Text type="secondary" key={`${action.name ?? 'action'}-${index}`}>
+            {action.description ?? action.name ?? '待确认操作'}
+          </Typography.Text>
+        ))}
+        <Space>
+          <Button type="primary" loading={submitting} onClick={() => onSubmit({ decisions: [{ type: 'approve' }] })}>
+            同意执行
+          </Button>
+          <Button disabled={submitting} onClick={() => onSubmit({ decisions: [{ type: 'reject', message: '用户拒绝执行' }] })}>
+            拒绝
+          </Button>
+        </Space>
+      </Space>
+    );
+  }
+
+  return (
+    <Form form={form} layout="vertical" size="small" onFinish={(values) => onSubmit(fields.length === 0 ? { answer: values.answer } : values as Record<string, unknown>)} style={{ minWidth: 360, maxWidth: 560 }}>
+      <Typography.Text>{interrupt.question ?? '请提供信息'}</Typography.Text>
+      {fields.length === 0 ? (
+        <Form.Item name="answer" rules={[{ required: true, message: '请输入回答' }]}>
+          <Input.TextArea autoSize={{ minRows: 2, maxRows: 5 }} placeholder="请输入回答" />
+        </Form.Item>
+      ) : fields.map((field) => (
+        <Form.Item
+          key={field.name}
+          name={field.name}
+          label={field.label}
+          valuePropName={field.name === 'secure' ? 'checked' : undefined}
+          rules={field.required ? [{ required: true, message: `请输入${field.label}` }] : undefined}
+        >
+          {field.name === 'port' ? (
+            <InputNumber min={1} max={65535} style={{ width: '100%' }} placeholder={field.example} />
+          ) : field.name === 'secure' ? (
+            <Switch />
+          ) : field.secret ? (
+            <Input.Password autoComplete="new-password" placeholder={field.example} />
+          ) : (
+            <Input placeholder={field.example} />
+          )}
+        </Form.Item>
+      ))}
+      <Button type="primary" htmlType="submit" loading={submitting}>提交并继续</Button>
+    </Form>
+  );
+};
 
 const createId = (): string => {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -457,13 +521,22 @@ const toRestoredChatMessage = (
     attachments?: ChatAttachment[];
     rawThinkContent?: string;
     thoughtSteps?: ChatThoughtStep[];
-    status?: 'updating' | 'done' | 'error';
+    status?: 'updating' | 'done' | 'error' | 'waiting';
   },
 ): ChatMessage => ({
   id: message.id,
   role: message.role,
   content: message.content,
   attachments: message.attachments,
+  pendingInterrupt: (() => {
+    const interruptStep = message.thoughtSteps?.find((step) => step.key.endsWith(':interrupt'));
+    if (message.status !== 'waiting' || !interruptStep?.content) return undefined;
+    try {
+      return JSON.parse(interruptStep.content) as ChatInterruptPayload;
+    } catch {
+      return undefined;
+    }
+  })(),
   rawThinkContent: message.rawThinkContent,
   thinkContent: message.rawThinkContent
     ? sanitizeThinkText(message.rawThinkContent)
@@ -494,9 +567,11 @@ const toRestoredChatMessage = (
   status:
     message.status === 'error'
       ? 'error'
-      : message.status === 'updating'
-        ? 'updating'
-        : 'done',
+      : message.status === 'waiting'
+        ? 'waiting'
+        : message.status === 'updating'
+          ? 'updating'
+          : 'done',
 });
 
 const renderMarkdownContent = (
@@ -573,7 +648,7 @@ const finalizeThoughtSteps = (
   loadingStatus: ChatThoughtStep['status'],
 ): ChatThoughtStep[] | undefined =>
   steps?.map((step) =>
-    step.status === 'loading'
+    step.status === 'loading' || step.status === 'waiting'
       ? {
           ...step,
           status: loadingStatus,
@@ -590,7 +665,7 @@ const toThoughtChainItems = (
     title: step.title,
     description: step.description,
     content: renderThoughtStepContent(step, isStreaming),
-    status: step.status,
+    status: step.status === 'waiting' ? 'loading' : step.status,
     collapsible: Boolean(step.content),
     blink: isStreaming && step.status === 'loading',
   }));
@@ -636,8 +711,6 @@ const ChatbotPage: React.FC = () => {
   const [agentOptions, setAgentOptions] = useState<ChatAgentOption[]>([]);
   const [conversationAgentMap, setConversationAgentMap] =
     useState<ConversationAgentMap>(readConversationAgentMap);
-  const [thoughtChainExpandedMap, setThoughtChainExpandedMap] =
-    useState<ThoughtChainExpandedMap>({});
   const [hasResolvedInitialConversation, setHasResolvedInitialConversation] =
     useState(false);
   const abortRef = useRef<AbortController | null>(null);
@@ -1027,59 +1100,6 @@ const ChatbotPage: React.FC = () => {
     writeConversationIdToUrl(activeKey);
   }, [activeKey, hasResolvedInitialConversation]);
 
-  useEffect(() => {
-    setThoughtChainExpandedMap((previousMap) => {
-      const nextMap: ThoughtChainExpandedMap = {};
-      let hasChanged = false;
-
-      for (const message of activeMessages) {
-        if (message.role !== 'assistant' || !message.thoughtSteps?.length) {
-          continue;
-        }
-
-        const messageKey = message.requestId ?? message.id;
-        const previousExpandedKeys = previousMap[messageKey];
-
-        if (!previousExpandedKeys) {
-          nextMap[messageKey] = [];
-          continue;
-        }
-
-        const knownStepKeys = new Set(
-          message.thoughtSteps.map((step) => String(step.key)),
-        );
-        const preservedExpandedKeys = previousExpandedKeys.filter((key) =>
-          knownStepKeys.has(key),
-        );
-        const isSameAsPrevious =
-          preservedExpandedKeys.length === previousExpandedKeys.length
-          && preservedExpandedKeys.every(
-            (key, index) => key === previousExpandedKeys[index],
-          );
-
-        nextMap[messageKey] = isSameAsPrevious
-          ? previousExpandedKeys
-          : preservedExpandedKeys;
-        if (!isSameAsPrevious) {
-          hasChanged = true;
-        }
-      }
-
-      if (!hasChanged) {
-        const previousKeys = Object.keys(previousMap);
-        const nextKeys = Object.keys(nextMap);
-        if (
-          previousKeys.length === nextKeys.length
-          && previousKeys.every((key) => nextMap[key] === previousMap[key])
-        ) {
-          return previousMap;
-        }
-      }
-
-      return nextMap;
-    });
-  }, [activeMessages]);
-
   const sendMessage = async (content: string) => {
     const question = content.trim();
     const hasUploadingAttachment = attachmentItems.some(
@@ -1209,6 +1229,19 @@ const ChatbotPage: React.FC = () => {
                                 : chunk.step.content,
                           }),
                         }
+                      : chunk.type === 'interrupt'
+                      ? {
+                          pendingInterrupt: chunk.interrupt,
+                          isThinking: false,
+                          thoughtSteps: upsertThoughtStep(message.thoughtSteps, {
+                            key: `${assistantRequestId}:interrupt`,
+                            title: '等待用户输入',
+                            description: chunk.interrupt.question ?? '请填写表单后继续',
+                            content: JSON.stringify(chunk.interrupt),
+                            status: 'waiting',
+                          }),
+                          status: 'waiting' as const,
+                        }
                       : chunk.type === 'error'
                       ? {
                           content:
@@ -1244,7 +1277,11 @@ const ChatbotPage: React.FC = () => {
                   message.thoughtSteps,
                   message.status === 'error' ? 'error' : 'success',
                 ),
-                status: message.status === 'error' ? 'error' : 'done',
+                status: message.status === 'error'
+                  ? 'error'
+                  : message.status === 'waiting'
+                    ? 'waiting'
+                    : 'done',
               }
             : message,
         ),
@@ -1282,6 +1319,126 @@ const ChatbotPage: React.FC = () => {
       }
       setIsRequesting(false);
       void refreshWorkspaceTree({ silent: true });
+    }
+  };
+
+  const resumePendingInterrupt = async (value: Record<string, unknown>) => {
+    if (isRequesting) return;
+    const targetKey = activeKey;
+    const pendingMessage = (messageMap[targetKey] ?? []).find(
+      (item) => item.role === 'assistant' && item.status === 'waiting' && item.pendingInterrupt,
+    );
+    if (!pendingMessage) return;
+
+    setIsRequesting(true);
+    const resumeValue = pendingMessage.pendingInterrupt?.fields?.length
+      ? value
+      : String(value.answer ?? '');
+    try {
+      await resumeChatCompletion(resumeValue, {
+        id: targetKey,
+        agentName: conversationAgentMap[targetKey] || selectedAgentName,
+        skillNames: [],
+        onChunk: (chunk) => {
+          setMessageMap((prev) => ({
+            ...prev,
+            [targetKey]: (prev[targetKey] ?? []).map((message) => {
+              if (message.requestId !== pendingMessage.requestId) return message;
+              if (chunk.type === 'thinking_delta') {
+                const rawThinkContent = `${message.rawThinkContent ?? ''}${chunk.delta}`;
+                const thinkContent = sanitizeThinkText(rawThinkContent);
+                const reasoningStepKey = getReasoningStepKey(message.thoughtSteps);
+                return {
+                  ...message,
+                  id: chunk.id || message.id,
+                  rawThinkContent,
+                  thinkContent,
+                  isThinking: true,
+                  status: 'updating' as const,
+                  thoughtSteps: upsertThoughtStep(message.thoughtSteps, {
+                    key: reasoningStepKey,
+                    title: '深度思考',
+                    description: '模型正在分析问题并规划执行步骤',
+                    content: thinkContent,
+                    status: 'loading',
+                  }),
+                };
+              }
+              if (chunk.type === 'thought_step') {
+                return {
+                  ...message,
+                  id: chunk.id || message.id,
+                  thoughtSteps: upsertThoughtStep(message.thoughtSteps, chunk.step),
+                };
+              }
+              if (chunk.type === 'interrupt') {
+                return {
+                  ...message,
+                  id: chunk.id || message.id,
+                  pendingInterrupt: chunk.interrupt,
+                  thoughtSteps: upsertThoughtStep(message.thoughtSteps, {
+                    key: `${pendingMessage.requestId}:interrupt`,
+                    title: '等待用户输入',
+                    description: chunk.interrupt.question ?? '请填写表单后继续',
+                    content: JSON.stringify(chunk.interrupt),
+                    status: 'waiting',
+                  }),
+                  status: 'waiting' as const,
+                  isThinking: false,
+                };
+              }
+              if (chunk.type === 'content_delta') {
+                return {
+                  ...message,
+                  id: chunk.id || message.id,
+                  content: `${message.content}${chunk.delta}`,
+                  pendingInterrupt: undefined,
+                  status: 'updating' as const,
+                };
+              }
+              if (chunk.type === 'error') {
+                return {
+                  ...message,
+                  content: message.content || chunk.error,
+                  thoughtSteps: finalizeThoughtSteps(message.thoughtSteps, 'error'),
+                  status: 'error' as const,
+                  pendingInterrupt: undefined,
+                  isThinking: false,
+                };
+              }
+              if (chunk.type === 'done') {
+                return {
+                  ...message,
+                  thoughtSteps: finalizeThoughtSteps(message.thoughtSteps, 'success'),
+                  status: 'done' as const,
+                  pendingInterrupt: undefined,
+                  isThinking: false,
+                };
+              }
+              return { ...message, id: chunk.id || message.id };
+            }),
+          }));
+        },
+      });
+      setMessageMap((prev) => ({
+        ...prev,
+        [targetKey]: (prev[targetKey] ?? []).map((message) =>
+          message.requestId === pendingMessage.requestId && message.status === 'updating'
+            ? { ...message, status: 'done' as const, pendingInterrupt: undefined }
+            : message,
+        ),
+      }));
+    } catch (error) {
+      setMessageMap((prev) => ({
+        ...prev,
+        [targetKey]: (prev[targetKey] ?? []).map((message) =>
+          message.requestId === pendingMessage.requestId
+            ? { ...message, content: message.content || (error instanceof Error ? error.message : '恢复失败'), status: 'error' as const }
+            : message,
+        ),
+      }));
+    } finally {
+      setIsRequesting(false);
     }
   };
 
@@ -1384,40 +1541,32 @@ const ChatbotPage: React.FC = () => {
         }
 
         if (isAI && thoughtChainItems.length > 0) {
-          const messageKey = message.requestId ?? message.id;
-          const expandedKeys = thoughtChainExpandedMap[messageKey] ?? [];
           item.header = (
             <div className={styles.thoughtChainWrap}>
               <ThoughtChain
                 items={thoughtChainItems}
-                expandedKeys={expandedKeys}
-                onExpand={(nextExpandedKeys) => {
-                  setThoughtChainExpandedMap((previousMap) => {
-                    const currentExpandedKeys = previousMap[messageKey] ?? [];
-                    if (
-                      currentExpandedKeys.length === nextExpandedKeys.length
-                      && currentExpandedKeys.every(
-                        (key, index) => key === nextExpandedKeys[index],
-                      )
-                    ) {
-                      return previousMap;
-                    }
-
-                    return {
-                      ...previousMap,
-                      [messageKey]: nextExpandedKeys.map(String),
-                    };
-                  });
-                }}
                 styles={THOUGHT_CHAIN_STYLES}
               />
             </div>
           );
         }
 
+        if (isAI && message.pendingInterrupt && message.status === 'waiting') {
+          const interruptForm = (
+            <div style={{ marginTop: 12, padding: 12, border: '1px solid #d9d9d9', borderRadius: 8 }}>
+              <InterruptForm
+                interrupt={message.pendingInterrupt}
+                submitting={isRequesting}
+                onSubmit={resumePendingInterrupt}
+              />
+            </div>
+          );
+          item.header = interruptForm;
+        }
+
         return item;
       }),
-    [activeMessages, styles.thoughtChainWrap, thoughtChainExpandedMap],
+    [activeMessages, styles.thoughtChainWrap],
   );
 
   const hasMessages = activeMessages.length > 0;
