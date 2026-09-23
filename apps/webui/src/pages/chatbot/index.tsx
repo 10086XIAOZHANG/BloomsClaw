@@ -1444,7 +1444,13 @@ const ChatbotPage: React.FC = () => {
         ...prev,
         [targetKey]: (prev[targetKey] ?? []).map((message) =>
           message.requestId === pendingMessage.requestId && message.status === 'updating'
-            ? { ...message, status: 'done' as const, pendingInterrupt: undefined }
+            ? {
+                ...message,
+                isThinking: false,
+                thoughtSteps: finalizeThoughtSteps(message.thoughtSteps, 'success'),
+                status: 'done' as const,
+                pendingInterrupt: undefined,
+              }
             : message,
         ),
       }));

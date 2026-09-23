@@ -61,17 +61,30 @@ export function getSandboxImage(): string {
   );
 }
 
+const SANDBOX_UID = 1000;
+const SANDBOX_GID = 1000;
+
 export function getHostWorkspaceRoot(): string {
   const base =
     process.env.BLOOMS_CLAW_WORKSPACES_DIR?.trim() ||
     path.join(os.homedir(), '.blooms_claw', 'workspaces');
   fs.mkdirSync(base, { recursive: true });
+  try {
+    fs.chownSync(base, SANDBOX_UID, SANDBOX_GID);
+  } catch {
+    // Local development may not permit changing ownership.
+  }
   return base;
 }
 
 export function getHostWorkspaceDir(threadId: string): string {
   const dir = path.join(getHostWorkspaceRoot(), sanitizeThreadSegment(threadId));
   fs.mkdirSync(dir, { recursive: true });
+  try {
+    fs.chownSync(dir, SANDBOX_UID, SANDBOX_GID);
+  } catch {
+    // Local development may not permit changing ownership.
+  }
   return dir;
 }
 

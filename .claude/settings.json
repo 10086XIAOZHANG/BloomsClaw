@@ -6,7 +6,23 @@
       "Bash(rg \"crypto\\\\.randomUUID|randomUUID\" apps/webui/src -g '*.{ts,tsx,js}')",
       "Bash(pnpm exec *)",
       "Bash(git add *)",
-      "Bash(git commit -m 'Fix crypto.randomUUID compatibility for older browsers *)"
+      "Bash(git commit -m 'Fix crypto.randomUUID compatibility for older browsers *)",
+      "Bash(ssh -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=accept-new root@47.112.192.143 'echo CONNECTED_OK; whoami; hostname; pwd')",
+      "Bash(ssh -o BatchMode=yes root@47.112.192.143 'echo \"=== /root ===\"; ls -la /root | head -40; echo \"=== pm2 ===\"; which pm2 2>/dev/null && pm2 list 2>/dev/null; echo \"=== processes ===\"; ps aux | grep -iE \"node|next|nest\" | grep -v grep | head -20; echo \"=== listening ===\"; ss -tlnp 2>/dev/null | grep -E \":3000|:80|:443|:8080\" ')",
+      "Bash(ssh -o BatchMode=yes root@47.112.192.143 'echo \"=== /opt/blooms-claw ===\"; ls -la /opt/blooms-claw | head -30; echo \"=== git? ===\"; cd /opt/blooms-claw 2>/dev/null && git log --oneline -5 2>&1 && git status -sb 2>&1 | head; echo \"=== pm2 conf ===\"; pm2 describe blooms-claw-api 2>/dev/null | grep -iE \"script path|exec cwd|interpreter|node args|script args\" ')",
+      "Bash(ssh -o BatchMode=yes root@47.112.192.143 'echo \"=== apps/api ===\"; ls /opt/blooms-claw/apps/api; echo \"=== apps/api/dist exists? ===\"; ls /opt/blooms-claw/apps/api/dist 2>/dev/null | head; echo \"=== apps/webui ===\"; ls /opt/blooms-claw/apps/webui; echo \"=== webui/dist ===\"; ls /opt/blooms-claw/apps/webui/dist 2>/dev/null | head; echo \"=== sandbox ===\"; ls /opt/blooms-claw/sandbox; echo \"=== docker images ===\"; docker images 2>/dev/null | grep -i bloom; echo \"=== docker ps ===\"; docker ps 2>/dev/null | grep -i bloom')",
+      "Bash(grep -iA2 \"blooms\\\\|workspace\")",
+      "Bash(pnpm -v)",
+      "Bash(pnpm build *)",
+      "Bash(echo \"=== WEBUI BUILD EXIT: $? ===\")",
+      "Bash(ssh -o BatchMode=yes root@47.112.192.143 'echo \"=== workspace link ===\"; ls -la /opt/blooms-claw/apps/api/node_modules/@blooms-claw/ 2>/dev/null; echo \"=== nodemailer present? ===\"; ls /opt/blooms-claw/node_modules/.pnpm 2>/dev/null | grep -i nodemailer; echo \"=== sandbox Dockerfile ===\"; head -5 /opt/blooms-claw/sandbox/Dockerfile; echo \"=== sandbox src ===\"; ls /opt/blooms-claw/sandbox/src')",
+      "Bash(rsync -az --delete --omit-dir-times packages/agent-core/dist/ root@47.112.192.143:/opt/blooms-claw/packages/agent-core/dist/)",
+      "Bash(rsync -az --omit-dir-times packages/agent-core/package.json root@47.112.192.143:/opt/blooms-claw/packages/agent-core/package.json)",
+      "Bash(rsync -az --delete --omit-dir-times apps/api/dist/ root@47.112.192.143:/opt/blooms-claw/apps/api/dist/)",
+      "Bash(rsync -az --omit-dir-times apps/api/package.json root@47.112.192.143:/opt/blooms-claw/apps/api/package.json)",
+      "Bash(rsync -az --delete --omit-dir-times apps/webui/dist/ root@47.112.192.143:/opt/blooms-claw/apps/webui/dist/)",
+      "Bash(ssh -o BatchMode=yes root@47.112.192.143 'cd /opt/blooms-claw && pnpm install 2>&1 | tail -25 && echo \"=== EXIT $? ===\" && echo \"nodemailer now:\" && ls node_modules/.pnpm | grep -i nodemailer')",
+      "Bash(ssh -o BatchMode=yes root@47.112.192.143 'echo \"=== find nodemailer ===\"; find /opt/blooms-claw/node_modules/.pnpm -maxdepth 1 -iname \"*nodemailer*\" 2>/dev/null; echo \"=== agent-core node_modules ===\"; ls /opt/blooms-claw/packages/agent-core/node_modules 2>/dev/null | grep -i nodemailer; echo \"=== api can resolve? ===\"; cd /opt/blooms-claw/apps/api && node -e \"try{const m=require\\(\\\\\"@blooms-claw/agent-core\\\\\"\\); console.log\\(\\\\\"agent-core resolved OK\\\\\"\\); }catch\\(e\\){console.log\\(\\\\\"ERR\\\\\", e.message\\)}\"; node -e \"require.resolve\\(\\\\\"nodemailer\\\\\"\\); console.log\\(\\\\\"nodemailer resolvable from api cwd\\\\\"\\)\" 2>&1 | head -3')"
     ]
   }
 }
