@@ -39,19 +39,26 @@ export class SandboxService {
     return isDir && result !== '/' ? `${result}/` : result;
   }
 
-  async list(input?: string) {
-    const directory = this.resolve(input);
-    const entries = await fs.readdir(directory, { withFileTypes: true });
-    const files: FileInfoDto[] = [];
-    for (const entry of entries) {
-      const fullPath = path.join(directory, entry.name);
-      try {
-        const stat = await fs.stat(fullPath);
-        const isDir = stat.isDirectory();
-        files.push({ path: this.virtual(fullPath, isDir), is_dir: isDir, size: stat.size, modified_at: stat.mtime.toISOString() });
-      } catch { /* entry may disappear during listing */ }
+  async list(input?: string): Promise<FileListDto> {
+    try {
+      const directory = this.resolve(input);
+      const entries = await fs.readdir(directory, { withFileTypes: true });
+      const files: FileInfoDto[] = [];
+      for (const entry of entries) {
+        const fullPath = path.join(directory, entry.name);
+        try {
+          const stat = await fs.stat(fullPath);
+          const isDir = stat.isDirectory();
+          files.push({ path: this.virtual(fullPath, isDir), is_dir: isDir, size: stat.size, modified_at: stat.mtime.toISOString() });
+        } catch { /* entry may disappear during listing */ }
+      }
+      return { files: files.sort((a, b) => a.path.localeCompare(b.path)) };
+    } catch (error) {
+      return {
+        files: [],
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
-    return { files: files.sort((a, b) => a.path.localeCompare(b.path)) };
   }
 
   async read(input: string, offset = 0, limit = 500) {

@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigFileService, RootConfig } from '../shared/config-file.service';
-import { AgentDto } from './agents.types';
+import { AgentDto, AgentHumanInTheLoopDto } from './agents.types';
 
 type RawAgentConfig = Record<string, unknown>;
 type AgentMap = Record<string, RawAgentConfig>;
@@ -91,7 +91,10 @@ export class AgentsService {
       });
     }
 
-    const storedAgent = this.toStoredAgentConfig(agentConfig);
+    const storedAgent = this.toStoredAgentConfig(
+      agentConfig,
+      agents[currentName],
+    );
     const nextAgents = Object.fromEntries(
       Object.entries(agents).map(([agentName, agentValue]) =>
         agentName === currentName
@@ -168,6 +171,7 @@ export class AgentsService {
     );
     const tools = this.validateTools(candidate.tools);
     const active = this.validateActive(candidate.active);
+    const humanInTheLoop = this.validateHumanInTheLoop(candidate.humanInTheLoop);
 
     return {
       name,
@@ -176,6 +180,7 @@ export class AgentsService {
       description,
       active,
       systemPrompt,
+      ...(humanInTheLoop === undefined ? {} : { humanInTheLoop }),
     };
   }
 
@@ -215,6 +220,7 @@ export class AgentsService {
       this.readStringArray(candidate.toolIds);
     const active =
       this.readActive(candidate.active) ?? this.readBooleanAsActive(candidate.enabled);
+    const humanInTheLoop = this.readHumanInTheLoop(candidate.humanInTheLoop);
 
     if (!model || !description || !systemPrompt || !tools || active === null) {
       throw new InternalServerErrorException(
@@ -229,16 +235,81 @@ export class AgentsService {
       description,
       active,
       systemPrompt,
+      ...(humanInTheLoop ? { humanInTheLoop } : {}),
     };
   }
 
-  private toStoredAgentConfig(agent: AgentDto): RawAgentConfig {
+  private toStoredAgentConfig(
+    agent: AgentDto,
+    previous?: RawAgentConfig,
+  ): RawAgentConfig {
     return {
       model: agent.model,
       tools: agent.tools,
       description: agent.description,
       active: agent.active,
       systemPrompt: agent.systemPrompt,
+      ...(agent.humanInTheLoop !== undefined
+        ? { humanInTheLoop: agent.humanInTheLoop }
+        : previous?.humanInTheLoop !== undefined
+          ? { humanInTheLoop: previous.humanInTheLoop }
+          : {}),
+    };
+  }
+
+  private validateHumanInTheLoop(
+    value: unknown,
+  ): AgentHumanInTheLoopDto | undefined {
+    if (value === undefined) return undefined;
+    if (value === null) return undefined;
+    if (typeof value !== 'object' || Array.isArray(value)) {
+      throw new BadRequestException({
+        message: 'Agent field "humanInTheLoop" must be an object.',
+        error: INVALID_AGENT_PAYLOAD,
+      });
+    }
+    const candidate = value as Record<string, unknown>;
+    if (typeof candidate.enabled !== 'boolean') {
+      throw new BadRequestException({
+        message: 'Agent field "humanInTheLoop.enabled" must be boolean.',
+        error: INVALID_AGENT_PAYLOAD,
+      });
+    }
+    const tools = this.readStringArray(candidate.tools);
+    if (!tools) {
+      throw new BadRequestException({
+        message: 'Agent field "humanInTheLoop.tools" must be a string array.',
+        error: INVALID_AGENT_PAYLOAD,
+      });
+    }
+    if (
+      candidate.enableAskHuman !== undefined &&
+      typeof candidate.enableAskHuman !== 'boolean'
+    ) {
+      throw new BadRequestException({
+        message: 'Agent field "humanInTheLoop.enableAskHuman" must be boolean.',
+        error: INVALID_AGENT_PAYLOAD,
+      });
+    }
+    return {
+      enabled: candidate.enabled,
+      tools,
+      enableAskHuman: candidate.enableAskHuman !== false,
+    };
+  }
+
+  private readHumanInTheLoop(value: unknown): AgentHumanInTheLoopDto | undefined {
+    if (value === undefined || value === null || typeof value !== 'object' || Array.isArray(value)) {
+      return undefined;
+    }
+    const candidate = value as Record<string, unknown>;
+    if (typeof candidate.enabled !== 'boolean') return undefined;
+    const tools = this.readStringArray(candidate.tools);
+    if (!tools) return undefined;
+    return {
+      enabled: candidate.enabled,
+      tools,
+      enableAskHuman: candidate.enableAskHuman !== false,
     };
   }
 

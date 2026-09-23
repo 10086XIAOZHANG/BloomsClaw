@@ -1,3 +1,9 @@
+export type AgentHumanInTheLoop = {
+  enabled: boolean;
+  tools: string[];
+  enableAskHuman: boolean;
+};
+
 export type AgentItem = {
   id: string;
   name: string;
@@ -6,6 +12,7 @@ export type AgentItem = {
   systemPrompt: string;
   enabled: boolean;
   toolIds: string[];
+  humanInTheLoop: AgentHumanInTheLoop;
 };
 
 export type ModelItem = {
@@ -70,6 +77,13 @@ export const MCP_TRANSPORT_OPTIONS = [
   { label: 'sse（兼容老服务）', value: 'sse' },
 ];
 
+export const HITL_TOOL_OPTIONS = [
+  { label: '沙箱 Shell 命令', value: 'sandbox_shell' },
+  { label: '沙箱文件操作', value: 'sandbox_file' },
+  { label: '代码执行 execute', value: 'execute' },
+  { label: '目录列表 ls', value: 'ls' },
+];
+
 export const createEmptyAgent = (): AgentItem => ({
   id: '',
   name: '',
@@ -78,6 +92,11 @@ export const createEmptyAgent = (): AgentItem => ({
   systemPrompt: '',
   enabled: true,
   toolIds: [],
+  humanInTheLoop: {
+    enabled: false,
+    tools: [],
+    enableAskHuman: true,
+  },
 });
 
 export const createEmptyModel = (): ModelItem => ({

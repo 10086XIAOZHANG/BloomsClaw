@@ -7,7 +7,7 @@ import {
   createDeepAgent,
 } from 'deepagents';
 
-import { readConfigByAgentName, readSelectedSkillContents } from './readConfig';
+import { readConfigByAgentName, readSelectedSkillContents, resolveConfigPath } from './readConfig';
 import { initStreamModel } from './agents';
 import { FileSaver } from './FileSaver';
 import { DockerSandboxBackend } from './sandbox';
@@ -37,6 +37,8 @@ export const DEFAULT_AGENT_TOOLS = ['FileTools', 'RunCommand', 'WebSearch', 'Sen
 export const DEFAULT_INTERRUPT_ON_TOOLS = [
   SANDBOX_SHELL_TOOL_NAME,
   SANDBOX_FILE_TOOL_NAME,
+  'execute',
+  'ls',
 ] as const;
 
 const _stripTrailingSlash = (p: string): string =>
@@ -456,6 +458,34 @@ export async function createAgent(
     throw new Error(`未找到智能体配置: ${agentName}`);
   }
 
+  const configPath = resolveConfigPath(userId);
+  const rawAgentHitl =
+    config?.agentConfig && typeof config.agentConfig === 'object'
+      ? (config.agentConfig as Record<string, unknown>).humanInTheLoop
+      : undefined;
+  console.log(
+    '[agent-core][createAgent] agent.identity=' + JSON.stringify({
+      agentName,
+      userId,
+      configPath,
+      configLoaded: Boolean(config),
+      optionHumanInTheLoop: humanInTheLoop === undefined ? '<undefined>' : (typeof humanInTheLoop === 'object' ? `object keys=[${Object.keys(humanInTheLoop as object).join(',')}]` : String(humanInTheLoop)),
+      agentConfigHumanInTheLoop: rawAgentHitl === undefined ? '<absent>' : `present type=${Array.isArray(rawAgentHitl) ? 'array' : typeof rawAgentHitl} shape=${JSON.stringify(typeof rawAgentHitl === 'object' ? Object.keys(rawAgentHitl as object) : rawAgentHitl)}`,
+    }),
+  );
+  // 安全审计：humanInTheLoop 只允许 enabled/tools/interruptOn/enableAskHuman 这几个字段
+  if (rawAgentHitl && typeof rawAgentHitl === 'object') {
+    const allowed = ['enabled', 'tools', 'interruptOn', 'enableAskHuman', 'askHuman'];
+    const keys = Object.keys(rawAgentHitl as object);
+    const suspicious = keys.filter((k) => !allowed.includes(k));
+    if (suspicious.length > 0) {
+      console.warn(
+        '[agent-core][createAgent] humanInTheLoop 含未知字段 ' + suspicious.join(',') +
+          ' （可能拼写错误，影响解析）',
+      );
+    }
+  }
+
   const model = await initStreamModel(config, { enableThinking });
   const { agentConfig } = config;
   const resolvedToolsEnable = resolveToolsEnable(toolsEnable, agentConfig.tools);
@@ -508,8 +538,15 @@ export async function createAgent(
       '，middleware 注入=' + (middleware ? '已启用（1条 BailianFileReferenceMiddleware）' : '未启用') +
       '，HITL=' +
       (resolvedHumanInLoop
-        ? `已启用 interruptOn=[${Object.keys(resolvedHumanInLoop.interruptOn).join(',')}] AskHuman=${resolvedHumanInLoop.enableAskHuman}`
+        ? `已启用 interruptOn=${JSON.stringify(resolvedHumanInLoop.interruptOn)} AskHuman=${resolvedHumanInLoop.enableAskHuman}`
         : '未启用'),
+  );
+  console.log(
+    '[agent-core][createAgent] 传给 createDeepAgent 的 interruptOn=' +
+      (interruptOn ? JSON.stringify(interruptOn) : '未传（undefined）') +
+      ' tools=' + (customTools.map((t) => t?.name).filter(Boolean).join(',') || '(空)') +
+      ' toolCount=' + customTools.length +
+      ' hasCheckpointer=' + Boolean(checkpointer),
   );
 
   const agent = createDeepAgent({
@@ -552,18 +589,86 @@ export function buildResumeCommand(resume: unknown): Command {
  * 返回待处理的中断值数组（HITLRequest 或 AskHuman 的 {question, kind}），无中断时返回 null。
  */
 export async function getPendingInterrupts(
-  agent: { getState: (config: unknown) => Promise<{ values?: unknown }> },
+  agent: {
+    getState: (config: unknown) => Promise<{
+      values?: unknown;
+      tasks?: Array<{ interrupts?: Array<{ value?: unknown }> }>;
+    }>;
+  },
   threadId: string,
 ): Promise<unknown[] | null> {
   const state = await agent.getState({ configurable: { thread_id: threadId } });
+  const interrupts = (state?.tasks ?? []).flatMap((task) => task.interrupts ?? []);
   const values = state?.values;
-  if (!isInterrupted(values)) {
-    return null;
+  const viaChannel = isInterrupted(values) ? (values as Record<string, { value?: unknown }[]>)[INTERRUPT] : undefined;
+  console.log(
+    '[agent-core][getPendingInterrupts] state.summary=' +
+      JSON.stringify({
+        threadId,
+        next: (state as { next?: string[] })?.next ?? [],
+        taskCount: Array.isArray((state as { tasks?: unknown[] })?.tasks) ? (state as { tasks?: unknown[] }).tasks?.length : null,
+        taskInterrupts: (state as { tasks?: Array<{ name?: string; interrupts?: Array<{ value?: unknown }> }> })?.tasks?.map((t) => ({
+          name: t.name,
+          interruptCount: t.interrupts?.length ?? 0,
+          values: (t.interrupts ?? []).map((i) => summarizeInterrupt(i.value)),
+        })),
+        channelInterrupts: viaChannel
+          ? ((viaChannel as { value?: unknown }[]).map((i) => summarizeInterrupt(i?.value)))
+          : undefined,
+      }),
+  );
+  if (interrupts.length > 0) {
+    return interrupts.map((item) => item.value);
   }
-  const interrupts = (values as Record<string, { value?: unknown }[]>)[INTERRUPT];
-  return Array.isArray(interrupts)
-    ? interrupts.map((item) => item?.value)
-    : null;
+
+  if (viaChannel) {
+    return Array.isArray(viaChannel)
+      ? viaChannel.map((item) => item?.value)
+      : null;
+  }
+  return null;
+}
+
+/** 仅输出中断值的结构摘要（不含完整文件内容 / 命令原文 / 敏感参数值） */
+function summarizeInterrupt(value: unknown): Record<string, unknown> | string {
+  if (!value || typeof value !== 'object') {
+    return value === undefined ? '<undefined>' : String(value).slice(0, 120);
+  }
+  const obj = value as Record<string, unknown>;
+  if (obj.kind === 'ask_human') {
+    return { kind: 'ask_human', question: String(obj.question ?? '').slice(0, 200) };
+  }
+  const actionRequests = Array.isArray(obj.actionRequests) && obj.actionRequests.length > 0
+    ? obj.actionRequests.map((a) => ({
+        name: (a as Record<string, unknown>)?.name,
+        argKeys: Object.keys(((a as Record<string, unknown>)?.args ?? {}) as Record<string, unknown>),
+        argValuesTruncated: truncateValues((a as Record<string, unknown>)?.args),
+      }))
+    : undefined;
+  const reviewConfigs = Array.isArray(obj.reviewConfigs)
+    ? obj.reviewConfigs.map((r) => ({
+        actionName: (r as Record<string, unknown>)?.actionName,
+        allowedDecisions: (r as Record<string, unknown>)?.allowedDecisions,
+      }))
+    : undefined;
+  if (actionRequests === undefined && reviewConfigs === undefined) {
+    return { keys: Object.keys(obj), bodyTruncated: JSON.stringify(value).slice(0, 300) };
+  }
+  return { keys: Object.keys(obj), actionRequests, reviewConfigs };
+}
+
+/** 只保留参数名 + 截断后的值样例，避免打印完整命令 / 文件内容 / 敏感值 */
+function truncateValues(value: unknown): Record<string, unknown> | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+    out[k] = typeof v === 'string'
+      ? (v.length > 40 ? `${v.slice(0, 40)}...[len=${v.length}]` : v)
+      : Array.isArray(v)
+        ? `<array[${v.length}]>`
+        : v;
+  }
+  return out;
 }
 export type {
   HITLRequest,

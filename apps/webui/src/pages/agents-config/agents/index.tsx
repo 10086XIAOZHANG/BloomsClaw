@@ -25,7 +25,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { subscribeUserChange } from '@/utils/userSession';
 
 import type { AgentItem, ModelItem, ToolItem } from '../data';
-import { createEmptyAgent } from '../data';
+import { createEmptyAgent, HITL_TOOL_OPTIONS } from '../data';
 import {
   deleteAgentItem,
   getBloomsClawAgentsConfig,
@@ -119,6 +119,9 @@ const AgentsPage: React.FC = () => {
       ['agents', fieldName, 'description'],
       ['agents', fieldName, 'systemPrompt'],
       ['agents', fieldName, 'toolIds'],
+      ['agents', fieldName, 'humanInTheLoop', 'enabled'],
+      ['agents', fieldName, 'humanInTheLoop', 'tools'],
+      ['agents', fieldName, 'humanInTheLoop', 'enableAskHuman'],
     ];
 
     try {
@@ -315,6 +318,43 @@ const AgentsPage: React.FC = () => {
                             placeholder="请输入系统提示词，用于定义智能体行为。"
                           />
                         </Form.Item>
+
+                        <Card size="small" title="Human-in-the-loop" style={{ marginTop: 16 }}>
+                          <Row gutter={16}>
+                            <Col xs={24} md={8}>
+                              <Form.Item
+                                label="启用人工介入"
+                                name={[field.name, 'humanInTheLoop', 'enabled']}
+                                valuePropName="checked"
+                              >
+                                <Switch checkedChildren="启用" unCheckedChildren="停用" />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={24} md={8}>
+                              <Form.Item
+                                label="允许 AskHuman 提问"
+                                name={[field.name, 'humanInTheLoop', 'enableAskHuman']}
+                                valuePropName="checked"
+                              >
+                                <Switch checkedChildren="允许" unCheckedChildren="禁止" />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                          {current?.humanInTheLoop?.enabled ? (
+                            <Form.Item
+                              label="需要审批的工具"
+                              name={[field.name, 'humanInTheLoop', 'tools']}
+                              extra="可选择内置危险工具，也可以输入其它工具名；为空时使用运行时默认工具。"
+                            >
+                              <Select
+                                mode="tags"
+                                allowClear
+                                options={HITL_TOOL_OPTIONS}
+                                placeholder="选择或输入需要人工审批的工具"
+                              />
+                            </Form.Item>
+                          ) : null}
+                        </Card>
                       </Card>
                     );
                   })

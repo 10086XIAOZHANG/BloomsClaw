@@ -255,10 +255,28 @@ const InterruptForm: React.FC<InterruptFormProps> = ({ interrupt, submitting, on
           </Typography.Text>
         ))}
         <Space>
-          <Button type="primary" loading={submitting} onClick={() => onSubmit({ decisions: [{ type: 'approve' }] })}>
+          <Button
+            type="primary"
+            loading={submitting}
+            onClick={() =>
+              onSubmit({
+                decisions: actions.map(() => ({ type: 'approve' })),
+              })
+            }
+          >
             同意执行
           </Button>
-          <Button disabled={submitting} onClick={() => onSubmit({ decisions: [{ type: 'reject', message: '用户拒绝执行' }] })}>
+          <Button
+            disabled={submitting}
+            onClick={() =>
+              onSubmit({
+                decisions: actions.map(() => ({
+                  type: 'reject',
+                  message: '用户拒绝执行',
+                })),
+              })
+            }
+          >
             拒绝
           </Button>
         </Space>
@@ -1331,7 +1349,9 @@ const ChatbotPage: React.FC = () => {
     if (!pendingMessage) return;
 
     setIsRequesting(true);
-    const resumeValue = pendingMessage.pendingInterrupt?.fields?.length
+    const pendingInterrupt = pendingMessage.pendingInterrupt;
+    const isToolApproval = (pendingInterrupt?.actionRequests?.length ?? 0) > 0;
+    const resumeValue = isToolApproval || 'decisions' in value
       ? value
       : String(value.answer ?? '');
     try {
@@ -1415,7 +1435,7 @@ const ChatbotPage: React.FC = () => {
                   isThinking: false,
                 };
               }
-              return { ...message, id: chunk.id || message.id };
+              return message;
             }),
           }));
         },
@@ -1561,7 +1581,17 @@ const ChatbotPage: React.FC = () => {
               />
             </div>
           );
-          item.header = interruptForm;
+          item.header = (
+            <div className={styles.thoughtChainWrap}>
+              {thoughtChainItems.length > 0 ? (
+                <ThoughtChain
+                  items={thoughtChainItems}
+                  styles={THOUGHT_CHAIN_STYLES}
+                />
+              ) : null}
+              {interruptForm}
+            </div>
+          );
         }
 
         return item;

@@ -1,5 +1,13 @@
 import { request } from '@umijs/max';
-import type { AgentItem, McpConfig, ModelItem, RemoteMcpToolMeta, SkillItem, ToolItem } from './data';
+import type {
+  AgentHumanInTheLoop,
+  AgentItem,
+  McpConfig,
+  ModelItem,
+  RemoteMcpToolMeta,
+  SkillItem,
+  ToolItem,
+} from './data';
 import { getCurrentUserId } from '@/utils/userSession';
 
 type ApiResponse<T> = {
@@ -16,6 +24,7 @@ type BackendAgentItem = {
   description: string;
   active: 0 | 1;
   systemPrompt: string;
+  humanInTheLoop?: AgentHumanInTheLoop | null;
 };
 
 type BackendModelItem = {
@@ -51,6 +60,12 @@ const API_BASE_URL =
   process.env.API_BASE_URL ||
   (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3000');
 
+const DEFAULT_HUMAN_IN_THE_LOOP: AgentHumanInTheLoop = {
+  enabled: false,
+  tools: [],
+  enableAskHuman: true,
+};
+
 export const getBloomsClawAgentsConfig = async (): Promise<{
   agents: AgentItem[];
 }> => {
@@ -72,6 +87,11 @@ export const getBloomsClawAgentsConfig = async (): Promise<{
       description: agent.description,
       enabled: agent.active === 1,
       systemPrompt: agent.systemPrompt,
+      humanInTheLoop: {
+        ...DEFAULT_HUMAN_IN_THE_LOOP,
+        ...(agent.humanInTheLoop ?? {}),
+        tools: agent.humanInTheLoop?.tools ?? [],
+      },
     })),
   };
 };
@@ -163,6 +183,7 @@ export const saveAgentItem = async (
     description: agent.description.trim(),
     active: agent.enabled ? 1 : 0,
     systemPrompt: agent.systemPrompt.trim(),
+    humanInTheLoop: agent.humanInTheLoop ?? DEFAULT_HUMAN_IN_THE_LOOP,
   };
   const requestUrl = agent.id
     ? `${API_BASE_URL}/agents/${encodeURIComponent(agent.id)}`

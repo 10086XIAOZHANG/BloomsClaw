@@ -24,6 +24,22 @@ import { ModelsWorkspaceService } from './models.workspace.service';
 
 type ThoughtStepStatus = 'loading' | 'success' | 'error' | 'abort' | 'waiting';
 
+function safeResumePreview(resume: unknown): string {
+  if (typeof resume === 'string') {
+    return `"${resume.slice(0, 60)}"`;
+  }
+  if (!resume || typeof resume !== 'object') return String(resume);
+  const obj = resume as Record<string, unknown>;
+  const decisions = Array.isArray(obj.decisions)
+    ? obj.decisions.map((d) => {
+        const dd = d as Record<string, unknown>;
+        return dd?.type ?? '<unknown>';
+      }).join(',')
+    : undefined;
+  if (decisions !== undefined) return `decisions=[${decisions}]`;
+  return `keys=[${Object.keys(obj).join(',')}]`;
+}
+
 function extractGraphInterruptValue(error: unknown): unknown | undefined {
   const raw = error instanceof Error ? error.message : String(error ?? '');
   const jsonStart = raw.indexOf('[');
@@ -235,8 +251,22 @@ export class ModelsLangchainController {
     if (!chatId) {
       throw new BadRequestException('缺少会话 id');
     }
-    if (body.resume === undefined) {
+    if (body.resume === undefined || body.resume === null) {
       throw new BadRequestException('缺少 resume 决策');
+    }
+    if (typeof body.resume === 'string' && body.resume.trim() === '') {
+      throw new BadRequestException(
+        'resume 不能为空：AskHuman 请传入用户回答文本，人工审批请传入 {"decisions":[{"type":"approve"}]}',
+      );
+    }
+    if (
+      typeof body.resume === 'object' &&
+      !Array.isArray(body.resume) &&
+      Object.keys(body.resume as Record<string, unknown>).length === 0
+    ) {
+      throw new BadRequestException(
+        'resume 决策对象不能为空：请传入 {"decisions":[{"type":"approve"}]}',
+      );
     }
 
     const currentUserId = body.userId ?? 'default';
@@ -244,6 +274,12 @@ export class ModelsLangchainController {
     const skillNames = this.normalizeBodySkills(body.skillNames);
     const assistantMessageId = randomUUID();
     let closeAgent: (() => Promise<void>) | undefined;
+
+    this.logger.log(
+      `[deepagents-resume] request chatId=${chatId} userId=${currentUserId} agentName=${agentName} ` +
+        `resumeKind=${typeof body.resume === 'string' ? 'ask_human_text' : Array.isArray(body.resume) ? 'object/array' : 'object/' + Object.keys((body.resume ?? {}) as Record<string, unknown>).join(',')} ` +
+        `resumePreview=${safeResumePreview(body.resume)}`,
+    );
 
     try {
       res.setHeader('Content-Type', 'text/plain; charset=utf-8');
@@ -286,7 +322,7 @@ export class ModelsLangchainController {
           'waiting',
           currentUserId,
         );
-        this.logger.log(`[deepagents-resume] re-interrupted chatId=${chatId}`);
+        this.logger.log(`[deepagents-resume] re-interrupted chatId=${chatId} (resume 后仍处于等待人工输入状态)`);
         if (!res.writableEnded) {
           res.end();
         }
@@ -537,10 +573,21 @@ export class ModelsLangchainController {
     let reasoningCompleted = false;
     let hasAnswer = false;
     let chunkCount = 0;
+    const eventCounts = new Map<string, number>();
+    const loggedTools = new Set<string>();
 
     try {
       for await (const event of response) {
       chunkCount += 1;
+      const evtName = event?.event ?? 'unknown';
+      eventCounts.set(evtName, (eventCounts.get(evtName) ?? 0) + 1);
+      // belt-and-suspenders: log each tool the model actually bound to, once
+      if ((evtName === 'on_tool_start' || evtName === 'on_tool_end' || evtName === 'on_tool_error') && event?.name) {
+        if (!loggedTools.has(event.name)) {
+          loggedTools.add(event.name);
+          this.logger.log(`[deepagents-stream] tool=${event.name} chatId=${chatId} (detected via ${evtName})`);
+        }
+      }
 
       if (event?.event === 'on_chat_model_stream') {
         const messageChunk = event?.data?.chunk ?? {};
@@ -688,6 +735,9 @@ export class ModelsLangchainController {
               interrupt: interruptValue,
               isEnd: true,
             });
+            this.logger.log(
+              `[deepagents-stream] INTERRUPT via on_tool_error chatId=${chatId} type=${interruptValue && typeof interruptValue === 'object' && 'kind' in interruptValue ? 'ask_human' : 'hitl_approval'}`,
+            );
             return { interrupted: true, chunkCount };
           }
           // If the event contains no payload, the checkpoint lookup below is
@@ -727,6 +777,9 @@ export class ModelsLangchainController {
           interrupt: interruptValue,
           isEnd: true,
         });
+        this.logger.log(
+          `[deepagents-stream] INTERRUPT via caught GraphInterrupt chatId=${chatId} type=${interruptValue && typeof interruptValue === 'object' && 'kind' in interruptValue ? 'ask_human' : 'hitl_approval'}`,
+        );
         return { interrupted: true, chunkCount };
       }
     }
@@ -781,10 +834,16 @@ export class ModelsLangchainController {
           interrupt: interruptValue,
           isEnd: true,
         });
+        this.logger.log(
+          `[deepagents-stream] INTERRUPT via checkpoint chatId=${chatId} type=${isAskHuman ? 'ask_human' : 'hitl_approval'} pendingCount=${pending.length}`,
+        );
         return { interrupted: true, chunkCount };
       }
     }
-
+    this.logger.log(
+      `[deepagents-stream] event-summary chatId=${chatId} types=${JSON.stringify(Object.fromEntries(eventCounts))} interrupted=false end` +
+        ` (chunkCount=${chunkCount})`,
+    );
     return { interrupted: false, chunkCount };
   }
 

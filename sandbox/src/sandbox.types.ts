@@ -70,6 +70,7 @@ export interface FileInfoDto extends FileInfo {
 
 export interface FileListDto {
   files: FileInfoDto[];
+  error?: string;
 }
 
 export interface ReadFileDto {

@@ -1,3 +1,9 @@
+export interface AgentHumanInTheLoopDto {
+  enabled: boolean;
+  tools: string[];
+  enableAskHuman: boolean;
+}
+
 export interface AgentDto {
   name: string;
   model: string;
@@ -5,4 +11,5 @@ export interface AgentDto {
   description: string;
   active: 0 | 1;
   systemPrompt: string;
+  humanInTheLoop?: AgentHumanInTheLoopDto;
 }
