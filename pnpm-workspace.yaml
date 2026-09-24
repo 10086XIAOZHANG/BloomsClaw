@@ -2,12 +2,24 @@ packages:
   - "apps/*"
   - "packages/*"
   - "mcp-server"
+# pnpm v12 将 onlyBuiltDependencies 移到了 workspace 配置；
+# 允许这些包运行 postinstall 构建脚本，避免 ERR_PNPM_IGNORED_BUILDS。
 allowBuilds:
-  '@nestjs/core': set this to true or false
-  '@scarf/scarf': set this to true or false
-  '@swc/core': set this to true or false
-  core-js: set this to true or false
-  core-js-pure: set this to true or false
-  es5-ext: set this to true or false
-  esbuild: set this to true or false
-  unrs-resolver: set this to true or false
+  '@nestjs/core': true
+  '@scarf/scarf': true
+  '@swc/core': true
+  core-js: true
+  core-js-pure: true
+  es5-ext: true
+  esbuild: true
+  unrs-resolver: true
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@scarf/scarf'
+  - '@swc/core'
+  - 'core-js'
+  - 'core-js-pure'
+  - 'es5-ext'
+  - 'esbuild'
+  - 'unrs-resolver'
+
