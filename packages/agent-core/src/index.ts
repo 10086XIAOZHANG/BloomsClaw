@@ -5,10 +5,12 @@ import { SystemMessage } from '@langchain/core/messages';
 import { Command, INTERRUPT, isInterrupted } from '@langchain/langgraph';
 import {
   createDeepAgent,
+  createSummarizationMiddleware,
+  FilesystemBackend,
 } from 'deepagents';
 
 import { readConfigByAgentName, readSelectedSkillContents, resolveConfigPath } from './readConfig';
-import { initStreamModel } from './agents';
+import { initStreamModel, createMemoryEmbedder } from './agents';
 import { FileSaver } from './FileSaver';
 import { DockerSandboxBackend } from './sandbox';
 import { CALCULATOR_TOOL_NAME, calculatorTool } from './tools/calculator';
@@ -26,6 +28,7 @@ import {
   createLoadSkillTool,
   createReadSkillResourceTool,
 } from './tools/skills';
+import { createMemoryTools, type MemoryEmbedder } from './tools/memory';
 
 /** 所有 agent 自动加载的默认工具（不依赖 agentConfig.tools 配置） */
 export const DEFAULT_AGENT_TOOLS = ['FileTools', 'RunCommand', 'WebSearch', 'SendEmail'] as const;
@@ -337,7 +340,8 @@ function buildSystemPrompt(
   // L1 常驻：只放 active Skills 的 name + description 索引（约200 token/skill），
   // 正文走 load_skill / read_skill_resource 按用户提问按需加载，避免首轮全量注入爆 context。
   const skillIndex = buildSkillIndexPrompt(userId);
-  const parts = [basePrompt.trim(), workspaceGuardrail, skillIndex];
+  const memoryGuidance = '稳定的用户偏好、项目事实和重要决策请用 remember 保存，需要回顾时用 recall 检索；不要把长期记忆重复写入当前对话。';
+  const parts = [basePrompt.trim(), workspaceGuardrail, skillIndex, memoryGuidance];
   // 兼容逻辑：调用方显式传入 skillNames 时，首轮仍强制预加载这些 Skill 正文（L2）；
   // 不传时仅给索引，由模型根据用户提问调用 load_skill 渐进加载。
   if (selectedSkills.length > 0) {
@@ -510,6 +514,9 @@ export async function createAgent(
   }
   const sandboxTools = backend ? createSandboxTools(backend) : [];
   const resolvedHumanInLoop = resolveHumanInLoop(humanInTheLoop, agentConfig);
+  const memoryTools = createMemoryTools(userId, agentName, {
+    embedder: createMemoryEmbedder(config.modelConfig),
+  });
   const customTools: any[] = [
     ...(resolvedToolsEnable.fileTools && sandboxTools[0] ? [sandboxTools[0]] : []),
     ...(resolvedToolsEnable.shellTools && sandboxTools[1] ? [sandboxTools[1]] : []),
@@ -517,6 +524,8 @@ export async function createAgent(
     ...(resolvedToolsEnable.calculatorTools ? [calculatorTool] : []),
     ...(resolvedToolsEnable.emailTools ? [sendEmailTool] : []),
     ...mcpTools,
+    memoryTools.rememberTool,
+    memoryTools.recallTool,
     // Skill 渐进式加载工具常驻：模型命中索引后自行调用，与用户提问动态相关
     createLoadSkillTool(userId),
     createReadSkillResourceTool(userId),
@@ -525,9 +534,23 @@ export async function createAgent(
   const bailianFileReferenceMiddleware = createBailianFileReferenceMiddleware(
     runtimeContext?.bailianFileReferences,
   );
-  const middleware = bailianFileReferenceMiddleware
-    ? [bailianFileReferenceMiddleware]
-    : undefined;
+  const summarizationMiddleware = createSummarizationMiddleware({
+    backend: new FilesystemBackend({
+      rootDir: path.join(homePath, '.blooms_claw', 'users', userId, 'conversation_history', threadId),
+      virtualMode: true,
+    }),
+    // 中长对话压缩：保留最近约 10 轮（约20条消息）原始消息，
+    // 历史达约20轮或占模型上下文约30%时，把更早消息卸载并压成一条摘要。
+    keep: { type: 'messages', value: 20 },
+    trigger: [
+      { type: 'messages', value: 40 },
+      { type: 'fraction', value: 0.3 },
+    ],
+  });
+  const middleware = [
+    ...(bailianFileReferenceMiddleware ? [bailianFileReferenceMiddleware] : []),
+    summarizationMiddleware,
+  ];
   const interruptOn =
     resolvedHumanInLoop && Object.keys(resolvedHumanInLoop.interruptOn).length > 0
       ? resolvedHumanInLoop.interruptOn
@@ -535,7 +558,7 @@ export async function createAgent(
   console.log(
     '[agent-core][createAgent] runtimeContext.bailianFileReferences=' +
       JSON.stringify(runtimeContext?.bailianFileReferences ?? null) +
-      '，middleware 注入=' + (middleware ? '已启用（1条 BailianFileReferenceMiddleware）' : '未启用') +
+      '，middleware 注入=' + (middleware.length > 0 ? `已启用（${middleware.length}条）` : '未启用') +
       '，HITL=' +
       (resolvedHumanInLoop
         ? `已启用 interruptOn=${JSON.stringify(resolvedHumanInLoop.interruptOn)} AskHuman=${resolvedHumanInLoop.enableAskHuman}`
@@ -573,8 +596,15 @@ export async function createAgent(
 export { DockerSandboxBackend, getHostWorkspaceDir } from './sandbox';
 export { createSandboxTools } from './tools/sandbox';
 export { readConfigByAgentName } from './readConfig';
+export { initStreamModel, createMemoryEmbedder } from './agents';
 export { ASK_HUMAN_TOOL_NAME, askHumanTool } from './tools/askHuman';
 export { SEND_EMAIL_TOOL_NAME, sendEmailTool } from './tools/sendEmail';
+export {
+  REMEMBER_TOOL_NAME,
+  RECALL_TOOL_NAME,
+  LongTermMemoryStore,
+  createMemoryTools,
+} from './tools/memory';
 
 /**
  * 构造用于恢复被 Human-in-the-loop 中断的图的 Command。
